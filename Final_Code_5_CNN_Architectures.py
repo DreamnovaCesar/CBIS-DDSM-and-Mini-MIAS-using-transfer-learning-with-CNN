@@ -1,7 +1,7 @@
-from gc import callbacks
 import os
+import string
+import sys
 import time
-import datetime
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -29,20 +29,38 @@ from tensorflow.keras import datasets
 from tensorflow.keras import layers
 from tensorflow.keras import models
 
+from tensorflow.keras.optimizers import Adam
+
 from tensorflow.keras.applications import ResNet50
 from tensorflow.keras.applications import ResNet50V2
 from tensorflow.keras.applications import ResNet152
 from tensorflow.keras.applications import ResNet152V2
+
 from tensorflow.keras.applications import MobileNet
+
 from tensorflow.keras.applications import MobileNetV3Small
 from tensorflow.keras.applications import MobileNetV3Large
+
 from tensorflow.keras.applications import Xception
+
 from tensorflow.keras.applications import VGG16
 from tensorflow.keras.applications import VGG19
+
 from tensorflow.keras.applications import InceptionV3
 from tensorflow.keras.applications import DenseNet121
 from tensorflow.keras.applications import DenseNet201
+
 from tensorflow.keras.applications import Xception
+from tensorflow.keras.applications import NASNetLarge
+
+from tensorflow.keras.applications import EfficientNetB0
+from tensorflow.keras.applications import EfficientNetB1
+from tensorflow.keras.applications import EfficientNetB2
+from tensorflow.keras.applications import EfficientNetB3
+from tensorflow.keras.applications import EfficientNetB4
+from tensorflow.keras.applications import EfficientNetB5
+from tensorflow.keras.applications import EfficientNetB6
+from tensorflow.keras.applications import EfficientNetB7
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.models import Model
@@ -54,11 +72,6 @@ from tensorflow.keras.layers import Conv2D
 from tensorflow.keras.layers import MaxPooling2D
 from tensorflow.keras.layers import AveragePooling2D
 from tensorflow.keras.layers import BatchNormalization
-
-from tensorflow.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.callbacks import CSVLogger
-from tensorflow.keras.callbacks import ReduceLROnPlateau
 
 from tensorflow.keras import regularizers
 
@@ -74,13 +87,58 @@ class pretrainedModels:
     self.extension = kwargs.get('extension', None)
     self.newextension = kwargs.get('newextension', None)
 """
+##################################################################################################################################################################
 
 # ? Configuration of each DCNN model
 
 def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, DL_model, Enhancement_technique, Class_labels, Column_names, X_size, Y_size, Vali_split, Epochs, Folder_data, Folder_models, Folder_models_esp):
+    """
+    _summary_
 
+    _extended_summary_
+
+    Args:
+        All_images (_type_): _description_
+        All_labels (_type_): _description_
+        Dataframe_save (_type_): _description_
+        Folder_path (_type_): _description_
+        DL_model (_type_): _description_
+        Enhancement_technique (_type_): _description_
+        Class_labels (_type_): _description_
+        Column_names (_type_): _description_
+        X_size (_type_): _description_
+        Y_size (_type_): _description_
+        Vali_split (_type_): _description_
+        Epochs (_type_): _description_
+        Folder_data (_type_): _description_
+        Folder_models (_type_): _description_
+        Folder_models_esp (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    #print(X_size)
+    #print(Y_size)
 
     for Index, Model in enumerate(DL_model):
+
+      #print(All_images)
+      #print(All_labels)
+
+      #All_images[0] = np.array(All_images[0])
+      #All_images[1] = np.array(All_images[1])
+
+      #All_labels[0] = np.array(All_labels[0])
+      #All_labels[1] = np.array(All_labels[1])
+
+      #print(len(All_images[0]))
+      #print(len(All_images[1]))
+
+      #print(len(All_labels[0]))
+      #print(len(All_labels[1]))
+
+      #All_images_CNN = All_images[0] + All_images[1]
+      #All_labels_CNN = np.concatenate((All_labels[0], All_labels[1]), axis = None)
 
       print(len(All_images))
       print(len(All_labels))
@@ -96,30 +154,27 @@ def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, DL
 # ? Pretrained model configurations
 
 def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class_labels, X_size, Y_size, Vali_split, Epochs, X_train, y_train, X_test, y_test, Folder_models, Folder_models_Esp):
-
     """
-	  General configuration for each model, extracting features and printing theirs values.
+    General configuration for each model, extracting features and printing theirs values.
 
-    Parameters:
-    argument1 (model): Model chosen.
-    argument2 (str): technique used.
-    argument3 (list): labels used for printing.
-    argument4 (int): Size of X.
-    argument5 (int): Size of Y.
-    argument6 (int): Number of classes.
-    argument7 (float): Validation split value.
-    argument8 (int): Number of epochs.
-    argument9 (int): X train split data.
-    argument9 (int): y train split data.
-    argument9 (int): X test split data.
-    argument9 (int): y test split data.
-    argument9 (int): Folder used to save data images.
-    argument9 (int): Folder used to save data images in spanish.
+    Args:
+        Pretrained_model_function (_type_): _description_
+        Enhancement_technique (_type_): _description_
+        Class_labels (_type_): _description_
+        X_size (_type_): _description_
+        Y_size (_type_): _description_
+        Vali_split (_type_): _description_
+        Epochs (_type_): _description_
+        X_train (_type_): _description_
+        y_train (_type_): _description_
+        X_test (_type_): _description_
+        y_test (_type_): _description_
+        Folder_models (_type_): _description_
+        Folder_models_Esp (_type_): _description_
 
     Returns:
-	  int:Returning all metadata from each model.
-    
-   	"""
+        _type_: _description_
+    """
 
     # * Parameters plt
 
@@ -419,7 +474,7 @@ def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
 def overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
 
     """
-	  Updates final CSV dataframe to see all values
+    Updates final CSV dataframe to see all values
 
     Parameters:
     argument1 (list): All values.
@@ -429,33 +484,32 @@ def overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
     argument5 (int): The index.
 
     Returns:
-	  void
+    void
     
-   	"""
+    """
 
     for i in range(len(Info_list)):
         Dataframe.loc[Row, Column_names[i]] = Info_list[i]
-  
+
     Dataframe.to_csv(Folder_path, index = False)
-  
+
     print(Dataframe)
 
     return Dataframe
 
+##################################################################################################################################################################
 
 # ? Folder Configuration of each DCNN model
-#train_generator, valid_generator, test_generator, Dataframe_save_mias, Models, Technique, Labels_biclass, Column_names, X_size, Y_size, Epochs, Biclass_Data_CSV, Biclass_Data_Model, Biclass_Data_Model_Esp
-def configuration_models_folder(Training_data, Validation_data, Test_data, Dataframe_save, DL_model, Enhancement_technique, Class_labels, Column_names, X_size, Y_size, Epochs, Folder_CSV, Folder_models, Folder_models_esp):
+
+def configuration_models_folder(Training_data, Validation_data, Test_data, Dataframe_save, Folder_path, DL_model, Enhancement_technique, Class_labels, Column_names, X_size, Y_size, Epochs, Folder_CSV, Folder_models, Folder_models_esp):
 
     for Index, Model in enumerate(DL_model):
 
-      Info_model, Folder_path = deep_learning_models_folder(Training_data, Validation_data, Test_data, Model, Enhancement_technique, Class_labels, X_size, Y_size, Epochs, Folder_CSV, Folder_models, Folder_models_esp)
+      Info_model = deep_learning_models_folder(Training_data, Validation_data, Test_data, Model, Enhancement_technique, Class_labels, X_size, Y_size, Epochs, Folder_CSV, Folder_models, Folder_models_esp)
       
-      print(Info_model)
+      Dataframe_updated = overwrite_row_CSV_folder(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
-      Info_dataframe = overwrite_row_CSV_folder(Dataframe_save, Folder_path, Info_model, Column_names, Index)
-
-    return Info_dataframe
+    return Dataframe_updated
 
 # ? Folder Pretrained model configurations
 
@@ -533,76 +587,29 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
 
     # * Training fit
 
-    Datatime_start_training = datetime.datetime.now()
     Start_training_time = time.time()
 
     Pretrained_model, Pretrained_model_name, Pretrained_model_name_letters = Pretrained_model_function(X_size, Y_size, Class_problem)
-    
-    Dir_name = str(Class_problem_prefix) + 'Each_Model_' + str(Enhancement_technique) + '_dir'
-    #print(Folder_CSV + '/' + Dir_name)
-    #print('\n')
-
-    Exist_dir = os.path.isdir(Folder_CSV + '/' + Dir_name) 
-
-    if Exist_dir == False:
-      Folder_path = os.path.join(Folder_CSV, Dir_name)
-      os.mkdir(Folder_path)
-      print(Folder_path)
-    else:
-      Folder_path = os.path.join(Folder_CSV, Dir_name)
-      print(Folder_path)
-
-
-    Dataframe_name = str(Class_problem_prefix) + 'Dataframe_' + 'CNN_' + 'Models_' + str(Enhancement_technique) + '.csv'
-    Dataframe_name_folder = os.path.join(Folder_path, Dataframe_name)
-
-    Best_model_name_weights = "{}{}_{}_Best_Model_Weights.h5".format(str(Class_problem_prefix), str(Pretrained_model_name), Enhancement_technique)
-    Best_model_folder_name_weights = os.path.join(Folder_path, Best_model_name_weights)
-
-    # * 
-    #Best_model_name = str(Class_problem_prefix) + str(Pretrained_model_name) + '_' + str(Enhancement_technique) + '_Best_Model' + '.h5'
-    #Best_model_folder_name = os.path.join(Folder_CSV, Best_model_name)
-
-    # * 
-    CSV_logger_info = str(Class_problem_prefix) + str(Pretrained_model_name) + '_' + str(Enhancement_technique) + '.csv'
-    CSV_logger_info_folder = os.path.join(Folder_path, CSV_logger_info)
-
-    # * 
-    Model_reduce_lr = ReduceLROnPlateau(  monitor = 'val_loss', factor = 0.2,
-                                          patience = 2, min_lr = 0.00001)
-
-    # * 
-    Model_checkpoint_callback = ModelCheckpoint(  filepath = Best_model_folder_name_weights,
-                                                  save_weights_only = True,                     
-                                                  monitor = 'val_loss',
-                                                  mode = 'max',
-                                                  save_best_only = True )
-
-    EarlyStopping_callback = EarlyStopping(patience = 3, monitor = 'val_loss')
-
-    Log_CSV = CSVLogger(CSV_logger_info_folder, separator = ',', append = False)
-
-    Callbacks = [Model_checkpoint_callback, EarlyStopping_callback, Log_CSV] 
 
     Pretrained_Model_History = Pretrained_model.fit(  Train_data,
                                                       validation_data = Valid_data,
                                                       steps_per_epoch = Train_data.n//Train_data.batch_size,
                                                       validation_steps = Valid_data.n//Valid_data.batch_size,
-                                                      epochs = Epochs,
-                                                      callbacks = Callbacks)
-  
-    End_training_time = time.time()
-    Datatime_finish_training = datetime.datetime.now()
+                                                      epochs = Epochs)
 
-    #Pretrained_model.save(Best_model_folder_name)
+    #steps_per_epoch = Train_data.n//Train_data.batch_size,
+
+    End_training_time = time.time()
+
     
     # * Test evaluation
 
     Start_testing_time = time.time()
 
-    Loss_Test, Accuracy_Test = Pretrained_model.evaluate(Valid_data)
+    Loss_Test, Accuracy_Test = Pretrained_model.evaluate(Test_data)
 
     End_testing_time = time.time()
+
     
     # * Total time of training and testing
 
@@ -620,10 +627,10 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
 
       # * Get the data from the model chosen
 
-      Predict = Pretrained_model.predict(Valid_data)
-      y_pred = Pretrained_model.predict(Valid_data).ravel()
+      Predict = Pretrained_model.predict(Test_data)
+      y_pred = Pretrained_model.predict(Test_data).ravel()
 
-      print(Valid_data.classes)
+      print(Test_data.classes)
       print(y_pred)
       
       #y_pred = Pretrained_model.predict(X_test)
@@ -634,33 +641,33 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
       
       # * Confusion Matrix
       print('Confusion Matrix')
-      Confusion_matrix = confusion_matrix(Valid_data.classes, y_pred_class)
+      Confusion_matrix = confusion_matrix(Test_data.classes, y_pred_class)
       
       print(Confusion_matrix)
-      print(classification_report(Valid_data.classes, y_pred_class, target_names = Class_labels))
+      print(classification_report(Test_data.classes, y_pred_class, target_names = Class_labels))
       
-      #Report = classification_report(Test_data.classes, y_pred_class, target_names = Class_labels)
-      Dict = classification_report(Valid_data.classes, y_pred_class, target_names = Class_labels, output_dict = True)
+      Report = classification_report(Test_data.classes, y_pred_class, target_names = Class_labels)
+      Dict = classification_report(Test_data.classes, y_pred_class, target_names = Class_labels, output_dict = True)
       
       for i, Report_labels in enumerate(Classification_report_labels):
         for i, Metric_labels in enumerate(Classification_report_metrics_labels):
 
-          #print(Dict[Report_labels][Metric_labels])
+          print(Dict[Report_labels][Metric_labels])
           Classification_report_values.append(Dict[Report_labels][Metric_labels])
           print("\n")
 
       # * Precision
-      Precision = precision_score(Valid_data.classes, y_pred_class)
+      Precision = precision_score(Test_data.classes, y_pred_class)
       print(f"Precision: {round(Precision, Digits)}")
       print("\n")
 
       # * Recall
-      Recall = recall_score(Valid_data.classes, y_pred_class)
+      Recall = recall_score(Test_data.classes, y_pred_class)
       print(f"Recall: {round(Recall, Digits)}")
       print("\n")
 
       # * F1-score
-      F1_score = f1_score(Valid_data.classes, y_pred_class)
+      F1_score = f1_score(Test_data.classes, y_pred_class)
       print(f"F1: {round(F1_score, Digits)}")
       print("\n")
 
@@ -672,7 +679,11 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
       #print(ConfusionM_Multiclass)
 
       #Labels = ['Benign_W_C', 'Malignant']
+      
       Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
+
+      Confusion_matrix_dataframe_name = 'Dataframe_' + str(Class_problem_prefix) + str(Pretrained_model_name) + str(Enhancement_technique) + '.csv'
+      Confusion_matrix_dataframe_folder = os.path.join(Folder_CSV, Confusion_matrix_dataframe_name)
 
       # * Figure's size
       plt.figure(figsize = (Width, Height))
@@ -694,7 +705,7 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
       Validation_loss = Pretrained_Model_History.history['val_loss']
 
       # * FPR and TPR values for the ROC curve
-      FPR, TPR, _ = roc_curve(Valid_data.classes, y_pred_class)
+      FPR, TPR, _ = roc_curve(Test_data.classes, y_pred_class)
       Auc = auc(FPR, TPR)
 
       # * Subplot Training accuracy
@@ -739,25 +750,25 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
         Labels_multiclass_number.append(i)
 
       # * Get the data from the model chosen
-      Predict = Pretrained_model.predict(Valid_data)
+      Predict = Pretrained_model.predict(Test_data)
       y_pred = Predict.argmax(axis = 1)
 
       # * Multiclass labeling
       y_pred_roc = label_binarize(y_pred, classes = Labels_multiclass_number)
-      y_test_roc = label_binarize(Valid_data.classes, classes = Labels_multiclass_number)
+      y_test_roc = label_binarize(Test_data.classes, classes = Labels_multiclass_number)
 
       #print(y_pred)
       #print(y_test)
 
       # * Confusion Matrix
       print('Confusion Matrix')
-      Confusion_matrix = confusion_matrix(Valid_data.classes, y_pred)
+      Confusion_matrix = confusion_matrix(Test_data.classes, y_pred)
 
       print(Confusion_matrix)
-      print(classification_report(Valid_data.classes, y_pred, target_names = Class_labels))
+      print(classification_report(Test_data.classes, y_pred, target_names = Class_labels))
       
-      #Report = classification_report(Valid_data.classes, y_pred, target_names = Class_labels)
-      Dict = classification_report(Valid_data.classes, y_pred, target_names = Class_labels, output_dict = True)
+      #Report = classification_report(Test_data.classes, y_pred, target_names = Class_labels)
+      Dict = classification_report(Test_data.classes, y_pred, target_names = Class_labels, output_dict = True)
 
       for i, Report_labels in enumerate(Classification_report_labels):
         for i, Metric_labels in enumerate(Classification_report_metrics_labels):
@@ -767,17 +778,17 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
           print("\n")
 
       # * Precision
-      Precision = precision_score(Valid_data.classes, y_pred, average = 'weighted')
+      Precision = precision_score(Test_data.classes, y_pred, average = 'weighted')
       print(f"Precision: {round(Precision, Digits)}")
       print("\n")
 
       # * Recall
-      Recall = recall_score(Valid_data.classes, y_pred, average = 'weighted')
+      Recall = recall_score(Test_data.classes, y_pred, average = 'weighted')
       print(f"Recall: {round(Recall, Digits)}")
       print("\n")
 
       # * F1-score
-      F1_score = f1_score(Valid_data.classes, y_pred, average = 'weighted')
+      F1_score = f1_score(Test_data.classes, y_pred, average = 'weighted')
       print(f"F1: {round(F1_score, Digits)}")
       print("\n")
 
@@ -853,14 +864,14 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
     
     Info.append(Pretrained_model_name_technique)
     Info.append(Pretrained_model_name)
-    Info.append(Accuracy[-1])
+    Info.append(Accuracy[Epochs - 1])
     Info.append(Accuracy[0])
     Info.append(Accuracy_Test)
-    Info.append(Loss[-1])
+    Info.append(Loss[Epochs - 1])
     Info.append(Loss_Test)
     Info.append(len(Train_data.classes))
     Info.append(len(Valid_data.classes))
-    Info.append(len(Valid_data.classes))
+    Info.append(len(Test_data.classes))
     Info.append(Precision)
     Info.append(Recall)
     Info.append(F1_score)
@@ -883,716 +894,960 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
       for i in range(Class_problem):
         Info.append(Roc_auc[i])
     
-    Info.append(Datatime_start_training)
-    Info.append(Datatime_finish_training)
-
-    Pretrained_model, Pretrained_model_name, Pretrained_model_name_letters = Pretrained_model_function(X_size, Y_size, Class_problem)
-
-    print('\n')
-    Loss_model, Acc_model = Pretrained_model.evaluate(Valid_data)
-    print("Untrained model, accuracy: {:5.2f}%".format(100 * Acc_model))
-    print('\n')
-
-    Pretrained_model.load_weights(Best_model_folder_name_weights)
-
-    Loss_model, Acc_model = Pretrained_model.evaluate(Valid_data)
-    print("Trained model, accuracy: {:5.2f}%".format(100 * Acc_model))
-    print('\n')
-
-    return Info, Dataframe_name_folder
+    return Info
 
 # ? Folder Update CSV changing value
 
-def overwrite_row_CSV_folder(Dataframe:pd.DataFrame, Folder_path, Info_list, Column_names, Row):
+def overwrite_row_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Row):
 
-  """_summary_
+    """
+	  Updates final CSV dataframe to see all values
 
-  Returns:
-      _type_: _description_
-  """
-  print(len(Column_names))
-  print(len(Info_list))
+    Parameters:
+    argument1 (list): All values.
+    argument2 (dataframe): dataframe that will be updated
+    argument3 (list): Names of each column
+    argument4 (folder): Folder path to save the dataframe
+    argument5 (int): The index.
 
-  for i in range(len(Info_list)):
-      Dataframe.loc[Row, Column_names[i]] = Info_list[i]
+    Returns:
+	  void
+    
+   	"""
 
-  Dataframe.to_csv(Folder_path, index = False)
+    for i in range(len(Info_list)):
+        Dataframe.loc[Row, Column_names[i]] = Info_list[i]
+  
+    Dataframe.to_csv(Folder_path, index = False)
+  
+    print(Dataframe)
 
-  print(Dataframe)
+    return Dataframe
 
-  return Dataframe
+##################################################################################################################################################################
 
 # ? Fine-Tuning MLP
 
-def MLP_classificador(x, Units:int, Activation:str):
+def MLP_classificador(x, Units: int, Activation: string):
+  """
+  MLP configuration.
 
-  """_summary_
+  Args:
+      x (list): Layers.
+      Units (int): The number of units for last layer.
+      Activation (string): Activation used.
 
   Returns:
       _type_: _description_
   """
-
   x = Flatten()(x)
   x = BatchNormalization()(x)
-  x = Dense(32, activation = 'relu', kernel_regularizer = regularizers.l2(0.01))(x)
+  x = Dropout(0.6)(x)
+  x = Dense(512, activation = 'relu', kernel_regularizer = regularizers.l2(0.01))(x)
   x = BatchNormalization()(x)
-  x = Dropout(0.5)(x)
+  x = Dropout(0.6)(x)
   #x = BatchNormalization()(x)
   x = Dense(Units, activation = Activation)(x)
 
   return x
-  
-# ? ResNet50
 
-def ResNet50_pretrained(Xsize, Ysize, num_classes):
+##################################################################################################################################################################
+
+# ? Model function
+
+def Model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretrained_value: int):
+    """
+    Model configuration.
+
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
+        Model_pretrained_value (int): Choses the model.
+
+    Returns:
+        _type_: _description_
+        string: Returning Model.
+        string: Returning Model Name.
+    """
+
+    def model_pretrained_index(Model_pretrained_value: int):
+
+        if (Model_pretrained_value == 1):
+
+            Model_name = 'EfficientNetB7_Model'
+            Model_name_letters = 'ENB7'
+            Model_index_chosen = EfficientNetB7
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        if (Model_pretrained_value == 2):
+
+            Model_name = 'EfficientNetB6_Model'
+            Model_name_letters = 'ENB6'
+            Model_index_chosen = EfficientNetB6
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        if (Model_pretrained_value == 3):
+
+            Model_name = 'EfficientNetB5_Model'
+            Model_name_letters = 'ENB5'
+            Model_index_chosen = EfficientNetB5
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        if (Model_pretrained_value == 4):
+
+            Model_name = 'EfficientNetB4_Model'
+            Model_name_letters = 'ENB4'
+            Model_index_chosen = EfficientNetB4
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        if (Model_pretrained_value == 5):
+            
+            Model_name = 'EfficientNetB3_Model'
+            Model_name_letters = 'ENB3'
+            Model_index_chosen = EfficientNetB3
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        if (Model_pretrained_value == 6):
+            
+            Model_name = 'EfficientNetB2_Model'
+            Model_name_letters = 'ENB2'
+            Model_index_chosen = EfficientNetB2
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        if (Model_pretrained_value == 7):
+            
+            Model_name = 'EfficientNetB1_Model'
+            Model_name_letters = 'ENB1'
+            Model_index_chosen = EfficientNetB1
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        if (Model_pretrained_value == 8):
+            
+            Model_name = 'EfficientNetB0_Model'
+            Model_name_letters = 'ENB0'
+            Model_index_chosen = EfficientNetB0
+
+            return Model_name, Model_name_letters, Model_index_chosen
+        
+        if (Model_pretrained_value == 9):
+            
+            Model_name = 'ResNet50_Model'
+            Model_name_letters = 'RN50'
+            Model_index_chosen = ResNet50
+
+            return Model_name, Model_name_letters, Model_index_chosen
+        
+        if (Model_pretrained_value == 10):
+            
+            Model_name = 'ResNet50V2_Model'
+            Model_name_letters = 'RN50V2'
+            Model_index_chosen = ResNet50V2
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        if (Model_pretrained_value == 11):
+            
+            Model_name = 'ResNet152_Model'
+            Model_name_letters = 'RN152'
+            Model_index_chosen = ResNet152
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        if (Model_pretrained_value == 12):
+            
+            Model_name = 'ResNet152V2_Model'
+            Model_name_letters = 'RN152V2'
+            Model_index_chosen = ResNet152V2        
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        return -1
+        
+    Model_name, Model_name_letters, Model_index_chosen = model_pretrained_index(Model_pretrained_value: int)
+
+    Model_input = Model_index_chosen(  input_shape = (X_size, Y_size, 3), 
+                                                include_top = False, 
+                                                weights = "imagenet")
+
+    for layer in Model_input.layers:
+        layer.trainable = False
+
+    if Num_classes == 2:
+        Activation = 'sigmoid'
+        Loss = "binary_crossentropy"
+        Units = 1
+    else:
+        Activation = 'softmax'
+        Units = Num_classes
+        Loss = "categorical_crossentropy"
+
+    x = MLP_classificador(Model_input.output, Units, Activation)
+
+    Model_CNN = Model(Model_input.input, x)
+
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    Model_CNN.compile(
+        optimizer = Opt,
+        loss = Loss,
+        metrics = ['accuracy']
+    )
   
-  """_summary_
+    return Model_CNN, Model_name, Model_name_letters
+
+# ? EfficientNetB7
+
+def EfficientNetB7_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretrained: int):
+  """
+  EfficientNetB7 configuration.
+
+  Args:
+      X_size (int): X's size value.
+      Y_size (int): Y's size value.
+      Num_classes (int): Number total of classes.
 
   Returns:
       _type_: _description_
+      string: Returning EfficientNetB7 model.
+      string: Returning EfficientNetB7 Name.
+  """
+
+  Model_name = 'EfficientNetB7_Model'
+  Model_name_letters = 'ENB7'
+
+  EfficientNetB7_Model = EfficientNetB7( input_shape = (X_size, Y_size, 3), 
+                                                    include_top = False, 
+                                                    weights = "imagenet")
+
+  for layer in EfficientNetB7_Model.layers:
+    layer.trainable = False
+
+  if Num_classes == 2:
+    Activation = 'sigmoid'
+    Loss = "binary_crossentropy"
+    Units = 1
+  else:
+    Activation = 'softmax'
+    Units = Num_classes
+    Loss = "categorical_crossentropy"
+
+  
+  x = MLP_classificador(EfficientNetB7_Model.output, Units, Activation)
+
+  EfficientNetB7_model = Model(EfficientNetB7_Model.input, x)
+
+  Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+  EfficientNetB7_model.compile(
+      optimizer = Opt,
+      loss = Loss,
+      metrics = ['accuracy']
+  )
+  
+  return EfficientNetB7_model, Model_name, Model_name_letters
+
+# ? ResNet50
+
+def ResNet50_pretrained(X_size: int, Y_size: int, Num_classes: int):
+  """
+  ResNet50 configuration.
+
+  Args:
+      X_size (int): X's size value.
+      Y_size (int): Y's size value.
+      Num_classes (int): Number total of classes.
+
+  Returns:
+      _type_: _description_
+      string: Returning ResNet50 model.
+      string: Returning ResNet50 Name.
   """
 
   Model_name = 'ResNet50_Model'
   Model_name_letters = 'RN50'
 
-  ResNet50_Model = ResNet50(input_shape = (Xsize, Ysize, 3), 
+  ResNet50_Model = ResNet50(input_shape = (X_size, Y_size, 3), 
                             include_top = False, 
                             weights = "imagenet")
 
   for layer in ResNet50_Model.layers:
     layer.trainable = False
 
-  if num_classes == 2:
-    activation = 'sigmoid'
-    loss = "binary_crossentropy"
-    units = 1
+  if Num_classes == 2:
+    Activation = 'sigmoid'
+    Loss = "binary_crossentropy"
+    Units = 1
   else:
-    activation = 'softmax'
-    units = num_classes
-    loss = "categorical_crossentropy"
+    Activation = 'softmax'
+    Units = Num_classes
+    Loss = "categorical_crossentropy"
 
-  x = MLP_classificador(ResNet50_Model.output, units, activation)
+  
+  x = MLP_classificador(ResNet50_Model.output, Units, Activation)
 
   ResNet50_model = Model(ResNet50_Model.input, x)
 
+  Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
   ResNet50_model.compile(
-      optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-      loss = loss,
+      optimizer = Opt,
+      loss = Loss,
       metrics = ['accuracy']
   )
 
   return ResNet50_model, Model_name, Model_name_letters
 
-def ResNet50V2_pretrained(Xsize, Ysize, num_classes):
+# ? ResNet50V2
 
-  """_summary_
-
-  Returns:
-      _type_: _description_
-  """
-
-  Model_name = 'ResNet50V2_Model'
-  Model_name_letters = 'RN50V2'
-
-  ResNet50V2_Model = ResNet50V2(input_shape = (Xsize, Ysize, 3), 
-                                include_top = False, 
-                                weights = "imagenet")
-
-  for layer in ResNet50V2_Model.layers:
-    layer.trainable = False
-
-  if num_classes == 2:
-    activation = 'sigmoid'
-    loss = "binary_crossentropy"
-    units = 1
-  else:
-    activation = 'softmax'
-    units = num_classes
-    loss = "categorical_crossentropy"
-    #loss = "KLDivergence"
-
-  x = MLP_classificador(ResNet50V2_Model.output, units, activation)
-
-  ResNet50V2Model = Model(ResNet50V2_Model.input, x)
-
-  ResNet50V2Model.compile(
-      optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-      loss = loss,
-      metrics = ['accuracy']
-  )
-
-  return ResNet50V2Model, Model_name, Model_name_letters
-
-def ResNet152_pretrained(Xsize, Ysize, num_classes):
-  
+def ResNet50V2_pretrained(X_size: int, Y_size: int, Num_classes: int):
     """
-	  ResNet152 configuration.
+    ResNet50V2 configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning ResNet152 model.
-    int:Returning ResNet152 Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning ResNet50V2 model.
+        string: Returning ResNet50V2 Name.
+    """
+
+    Model_name = 'ResNet50V2_Model'
+    Model_name_letters = 'RN50V2'
+
+    ResNet50V2_Model = ResNet50V2(input_shape = (X_size, Y_size, 3), 
+                                  include_top = False, 
+                                  weights = "imagenet")
+
+    for layer in ResNet50V2_Model.layers:
+      layer.trainable = False
+  
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
+    else:
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
+      #loss = "KLDivergence"
+
+    x = MLP_classificador(ResNet50V2_Model.output, Units, Activation)
+
+    ResNet50V2_model = Model(ResNet50V2_Model.input, x)
+
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    ResNet50V2_model.compile(
+        optimizer = Opt,
+        loss = Loss,
+        metrics = ['accuracy']
+    )
+
+    return ResNet50V2_model, Model_name, Model_name_letters
+
+# ? ResNet152
+
+def ResNet152_pretrained(X_size: int, Y_size: int, Num_classes: int):
+    """
+    ResNet152 configuration.
+
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
+
+    Returns:
+        _type_: _description_
+        string: Returning ResNet152 model.
+        string: Returning ResNet152 Name.
+    """
 
     Model_name = 'ResNet152_Model'
     Model_name_letters = 'RN152'
 
-    ResNet152_Model = ResNet152(input_shape = (Xsize, Ysize, 3), 
+    ResNet152_Model = ResNet152(input_shape = (X_size, Y_size, 3), 
                               include_top = False, 
                               weights = "imagenet")
 
     for layer in ResNet152_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLP_classificador(ResNet152_Model.output, units, activation)
+    x = MLP_classificador(ResNet152_Model.output, Units, Activation)
 
     ResNet152Model = Model(ResNet152_Model.input, x)
 
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
     ResNet152Model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+        optimizer = Opt,
+        loss = Loss,
         metrics = ['accuracy']
     )
 
     return ResNet152Model, Model_name, Model_name_letters
 
-def ResNet152V2_pretrained(Xsize, Ysize, num_classes):
-  
-    """
-	  ResNet152V2 configuration.
+# ? ResNet152V2
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+def ResNet152V2_pretrained(X_size: int, Y_size: int, Num_classes: int):
+    """
+    ResNet152V2 configuration.
+
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning ResNet152V2 model.
-    int:Returning ResNet152V2 Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning ResNet152V2 model.
+        string: Returning ResNet152V2 Name.
+    """
      
     Model_name = 'ResNet152V2_Model'
     Model_name_letters = 'RN152V2'
 
-    ResNet152V2_Model = ResNet152V2(input_shape = (Xsize, Ysize, 3), 
+    ResNet152V2_Model = ResNet152V2(input_shape = (X_size, Y_size, 3), 
                                     include_top = False, 
                                     weights = "imagenet")
 
     for layer in ResNet152V2_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLP_classificador(ResNet152V2_Model.output, units, activation)
+    x = MLP_classificador(ResNet152V2_Model.output, Units, Activation)
 
-    ResNet152V2Model = Model(ResNet152V2_Model.input, x)
+    ResNet152V2_model = Model(ResNet152V2_Model.input, x)
 
-    ResNet152V2Model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    ResNet152V2_model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ['accuracy']
     )
 
-    return ResNet152V2Model, Model_name, Model_name_letters
+    return ResNet152V2_model, Model_name, Model_name_letters
 
 # ? MobileNet
 
-def MobileNet_pretrained(Xsize, Ysize, num_classes):
-  
+def MobileNet_pretrained(X_size: int, Y_size: int, Num_classes: int):
     """
-	  MobileNet configuration.
+    MobileNet configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning MobileNet model.
-    int:Returning MobileNet Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning MobileNet model.
+        string: Returning MobileNet Name.
+    """
 
     Model_name = 'MobileNet_Model'
     Model_name_letters = 'MN'
 
-    MobileNet_Model = MobileNet(input_shape = (Xsize, Ysize, 3), 
+    MobileNet_Model = MobileNet(input_shape = (X_size, Y_size, 3), 
                                               include_top = False, 
                                               weights = "imagenet")
 
     for layer in MobileNet_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLP_classificador(MobileNet_Model.output, units, activation)
+    x = MLP_classificador(MobileNet_Model.output, Units, Activation)
 
-    MobileNetModel = Model(MobileNet_Model.input, x)
+    MobileNet_model = Model(MobileNet_Model.input, x)
 
-    MobileNetModel.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    MobileNet_model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return MobileNetModel, Model_name, Model_name_letters
+    return MobileNet_model, Model_name, Model_name_letters
 
-def MobileNetV3Small_pretrained(Xsize, Ysize, num_classes):
+# ? MobileNetV3Small
 
+def MobileNetV3Small_pretrained(X_size: int, Y_size: int, Num_classes: int):
     """
-	  MobileNetV3Small configuration.
+    MobileNetV3Small configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning MobileNetV3Small model.
-    int:Returning MobileNetV3Small Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning MobileNetV3Small model.
+        string: Returning MobileNetV3Small Name.
+    """
 
     Model_name = 'MobileNetV3Small_Model'
     Model_name_letters = 'MNV3S'
 
-    MobileNetV3Small_Model = MobileNetV3Small(input_shape = (Xsize, Ysize, 3), 
+    MobileNetV3Small_Model = MobileNetV3Small(input_shape = (X_size, Y_size, 3), 
                                               include_top = False, 
                                               weights = "imagenet")
 
     for layer in MobileNetV3Small_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLP_classificador(MobileNetV3Small_Model.output, units, activation)
+    x = MLP_classificador(MobileNetV3Small_Model.output, Units, Activation)
 
-    MobileNetV3SmallModel = Model(MobileNetV3Small_Model.input, x)
+    MobileNetV3Small_model = Model(MobileNetV3Small_Model.input, x)
 
-    MobileNetV3SmallModel.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    MobileNetV3Small_model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return MobileNetV3SmallModel, Model_name, Model_name_letters
+    return MobileNetV3Small_model, Model_name, Model_name_letters
 
-def MobileNetV3Large_pretrained(Xsize, Ysize, num_classes):
+# ? MobileNetV3Large
 
+def MobileNetV3Large_pretrained(X_size: int, Y_size: int, Num_classes: int):
     """
-	  MobileNetV3Large configuration.
+    MobileNetV3Large configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning MobileNetV3Large model.
-    int:Returning MobileNetV3Large Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning MobileNetV3Large model.
+        string: Returning MobileNetV3Large Name.
+    """
 
     Model_name = 'MobileNetV3Large_Model'
     Model_name_letters = 'MNV3L'
 
-    MobileNetV3Large_Model = MobileNetV3Large(input_shape = (Xsize, Ysize, 3), 
+    MobileNetV3Large_Model = MobileNetV3Large(input_shape = (X_size, Y_size, 3), 
                                               include_top = False, 
                                               weights = "imagenet")
 
     for layer in MobileNetV3Large_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
       
-    x = MLP_classificador(MobileNetV3Large_Model.output, units, activation)
+    x = MLP_classificador(MobileNetV3Large_Model.output, Units, Activation)
 
-    MobileNetV3LargeModel = Model(MobileNetV3Large_Model.input, x)
+    MobileNetV3Large_model = Model(MobileNetV3Large_Model.input, x)
 
-    MobileNetV3LargeModel.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    MobileNetV3Large_model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return MobileNetV3LargeModel, Model_name, Model_name_letters
+    return MobileNetV3Large_model, Model_name, Model_name_letters
 
 # ? Xception
 
-def Xception_pretrained(Xsize, Ysize, num_classes):
-
+def Xception_pretrained(X_size: int, Y_size: int, Num_classes: int):
     """
-	  Xception configuration.
+    Xception configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning Xception model.
-    int:Returning Xception Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning Xception model.
+        string: Returning Xception Name.
+    """
 
     Model_name = 'Xception_Model'
     Model_name_letters = 'Xc'
 
-    Xception_Model = Xception(input_shape = (Xsize, Ysize, 3), 
+    Xception_Model = Xception(input_shape = (X_size, Y_size, 3), 
                               include_top = False, 
                               weights = "imagenet")
 
     for layer in Xception_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLP_classificador(Xception_Model.output, units, activation)
+    x = MLP_classificador(Xception_Model.output, Units, Activation)
 
-    XceptionModel = Model(Xception_Model.input, x)
+    Xception_model = Model(Xception_Model.input, x)
 
-    XceptionModel.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    Xception_model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return XceptionModel, Model_name, Model_name_letters
+    return Xception_model, Model_name, Model_name_letters
 
-# ? VGG
+# ? VGG 16
 
-def VGG16_pretrained(Xsize, Ysize, num_classes):
-
+def VGG16_pretrained(X_size: int, Y_size: int, Num_classes: int):
     """
-	  VGG16 configuration.
+    VGG16 configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning VGG16 model.
-    int:Returning VGG16 Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning VGG16 model.
+        string: Returning VGG16 Name.
+    """
 
     Model_name = 'VGG16_Model'
     Model_name_letters = 'VGG16'
 
-    VGG16_Model = VGG16(input_shape = (Xsize, Ysize, 3), 
+    VGG16_Model = VGG16(input_shape = (X_size, Y_size, 3), 
                         include_top = False, 
                         weights = "imagenet")
 
     for layer in VGG16_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLP_classificador(VGG16_Model.output, units, activation)
+    x = MLP_classificador(VGG16_Model.output, Units, Activation)
 
-    VGG16Model = Model(VGG16_Model.input, x)
+    VGG16_model = Model(VGG16_Model.input, x)
 
-    VGG16Model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    VGG16_model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return VGG16Model, Model_name, Model_name_letters
+    return VGG16_model, Model_name, Model_name_letters
 
-def VGG19_pretrained(Xsize, Ysize, num_classes):
+# ? VGG 19
 
+def VGG19_pretrained(X_size: int, Y_size: int, Num_classes: int):
     """
-	  VGG19 configuration.
+    VGG19 configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning VGG19 model.
-    int:Returning VGG19 Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning VGG19 model.
+        string: Returning VGG19 Name.
+    """
 
     Model_name = 'VGG19_Model'
     Model_name_letters = 'VGG19'
 
-    VGG19_Model = VGG19(input_shape = (Xsize, Ysize, 3), 
+    VGG19_Model = VGG19(input_shape = (X_size, Y_size, 3), 
                         include_top = False, 
                         weights = "imagenet")
 
     for layer in VGG19_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLP_classificador(VGG19_Model.output, units, activation)
+    x = MLP_classificador(VGG19_Model.output, Units, Activation)
     
-    VGG19Model = Model(VGG19_Model.input, x)
+    VGG19_Model = Model(VGG19_Model.input, x)
 
-    VGG19Model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    VGG19_Model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return VGG19Model, Model_name, Model_name_letters
+    return VGG19_Model, Model_name, Model_name_letters
 
 # ? InceptionV3
 
-def InceptionV3_pretrained(Xsize, Ysize, num_classes):
-
+def InceptionV3_pretrained(X_size: int, Y_size: int, Num_classes: int):
     """
-	  InceptionV3 configuration.
+    InceptionV3 configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning InceptionV3 model.
-    int:Returning InceptionV3 Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning InceptionV3 model.
+        string: Returning InceptionV3 Name.
+    """
 
     Model_name = 'InceptionV3_Model'
     Model_name_letters = 'IV3'
 
-    InceptionV3_Model = InceptionV3(input_shape = (Xsize, Ysize, 3), 
+    InceptionV3_Model = InceptionV3(input_shape = (X_size, Y_size, 3), 
                                     include_top = False, 
                                     weights = "imagenet")
 
     for layer in InceptionV3_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLP_classificador(InceptionV3_Model.output, units, activation)
+    x = MLP_classificador(InceptionV3_Model.output, Units, Activation)
 
-    InceptionV3Model = Model(InceptionV3_Model.input, x)
+    InceptionV3_model = Model(InceptionV3_Model.input, x)
 
-    InceptionV3Model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    InceptionV3_model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return InceptionV3Model, Model_name, Model_name_letters
+    return InceptionV3_model, Model_name, Model_name_letters
 
-# ? DenseNet
+# ? DenseNet121
 
-def DenseNet121_pretrained(Xsize, Ysize, num_classes):
-
+def DenseNet121_pretrained(X_size: int, Y_size: int, Num_classes: int):
     """
-	  DenseNet121 configuration.
+    DenseNet121 configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning DenseNet121 model.
-    int:Returning DenseNet121 Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning DenseNet121 model.
+        string: Returning DenseNet121 Name.
+    """
 
     Model_name = 'DenseNet121_Model'
     Model_name_letters = 'DN121'
 
-    DenseNet121_Model = DenseNet121(input_shape = (Xsize, Ysize, 3), 
+    DenseNet121_Model = DenseNet121(input_shape = (X_size, Y_size, 3), 
                                     include_top = False, 
                                     weights = "imagenet")
 
     for layer in DenseNet121_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLP_classificador(DenseNet121_Model.output, units, activation)
+    x = MLP_classificador(DenseNet121_Model.output, Units, Activation)
 
-    DenseNet121Model = Model(DenseNet121_Model.input, x)
+    DenseNet121_model = Model(DenseNet121_Model.input, x)
 
-    DenseNet121Model.compile(
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    DenseNet121_model.compile(
         optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return DenseNet121Model, Model_name, Model_name_letters
+    return DenseNet121_model, Model_name, Model_name_letters
 
-def DenseNet201_pretrained(Xsize, Ysize, num_classes):
+# ? DenseNet201
 
+def DenseNet201_pretrained(X_size: int, Y_size: int, Num_classes: int):
     """
-	  DenseNet201 configuration.
+    DenseNet201 configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning DenseNet201 model.
-    int:Returning DenseNet201 Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning DenseNet201 model.
+        string: Returning DenseNet201 Name.
+    """
 
     Model_name = 'DenseNet201_Model'
     Model_name_letters = 'DN201'
 
-    DenseNet201_Model = DenseNet201(input_shape = (Xsize, Ysize, 3), 
+    DenseNet201_Model = DenseNet201(input_shape = (X_size, Y_size, 3), 
                                     include_top = False, 
                                     weights = "imagenet")
 
     for layer in DenseNet201_Model.layers:
       layer.trainable = False
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLP_classificador(DenseNet201_Model.output, units, activation)
+    x = MLP_classificador(DenseNet201_Model.output, Units, Activation)
 
-    DenseNet201Model = Model(DenseNet201_Model.input, x)
+    DenseNet201_model = Model(DenseNet201_Model.input, x)
 
-    DenseNet201Model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    DenseNet201_model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return DenseNet201Model, Model_name, Model_name_letters
+    return DenseNet201_model, Model_name, Model_name_letters
 
 # ? Custom AlexNet12
 
-def CustomCNNAlexNet12_Model(Xsize, Ysize, num_classes):
-
+def CustomCNNAlexNet12_Model(X_size: int, Y_size: int, Num_classes: int):
     """
-	  Custom AlexNet12 configuration.
+    CustomCNNAlexNet12 configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning Custom AlexNet12 model.
-    int:Returning Custom AlexNet12 Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning CustomCNNAlexNet12 model.
+        string: Returning CustomCNNAlexNet12 Name.
+    """
 
     Model_name = 'CustomAlexNet12_Model'
     Model_name_letters = 'CAN12'
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    CustomCNN_Model = Input(shape = (Xsize, Ysize, 3))
+    CustomCNN_Model = Input(shape = (X_size, Y_size, 3))
 
     x = CustomCNN_Model
    
@@ -1622,48 +1877,51 @@ def CustomCNNAlexNet12_Model(Xsize, Ysize, num_classes):
     x = Dense(4096, activation = 'relu')(x)
     x = Dropout(0.2)(x)
 
-    x = Dense(units, activation = activation)(x)
+    x = Dense(Units, activation = Activation)(x)
 
-    CustomLeNet5Model = Model(CustomCNN_Model, x)
+    CustomLeNet5_model = Model(CustomCNN_Model, x)
     
-    CustomLeNet5Model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    CustomLeNet5_model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return CustomLeNet5Model, Model_name, Model_name_letters
+    return CustomLeNet5_model, Model_name, Model_name_letters
 
-def CustomCNNAlexNet12Tunner_Model(Xsize, Ysize, num_classes, hp):
+# ? Custom AlexNet12 Tunner
 
+def CustomCNNAlexNet12Tunner_Model(X_size: int, Y_size: int, Num_classes: int, hp):
     """
-	  Custom AlexNet12 configuration.
+    CustomCNNAlexNet12 configuration.
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
 
     Returns:
-	  int:Returning Custom AlexNet12 model.
-    int:Returning Custom AlexNet12 Name.
-    
-   	"""
+        _type_: _description_
+        string: Returning CustomCNNAlexNet12 model.
+        string: Returning CustomCNNAlexNet12 Name.
+    """
 
     Model_name = 'CustomAlexNet12_Model'
     Model_name_letters = 'CAN12'
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
+    if Num_classes == 2:
+      Activation = 'sigmoid'
+      Loss = "binary_crossentropy"
+      Units = 1
     else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+      Activation = 'softmax'
+      Units = Num_classes
+      Loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    CustomCNN_Model = Input(shape = (Xsize, Ysize, 3))
+    CustomCNN_Model = Input(shape = (X_size, Y_size, 3))
 
     x = CustomCNN_Model
    
@@ -1693,14 +1951,16 @@ def CustomCNNAlexNet12Tunner_Model(Xsize, Ysize, num_classes, hp):
     x = Dense(hp.Choice('units', [32, 64, 256, 512, 1024, 2048, 4096]), activation = 'relu')(x)
     x = Dropout(0.2)(x)
 
-    x = Dense(units, activation = activation)(x)
+    x = Dense(Units, activation = Activation)(x)
 
-    CustomLeNet5Model = Model(CustomCNN_Model, x)
+    CustomLeNet5_model = Model(CustomCNN_Model, x)
     
-    CustomLeNet5Model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
+    Opt = Adam(learning_rate = 0.0001, beta_1 = 0.5)
+
+    CustomLeNet5_model.compile(
+        optimizer = Opt,
+        loss = Loss,
         metrics = ["accuracy"]
     )
 
-    return CustomLeNet5Model, Model_name, Model_name_letters
+    return CustomLeNet5_model, Model_name, Model_name_letters

@@ -23,8 +23,8 @@ from skimage.exposure import rescale_intensity
 
 from skimage.filters import unsharp_mask
 
-from Mini_MIAS_2_General_Functions import sort_images
-from Mini_MIAS_2_General_Functions import remove_all_files
+from Final_Code_1_General_Functions import sort_images
+from Final_Code_1_General_Functions import remove_all_files
 
 class ImageProcessing:
   """
@@ -32,7 +32,7 @@ class ImageProcessing:
 
   _extended_summary_
   """
-  def __init__(self, **kwargs):
+  def __init__(self, **kwargs) -> None:
     """
     _summary_
 
@@ -89,28 +89,39 @@ class ImageProcessing:
     # ? Resize
     # * X resize (TypeError)
     if not isinstance(self.X_resize, int):
-      raise TypeError("X must be a int") #! Alert
+      raise TypeError("X must be integer") #! Alert
     # * Y resize (TypeError)
     if not isinstance(self.Y_resize, int):
-      raise TypeError("Y must be a int") #! Alert
+      raise TypeError("Y must be integer") #! Alert
 
     # ? Median Filter
-    # * X resize (TypeError)
-    if not isinstance(self.X_resize, int):
-      raise TypeError("X must be a int") #! Alert
-    # * Y resize (TypeError)
-    if not isinstance(self.Y_resize, int):
-      raise TypeError("Y must be a int") #! Alert
+    # * Division (TypeError)
+    if not isinstance(self.Division, int):
+      raise TypeError("Division must be integer") #! Alert
+
+    # ? CLAHE
+    # * Clip limit (TypeError)
+    if not isinstance(self.Clip_limit, float):
+      raise TypeError("Clip limit must be float") #! Alert
+
+    # ? Unsharp masking
+    # * Radius and amount (TypeError)
+    if not isinstance(self.Radius, int):
+      raise TypeError("Clip limit must be integer") #! Alert
+    if not isinstance(self.Amount, int):
+      raise TypeError("Clip limit must be integer") #! Alert
 
   def __repr__(self):
 
-      kwargs_info = "Folder: {} , Folder_dest: {}, Severity: {}, Sampling: {}, Label: {}, Save_images: {}".format( self.Folder, self.Folder_dest, self.Severity,
-                                                                                                                   self.Sampling, self.Label, self.Save_images)
+      kwargs_info = "Folder: {}, New_folder: {}, Severity: {}, Label: {}, Label: {}, Interpolation: {}, X_resize: {}, Y_resize: {}, Division: {}, Clip_limit: {}, Radius: {}, Amount: {}".format(   self.Folder, self.New_folder, self.Severity,
+                                                                                                                                                                                                    self.Label, self.Interpolation, self.X_resize,
+                                                                                                                                                                                                    self.Y_resize, self.Division, self.Clip_limit,
+                                                                                                                                                                                                    self.Radius, self.Amount)
       return kwargs_info
 
   def __str__(self):
 
-        Descripcion_class = "This is a class xD"
+        Descripcion_class = ""
         
         return Descripcion_class
 
@@ -170,7 +181,7 @@ class ImageProcessing:
   @Label_property.setter
   def Label_property(self, New_value):
     if not isinstance(New_value, int):
-      raise TypeError("Must be a integer value ") #! Alert
+      raise TypeError("Must be a integer value") #! Alert
     self.Label = New_value
   
   @Label_property.deleter
@@ -178,9 +189,119 @@ class ImageProcessing:
       print("Deleting label...")
       del self.Label
 
+  # * Interpolation attribute
+  @property
+  def Interpolation_property(self):
+      return self.Interpolation
+
+  @Interpolation_property.setter
+  def Interpolation_property(self, New_value):
+    self.Interpolation = New_value
+  
+  @Interpolation_property.deleter
+  def Interpolation_property(self):
+      print("Deleting Interpolation...")
+      del self.Interpolation
+
+  # * X resize attribute
+  @property
+  def X_resize_property(self):
+      return self.X_resize
+
+  @X_resize_property.setter
+  def X_resize_property(self, New_value):
+    if not isinstance(New_value, int):
+      raise TypeError("X must be a integer value") #! Alert
+    self.X_resize = New_value
+  
+  @X_resize_property.deleter
+  def X_resize_property(self):
+      print("Deleting X...")
+      del self.X_resize
+
+  # * Y resize attribute
+  @property
+  def Y_resize_property(self):
+      return self.Y_resize
+
+  @Y_resize_property.setter
+  def Y_resize_property(self, New_value):
+    if not isinstance(New_value, int):
+      raise TypeError("Y must be a integer value") #! Alert
+    self.Y_resize = New_value
+  
+  @Y_resize_property.deleter
+  def Y_resize_property(self):
+      print("Deleting Y...")
+      del self.Y_resize
+
+  # * Division attribute
+  @property
+  def Division_property(self):
+      return self.Division
+
+  @Division_property.setter
+  def Division_property(self, New_value):
+    if not isinstance(New_value, int):
+      raise TypeError("Division must be a integer value") #! Alert
+    self.Division = New_value
+  
+  @Division_property.deleter
+  def Division_property(self):
+      print("Deleting division...")
+      del self.Division
+
+  # * Clip limit attribute
+  @property
+  def Clip_limit_property(self):
+      return self.Clip_limit
+
+  @Clip_limit_property.setter
+  def Clip_limit_property(self, New_value):
+    if not isinstance(New_value, float):
+      raise TypeError("Clip limit must be a float value") #! Alert
+    self.Clip_limit = New_value
+  
+  @Clip_limit_property.deleter
+  def Clip_limit_property(self):
+      print("Deleting clip limit...")
+      del self.Clip_limit
+
+  # * Radius attribute
+  @property
+  def Radius_property(self):
+      return self.Radius
+
+  @Radius_property.setter
+  def Radius_property(self, New_value):
+    if not isinstance(New_value, float):
+      raise TypeError("Radius must be a float value") #! Alert
+    self.Radius = New_value
+  
+  @Radius_property.deleter
+  def Radius_property(self):
+      print("Deleting Radius...")
+      del self.Radius
+
+  # * Amount attribute
+  @property
+  def Amount_property(self):
+      return self.Amount
+
+  @Amount_property.setter
+  def Amount_property(self, New_value):
+    if not isinstance(New_value, float):
+      raise TypeError("Amount must be a float value") #! Alert
+    self.Amount = New_value
+  
+  @Amount_property.deleter
+  def Amount_property(self):
+      print("Deleting Amount...")
+      del self.Amount
+
   # ? Resize technique method
 
-  def resize_technique(self):
+  def resize_technique(self) -> pd.DataFrame:
     """
     _summary_
 
@@ -206,6 +327,7 @@ class ImageProcessing:
       if File.endswith(Format):
 
         try:
+          
           print('Working with {} of {} images ✅'.format(Count, Total_images))
           Count += 1
           
@@ -215,17 +337,17 @@ class ImageProcessing:
 
           # * Resize with the given values 
           Shape = (self.X_resize, self.Y_resize)
-          Resized_Imagen = cv2.resize(Imagen, Shape, interpolation = self.Interpolation)
+          Resized_imagen = cv2.resize(Imagen, Shape, interpolation = self.Interpolation)
 
           # * Show old image and new image
-          print(Imagen.shape, ' -------- ', Resized_Imagen.shape)
+          print(Imagen.shape, ' -------- ', Resized_imagen.shape)
 
           # * Name the new file
           New_name_filename = Filename + Format
           New_folder = os.path.join(self.Folder, New_name_filename)
 
           # * Save the image in a new folder
-          cv2.imwrite(New_folder, Resized_Imagen)
+          cv2.imwrite(New_folder, Resized_imagen)
           #New_images.append(Resized_Imagen)
           
         except OSError:
@@ -352,7 +474,7 @@ class ImageProcessing:
 
   # ? Median filter technique method
 
-  def median_filter_technique(self):
+  def median_filter_technique(self) -> pd.DataFrame:
 
       """
       Get the values from median filter images and save them into a dataframe.
@@ -459,7 +581,7 @@ class ImageProcessing:
 
   # ? CLAHE technique method
 
-  def CLAHE_technique(self):
+  def CLAHE_technique(self) -> pd.DataFrame:
 
       """
       Get the values from CLAHE images and save them into a dataframe.
@@ -571,7 +693,7 @@ class ImageProcessing:
 
   # ? Histogram equalization technique method
 
-  def histogram_equalization_technique(self):
+  def histogram_equalization_technique(self) -> pd.DataFrame:
 
       """
       Get the values from histogram equalization images and save them into a dataframe.
@@ -677,7 +799,7 @@ class ImageProcessing:
 
   # ? Unsharp masking technique method
 
-  def unsharp_masking_technique(self):
+  def unsharp_masking_technique(self) -> pd.DataFrame:
 
       """
       Get the values from unsharp masking images and save them into a dataframe.
@@ -785,7 +907,7 @@ class ImageProcessing:
 
   # ? Contrast Stretching technique method
 
-  def contrast_stretching_technique(self):
+  def contrast_stretching_technique(self) -> pd.DataFrame:
 
       """
       Get the values from constrast streching images and save them into a dataframe.

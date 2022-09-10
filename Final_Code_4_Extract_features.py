@@ -1,4 +1,5 @@
 import os
+import string
 import cv2
 import numpy as np
 import pandas as pd
@@ -6,7 +7,7 @@ import pandas as pd
 from glrlm import GLRLM
 from skimage.feature import graycomatrix, graycoprops
 
-from Mini_MIAS_2_General_Functions import sort_images
+from Final_Code_1_General_Functions import sort_images
 
 # First Order features from https://github.com/giakou4/pyfeats/blob/main/pyfeats/textural/fos.py
 
@@ -79,33 +80,32 @@ def fos(f, mask):
 # class for features extraction using first order statistic and GLCM.
 
 class FeatureExtraction():
-  """
-  _summary_
 
-  _extended_summary_
-  """
-  def __init__(self, **kwargs):
-    """
-    _summary_
-
-    _extended_summary_
-    """
+  def __init__(self, **kwargs) -> None:
+    
+    # * General parameters
     self.Folder = kwargs.get('Folder', None)
-    #self.newfolder = kwargs.get('newfolder', None)
-    self.Format = kwargs.get('Format', None)
     self.Images = kwargs.get('Images', None)
-    #self.Images_tumor = kwargs.get('Images_tumor', None)
     self.Label = kwargs.get('Label', None)
+
+    #self.newfolder = kwargs.get('newfolder', None)
+    #self.Format = kwargs.get('Format', None)
+    #self.Images_tumor = kwargs.get('Images_tumor', None)
     #self.Label_tumor = kwargs.get('Label_tumor', None)
 
-    #if self.Folder == None:
-      #raise ValueError("Folder does not exist") #! Alert
+    # * Folder (ValueError, TypeError)
+    #if not isinstance(self.Folder, str):
+      #raise TypeError("Folder attribute must be a string") #! Alert
+    
+    # * Images (ValueError, TypeError)
+    #if not isinstance(self.Images, str):
+      #raise TypeError("Folder attribute must be a string") #! Alert
 
-    #elif self.Format == None:
-      #raise ValueError("Assign the format") #! Alert
-
-    #elif self.Label == None:
-      #raise ValueError("Assign the label") #! Alert
+    # * Images (ValueError, TypeError)
+    #if self.Images == None:
+      #raise ValueError("Label does not exist") #! Alert
+    #if not isinstance(self.Images, int):
+      #raise TypeError("Label must be a int") #! Alert
 
   # ? FOF features folder
 
@@ -131,17 +131,18 @@ class FeatureExtraction():
 
     # * Using sort function
     Sorted_files, Total_images = sort_images(self.Folder)
-    count = 1
+    Count = 1
 
     # * Reading the files
     for File in Sorted_files:
-      if File.endswith(self.Format):
 
         try:
 
             Filename, Format  = os.path.splitext(File)
-            print(f"Working with {count} of {Total_images} {Format} images, {Filename} ------- {self.Format} ✅")
-            count += 1
+            
+            print('Working with {} of {} images, {} -------- {} ✅'.format(str(Count), str(Total_images), str(Filename), str(Format)))
+            #print(f"Working with {Count} of {Total_images} images, {Filename} ------- {Format} ✅")
+            Count += 1
 
             # * Reading the image
             Path_File = os.path.join(self.Folder, File)
@@ -182,20 +183,22 @@ class FeatureExtraction():
             #print(len(Labels))
             #print(len(Filename))
 
+            Count += 1
+            
         except OSError:
-            print('Cannot convert %s ❌' % File)
+            print('Cannot convert {} ❌'.format(str(File))) #! Alert
 
     # * Return the new dataframe with the new data
-    Dataset = pd.DataFrame({'REFNUM':All_filename, 'Mean':Mean, 'Var':Var, 'Kurtosis':Kurtosis, 'Energy':Energy, 'Skew':Skew, 'Entropy':Entropy, 'Labels':Labels})
+    Dataframe = pd.DataFrame({'REFNUM':All_filename, 'Mean':Mean, 'Var':Var, 'Kurtosis':Kurtosis, 'Energy':Energy, 'Skew':Skew, 'Entropy':Entropy, 'Labels':Labels})
 
     # * Return a dataframe with only the data without the labels
-    X = Dataset.iloc[:, [1, 2, 3, 4, 5, 6]].values
+    X = Dataframe.iloc[:, [1, 2, 3, 4, 5, 6]].values
 
     # * Return a dataframe with only the labels
-    Y = Dataset.iloc[:, 0].values
+    Y = Dataframe.iloc[:, 0].values
 
     # * Return the three dataframes
-    return Dataset, X, Y
+    return Dataframe, X, Y, Fof
 
   # ? GLRLM features folder
 
@@ -220,17 +223,16 @@ class FeatureExtraction():
 
     # * Using sort function
     Sorted_files, Total_images = sort_images(self.Folder)
-    count = 1
+    Count = 1
 
     # * Reading the file
     for File in Sorted_files:
-      if File.endswith(self.Format): 
 
         try:
 
             Filename, Format  = os.path.splitext(File)
-            print(f"Working with {count} of {Total_images} {Format} images, {Filename} ------- {self.Format} ✅")
-            count += 1
+            print('Working with {} of {} images, {} -------- {} ✅'.format(str(Count), str(Total_images), str(Filename), str(Format)))
+            #print(f"Working with {Count} of {Total_images} {Format} images, {Filename} ------- {self.Format} ✅")
 
             # * Reading the image
             Path_File = os.path.join(self.Folder, File)
@@ -251,8 +253,10 @@ class FeatureExtraction():
             Labels.append(self.Label)
             All_filename.append(Filename)
 
+            Count += 1
+
         except OSError:
-            print('Cannot convert %s ❌' % File)
+            print('Cannot convert {} ❌'.format(str(File))) #! Alert
 
     # * Return the new dataframe with the new data
     Dataset = pd.DataFrame({'REFNUM':All_filename, 'SRE':SRE, 'LRE':LRE, 'GLU':GLU, 'RLU':RLU, 'RPC':RPC, 'Labels':Labels})
@@ -264,7 +268,7 @@ class FeatureExtraction():
     Y = Dataset.iloc[:, -1].values
 
     # * Return the three dataframes
-    return Dataset, X, Y
+    return Dataset, X, Y, Glrlm
 
   # ? GLCM features folder
 
@@ -289,17 +293,17 @@ class FeatureExtraction():
     os.chdir(self.Folder)
 
     # * Using sort function
-    sorted_files, images = sort_images(self.Folder)
-    count = 1
+    sorted_files, Total_images = sort_images(self.Folder)
+    Count = 1
 
     # * Reading the file
     for File in sorted_files:
-      if File.endswith(self.Format): # Read png files
 
         try:
+
             Filename, Format  = os.path.splitext(File)
-            print(f"Working with {count} of {images} {Format} images, {Filename} ------- {self.Format} ✅")
-            count += 1
+            print('Working with {} of {} images, {} -------- {} ✅'.format(str(Count), str(Total_images), str(Filename), str(Format)))
+            #print(f"Working with {Vount} of {images} {Format} images, {Filename} ------- {self.Format} ✅")
 
             # * Reading the image
             Path_File = os.path.join(self.Folder, File)
@@ -317,9 +321,11 @@ class FeatureExtraction():
 
             Labels.append(self.Label)
             All_filename.append(Filename)
+            
+            Count += 1
 
         except OSError:
-            print('Cannot convert %s ❌' % File)
+            print('Cannot convert {} ❌'.format(str(File))) #! Alert
 
     # * Return the new dataframe with the new data
     Dataset = pd.DataFrame({'REFNUM':All_filename, 'Energy':Energy, 'Correlation':Correlation, 'Homogeneity':Homogeneity, 'Dissimilarity':Dissimilarity, 'Contrast':Contrast, 'ASM':ASM, 'Labels':Labels})
@@ -331,7 +337,7 @@ class FeatureExtraction():
     Y = Dataset.iloc[:, 0].values
 
     # * Return the three dataframes
-    return Dataset, X, Y
+    return Dataset, X, Y, Glcm
 
   # ? FOF features images
 
@@ -351,15 +357,17 @@ class FeatureExtraction():
     Energy = []
     Entropy = []
 
-    count = 1
+    # * Enumerate the total of images
+    Total_images = len(self.Images)
+    Count = 1
 
     # * Reading the file
     for File in range(len(self.Images)):
 
         try:
 
-            print(f"Working with {count} of {len(self.Images)} images ✅")
-            count += 1
+            print('Working with {} of {} images ✅'.format(str(Count), str(Total_images)))
+            #print(f"Working with {Count} of {len(self.Images)} images ✅")
 
             # * Reading the image
             self.Images[File] = cv2.cvtColor(self.Images[File], cv2.COLOR_BGR2GRAY)
@@ -375,6 +383,8 @@ class FeatureExtraction():
             Energy.append(Features[6])
             Entropy.append(Features[7])
             Labels.append(self.Label[0])
+
+            Count += 1
 
         except OSError:
             print('Cannot convert %s ❌' % File)
@@ -408,14 +418,17 @@ class FeatureExtraction():
     RLU = []  # Run Length Uniformity
     RPC = []  # Run Percentage
 
-    count = 1
+    # * Enumerate the total of images
+    Total_images = len(self.Images)
+    Count = 1
 
     # * Reading the file
     for File in range(len(self.Images)):
 
         try:
-            print(f"Working with {count} of {len(self.Images)} images ✅")
-            count += 1
+
+            print('Working with {} of {} images ✅'.format(str(Count), str(Total_images)))
+            #print(f"Working with {count} of {len(self.Images)} images ✅")
 
             # * Reading the image
             app = GLRLM()
@@ -428,6 +441,8 @@ class FeatureExtraction():
             RLU.append(glrlm.Features[3])
             RPC.append(glrlm.Features[4])
             Labels.append(self.Label[0])
+            
+            Count += 1
 
         except OSError:
             print('Cannot convert %s ❌' % File)
@@ -482,15 +497,17 @@ class FeatureExtraction():
     Energy_7_3_pi_4 = []
     Contrast_7_3_pi_4 = []
 
-    count = 1
+    # * Enumerate the total of images
+    Total_images = len(self.Images)
+    Count = 1
 
     # * Reading the file
     for File in range(len(self.Images)):
 
         try:
 
-            print(f"Working with {count} of {len(self.Images)} images ✅")
-            count += 1
+            print('Working with {} of {} images ✅'.format(str(Count), str(Total_images)))
+            #print(f"Working with {count} of {len(self.Images)} images ✅")
 
             # * Reading the image
             #self.Images[File] = cv2.cvtColor(self.Images[File], cv2.COLOR_BGR2GRAY)
@@ -529,15 +546,16 @@ class FeatureExtraction():
             # np.pi/2
             # 3*np.pi/4
 
+            Count += 1
+
         except OSError:
             print('Cannot convert %s ❌' % File)
     
     # * Return the new dataframe with the new data
-    DataFrame = pd.DataFrame({'Energy':Energy_1_0,  'Homogeneity':Homogeneity_1_0,  'Contrast':Contrast_1_0,  'Correlation':Correlation_1_0, 'Dissimilarity':Dissimilarity_1_0,
-                            'Energy2':Energy_1_pi_4, 'Homogeneity2':Homogeneity_1_pi_4, 'Contrast2':Contrast_1_pi_4, 'Correlation2':Correlation_1_pi_4, 'Dissimilarity':Dissimilarity_1_pi_4,
-                            'Energy3':Energy_7_pi_2, 'Homogeneity3':Homogeneity_7_pi_2, 'Contrast3':Contrast_7_pi_2, 'Correlation3':Correlation_7_pi_2, 'Dissimilarity':Dissimilarity_7_pi_2,
-                            'Energy4':Energy_7_3_pi_4, 'Homogeneity4':Homogeneity_7_3_pi_4, 'Contrast4':Contrast_7_3_pi_4, 'Correlation4':Correlation_7_3_pi_4, 'Dissimilarity':Dissimilarity_7_3_pi_4,
-                            'Labels':Labels})
+    DataFrame = pd.DataFrame({'Energy':Energy_1_0,  'Homogeneity':Homogeneity_1_0,  'Contrast':Contrast_1_0,  'Correlation':Correlation_1_0,
+                              'Energy2':Energy_1_pi_4, 'Homogeneity2':Homogeneity_1_pi_4, 'Contrast2':Contrast_1_pi_4, 'Correlation2':Correlation_1_pi_4, 
+                              'Energy3':Energy_7_pi_2, 'Homogeneity3':Homogeneity_7_pi_2, 'Contrast3':Contrast_7_pi_2, 'Correlation3':Correlation_7_pi_2, 
+                              'Energy4':Energy_7_3_pi_4, 'Homogeneity4':Homogeneity_7_3_pi_4, 'Contrast4':Contrast_7_3_pi_4, 'Correlation4':Correlation_7_3_pi_4, 'Labels':Labels})
 
 
     #'Energy':Energy
@@ -547,7 +565,7 @@ class FeatureExtraction():
     #'Dissimilarity':Dissimilarity
 
     # * Return a dataframe with only the data without the labels
-    X = DataFrame.iloc[:, :-1].values
+    X = DataFrame.iloc[:, [0, 1]].values
 
     # * Return a dataframe with only the labels
     Y = DataFrame.iloc[:, -1].values
