@@ -1065,7 +1065,13 @@ def Model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretraine
             
             Model_name = 'ResNet152V2_Model'
             Model_name_letters = 'RN152V2'
-            Model_index_chosen = ResNet152V2        
+            Model_index_chosen = ResNet152V2    
+
+        if (Model_pretrained_value == 12):
+            
+            Model_name = 'ResNet152V2_Model'
+            Model_name_letters = 'RN152V2'
+            Model_index_chosen = ResNet152V2     
 
             return Model_name, Model_name_letters, Model_index_chosen
 
