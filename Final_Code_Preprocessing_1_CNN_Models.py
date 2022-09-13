@@ -44,7 +44,7 @@ def Testing_CNN_Models_Biclass_From_Folder(Models, Folder, Technique):
     #Labels_triclass = ['Normal', 'Benign', 'Malignant']
     X_size = 224
     Y_size = 224
-    Epochs = 2
+    Epochs = 4
 
     #Name_dir = os.path.dirname(Folder)
     #Name_base = os.path.basename(Folder)

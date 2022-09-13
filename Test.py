@@ -1,4 +1,6 @@
-example_dict = {1:'a', 2:'b', 3:'c', 4:'d'}
+from Final_Code_1_General_Functions import test_figure_plot
 
-for i, (k, v) in enumerate(example_dict.items()):
-    print(i, k, v)
+
+
+test_figure_plot(12, 12, 12, 1, "D:\Test\Biclass_Folder_Data_Models_TEST\Dataframe_Confusion_Matrix_Biclass_MN_TEST.csv", "D:\Test\Biclass_Folder_Data_Models_TEST\Biclass_MN_TEST_logger.csv",
+                        "D:\Test\Biclass_Folder_Data_Models_TEST\Biclass_Dataframe_ROC_Curve_Values_MN_TEST.csv")

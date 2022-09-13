@@ -8,6 +8,8 @@ import pydicom
 import warnings
 import numpy as np
 import pandas as pd
+import seaborn as sns
+
 import splitfolders
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -20,6 +22,8 @@ from sklearn.utils import resample
 from sklearn.preprocessing import LabelEncoder
 
 from cryptography.fernet import Fernet
+
+from sklearn.metrics import auc
 
 # ? Create folders
 
@@ -2437,3 +2441,90 @@ class BarChart:
 
   def barchart_vertical(self) -> None:  
     pass
+
+
+# ? Create folders
+
+def test_figure_plot(Height: int, Width: int, Annot_kws: int, font: int, CM_dataframe: pd.DataFrame, History_dataframe: pd.DataFrame, ROC_dataframe: pd.DataFrame) -> None: 
+
+  X_size_figure = 2
+  Y_size_figure = 2
+
+  Confusion_matrix_dataframe = pd.read_csv(CM_dataframe)
+
+  #Column_names = ["accuracy", "loss", "val_accuracy", "val_loss"]
+  History_data_dataframe = pd.read_csv(History_dataframe)
+  
+  Accuracy = History_data_dataframe.accuracy.to_list()
+  Loss = History_data_dataframe.loss.to_list()
+  Val_accuracy = History_data_dataframe.val_accuracy.to_list()
+  Val_loss = History_data_dataframe.val_loss.to_list()
+
+  print(Loss)
+  print(Val_loss)
+
+  #Column_names = ["FPR", "TPR"]
+  Roc_curve_dataframe = pd.read_csv(ROC_dataframe)
+  
+  FPR = Roc_curve_dataframe.FPR.to_list()
+  TPR = Roc_curve_dataframe.TPR.to_list()
+
+  print(FPR)
+
+  # * Figure's size
+  
+  plt.figure(figsize = (Width, Height))
+  plt.suptitle('MobileNet', fontsize = 20)
+  plt.subplot(X_size_figure, Y_size_figure, 4)
+  sns.set(font_scale = font)
+
+  # * Confusion matrix heatmap
+  ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": Annot_kws})
+  #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
+  ax.set_xlabel('\nPredicted Values')
+  ax.set_ylabel('Actual Values')
+
+  # * Subplot Training accuracy
+  plt.subplot(X_size_figure, Y_size_figure, 1)
+  plt.plot(Accuracy, label = 'Training Accuracy')
+  plt.plot(Val_accuracy, label = 'Validation Accuracy')
+  plt.ylim([0, 1])
+  plt.legend(loc = 'lower right')
+  plt.title('Training and Validation Accuracy')
+  plt.xlabel('Epoch')
+
+  plt.subplot(X_size_figure, Y_size_figure, 2)
+  plt.plot(Loss, label = 'Training Loss')
+  plt.plot(Val_loss, label = 'Validation Loss')
+  plt.ylim([0, 2.0])
+  plt.legend(loc = 'upper right')
+  plt.title('Training and Validation Loss')
+  plt.xlabel('Epoch')
+
+  # * FPR and TPR values for the ROC curve
+  Auc = auc(FPR, TPR)
+
+  # * Subplot ROC curve
+  plt.subplot(X_size_figure, Y_size_figure, 3)
+  plt.plot([0, 1], [0, 1], 'k--')
+  plt.plot(FPR, TPR, label = 'Test' + '(area = {:.4f})'.format(Auc))
+  plt.xlabel('False positive rate')
+  plt.ylabel('True positive rate')
+  plt.title('ROC curve')
+  plt.legend(loc = 'lower right')
+
+  plt.show()
+
+  # * Figure's size
+  
+  plt.figure(figsize = (Width/2, Height/2))
+  plt.title('MobileNet', fontsize = 20)
+  sns.set(font_scale = font)
+
+  # * Confusion matrix heatmap
+  ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": Annot_kws})
+  #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
+  ax.set_xlabel('\nPredicted Values')
+  ax.set_ylabel('Actual Values')
+
+  plt.show()

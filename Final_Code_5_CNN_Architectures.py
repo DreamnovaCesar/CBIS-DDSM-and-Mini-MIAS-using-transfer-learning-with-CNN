@@ -834,7 +834,7 @@ def deep_learning_models_folder(**kwargs):
     #Labels = ['Benign_W_C', 'Malignant']
     
     Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
-    Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe_folder)
+    Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe_folder, index = False)
 
     # * Figure's size
     plt.figure(figsize = (Width, Height))
