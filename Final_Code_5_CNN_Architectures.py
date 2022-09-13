@@ -607,7 +607,7 @@ def deep_learning_models_folder(**kwargs):
   Weighted_avg_label = 'weighted avg'
 
   Classification_report_labels = []
-  Classification_report_metrics_labels = ('precision', 'recall', 'f1-score', 'support')
+  Classification_report_metrics_labels = ('Accuracy', 'precision', 'recall', 'f1-score', 'support')
 
   for Label in Class_labels:
     Classification_report_labels.append(Label)
@@ -645,8 +645,8 @@ def deep_learning_models_folder(**kwargs):
   # * Lists
   Column_names = ['Name Model', "Model used", "Accuracy Training FE", "Accuracy Training LE", "Accuracy Testing", "Loss Train", "Loss Test", 
                   "Training images", "Validation images", "Test images", "Precision", "Recall", "F1_Score", 
-                  "Precision normal", "Recall normal", "F1_Score normal", "Images support normal",
-                  "Precision tumor", "Recall tumor", "F1_Score tumor", "Images support tumor",
+                  "Accuracy normal", "Precision normal", "Recall normal", "F1_Score normal", "Images support normal",
+                  "Accuracy tumor", "Precision tumor", "Recall tumor", "F1_Score tumor", "Images support tumor",
                   "Precision macro avg", "Recall macro avg", "F1_Score macro avg", "Images support macro avg",
                   "Precision weighted avg", "Recall weighted avg", "F1_Score weighted avg", "Images support weighted avg",
                   "Time training", "Time testing", "Technique used", "TN", "FP", "FN", "TP", "Epochs", "Auc"]
@@ -658,6 +658,9 @@ def deep_learning_models_folder(**kwargs):
   #Dir_name = str(Class_problem_prefix) + 'Model_s' + str(Enhancement_technique) + '_dir'
   Dir_name_csv = "{}_Folder_Data_Models_{}".format(Class_problem_prefix, Enhancement_technique)
   Dir_name_images = "{}_Folder_Images_Models_{}".format(Class_problem_prefix, Enhancement_technique)
+
+  Dir_name_csv_model = "{}_Folder_Data_Model_{}_{}".format(Class_problem_prefix, Pretrained_model_name_letters, Enhancement_technique)
+  Dir_name_images_model = "{}_Folder_Images_Model_{}_{}".format(Class_problem_prefix, Pretrained_model_name_letters, Enhancement_technique)
   #print(Folder_CSV + '/' + Dir_name)
   #print('\n')
 
@@ -666,6 +669,7 @@ def deep_learning_models_folder(**kwargs):
 
   Exist_dir_csv = os.path.isdir(Dir_data_csv)
   Exist_dir_images = os.path.isdir(Dir_data_images)
+
 
   if Exist_dir_csv == False:
     Folder_path = os.path.join(Folder_CSV, Dir_name_csv)
@@ -683,6 +687,28 @@ def deep_learning_models_folder(**kwargs):
     Folder_path_images = os.path.join(Folder_CSV, Dir_name_images)
     print(Folder_path_images)
 
+  Dir_data_csv_model = Folder_path + '/' + Dir_name_csv_model
+  Dir_data_images_model = Folder_path_images + '/' + Dir_name_images_model
+  
+  Exist_dir_csv_model = os.path.isdir(Dir_data_csv_model)
+  Exist_dir_images_model = os.path.isdir(Dir_data_images_model)
+
+  if Exist_dir_csv_model == False:
+    Folder_path_in = os.path.join(Folder_path, Dir_name_csv_model)
+    os.mkdir(Folder_path_in)
+    print(Folder_path_in)
+  else:
+    Folder_path_in = os.path.join(Folder_path, Dir_name_csv_model)
+    print(Folder_path_in)
+
+  if Exist_dir_images_model == False:
+    Folder_path_images_in = os.path.join(Folder_path_images, Dir_name_images_model)
+    os.mkdir(Folder_path_images_in)
+    print(Folder_path_images_in)
+  else:
+    Folder_path_images_in = os.path.join(Folder_path_images, Dir_name_images_model)
+    print(Folder_path_images_in)
+
   #Dataframe_name = str(Class_problem_prefix) + 'Dataframe_' + 'CNN_' + 'Models_' + str(Enhancement_technique) + '.csv'
   #Dataframe_name = "{}_Dataframe_CNN_Models_{}.csv".format(Class_problem_prefix, Enhancement_technique)
   #Dataframe_name_folder = os.path.join(Folder_path, Dataframe_name)
@@ -691,30 +717,30 @@ def deep_learning_models_folder(**kwargs):
 
   # *
   Dataframe_save_name = "{}_Dataframe_CNN_Folder_Data_{}.csv".format(Class_problem_prefix, Enhancement_technique)
-  Dataframe_save_folder = os.path.join(Folder_path, Dataframe_save_name)
+  Dataframe_save_folder = os.path.join(Folder_path_in, Dataframe_save_name)
 
   # *
   Best_model_name_weights = "{}_{}_{}_Best_Model_Weights.h5".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
-  Best_model_folder_name_weights = os.path.join(Folder_path, Best_model_name_weights)
+  Best_model_folder_name_weights = os.path.join(Folder_path_in, Best_model_name_weights)
   
   # *
   #Confusion_matrix_dataframe_name = 'Dataframe_' + str(Class_problem_prefix) + str(Pretrained_model_name) + str(Enhancement_technique) + '.csv'
   Confusion_matrix_dataframe_name = "Dataframe_Confusion_Matrix_{}_{}_{}.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
-  Confusion_matrix_dataframe_folder = os.path.join(Folder_path, Confusion_matrix_dataframe_name)
+  Confusion_matrix_dataframe_folder = os.path.join(Folder_path_in, Confusion_matrix_dataframe_name)
   
   # * 
   #CSV_logger_info = str(Class_problem_prefix) + str(Pretrained_model_name) + '_' + str(Enhancement_technique) + '.csv'
   CSV_logger_info = "{}_{}_{}_logger.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
-  CSV_logger_info_folder = os.path.join(Folder_path, CSV_logger_info)
+  CSV_logger_info_folder = os.path.join(Folder_path_in, CSV_logger_info)
 
   # * 
   Dataframe_ROC_name = "{}_Dataframe_ROC_Curve_Values_{}_{}.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
-  Dataframe_ROC_folder = os.path.join(Folder_path, Dataframe_ROC_name)
+  Dataframe_ROC_folder = os.path.join(Folder_path_in, Dataframe_ROC_name)
 
   # * Save this figure in the folder given
   #Class_problem_name = str(Class_problem_prefix) + str(Pretrained_model_name) + str(Enhancement_technique) + '.png'
   Class_problem_name = "{}_{}_{}.png".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
-  Class_problem_folder = os.path.join(Folder_path_images, Class_problem_name)
+  Class_problem_folder = os.path.join(Folder_path_images_in, Class_problem_name)
 
   # * 
   #Best_model_name = str(Class_problem_prefix) + str(Pretrained_model_name) + '_' + str(Enhancement_technique) + '_Best_Model' + '.h5'
