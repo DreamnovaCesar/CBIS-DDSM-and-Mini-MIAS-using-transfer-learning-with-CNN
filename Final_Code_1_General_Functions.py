@@ -27,12 +27,55 @@ from sklearn.metrics import auc
 
 # ? Create folders
 
-def create_folders(Folder_path: str, Folder_name: str) -> None: 
-    pass
+def create_folders(Folder_path: str, Folder_name: str, CSV_name: str) -> None: 
+
+  Path_names = []
+  Path_absolute_dir = []
+
+  if(len(Folder_name) >= 2):
+
+    for i, Path_name in enumerate(Folder_name):
+
+      Folder_path_new = r'{}\{}'.format(Folder_path, Folder_name[i])
+      print(Folder_path_new)
+
+      Path_names.append(Path_name)
+      Path_absolute_dir.append(Folder_path_new)
+
+      Exist_dir = os.path.isdir(Folder_path_new) 
+
+      if Exist_dir == False:
+        os.mkdir(Folder_path_new)
+      else:
+        print('Path: {} exists, use another name for it'.format(Folder_name[i]))
+
+  else:
+
+    Folder_path_new = r'{}\{}'.format(Folder_path, Folder_name)
+    print(Folder_path_new)
+
+    Path_names.append(Folder_name)
+    Path_absolute_dir.append(Folder_path_new)
+
+    Exist_dir = os.path.isdir(Folder_path_new) 
+
+    if Exist_dir == False:
+      os.mkdir(Folder_path_new)
+    else:
+      print('Path: {} exists, use another name for it'.format(Folder_name))
+
+  Dataframe_name = 'Dataframe_path_names_{}.csv'.format(CSV_name)
+  Dataframe_folder = os.path.join(Folder_path, Dataframe_name)
+
+  #Exist_dataframe = os.path.isfile(Dataframe_folder)
+
+  Dataframe = pd.DataFrame({'Names':Path_names, 'Path names':Path_absolute_dir})
+  Dataframe.to_csv(Dataframe_folder)
+
 
 # ? Create folders
 
-def create_folders() -> None: 
+def unknown() -> None: 
     pass
 
 # ? Generate keys
