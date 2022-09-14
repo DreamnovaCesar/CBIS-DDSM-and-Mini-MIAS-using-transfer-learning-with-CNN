@@ -27,7 +27,7 @@ from sklearn.metrics import auc
 
 # ? Create folders
 
-def create_folders() -> None: 
+def create_folders(Folder_path: str, Folder_name: str) -> None: 
     pass
 
 # ? Create folders

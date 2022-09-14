@@ -757,12 +757,16 @@ def deep_learning_models_folder(**kwargs):
                                                 mode = 'max',
                                                 save_best_only = True )
 
+  # * 
   EarlyStopping_callback = EarlyStopping(patience = 2, monitor = 'val_loss')
 
+  # * 
   Log_CSV = CSVLogger(CSV_logger_info_folder, separator = ',', append = False)
 
+  # * 
   Callbacks = [Model_checkpoint_callback, EarlyStopping_callback, Log_CSV]
 
+  # * 
   Dataframe_save.to_csv(Dataframe_save_folder)
 
   #################### * Training fit
