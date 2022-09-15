@@ -4,8 +4,8 @@ import pandas as pd
 import cv2
 from matplotlib import pyplot as plt
 
-from Mini_MIAS_2_General_Functions import sort_images
-from Mini_MIAS_2_General_Functions import remove_all_files
+from Final_Code_1_General_Functions import sort_images
+from Final_Code_1_General_Functions import remove_all_files
 
 """
 img = cv2.imread("D:\CBIS-DDSM\CBIS-DDSM Final\CBIS_DDSM_NO_Images_Biclass\Mass_NO_AbnormalImages_DA\Mass-Training_P_00018_RIGHT_MLO_1_Benign_0_Rotation_Augmentation.png")
