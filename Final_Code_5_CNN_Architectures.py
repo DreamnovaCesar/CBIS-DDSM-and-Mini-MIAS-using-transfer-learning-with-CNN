@@ -607,7 +607,7 @@ def deep_learning_models_folder(**kwargs):
   Weighted_avg_label = 'weighted avg'
 
   Classification_report_labels = []
-  Classification_report_metrics_labels = ('Accuracy', 'precision', 'recall', 'f1-score', 'support')
+  Classification_report_metrics_labels = ('precision', 'recall', 'f1-score', 'support')
 
   for Label in Class_labels:
     Classification_report_labels.append(Label)
