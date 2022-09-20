@@ -25,6 +25,9 @@ from cryptography.fernet import Fernet
 
 from sklearn.metrics import auc
 
+import random
+from random import randint
+
 # ? Create folders
 
 def create_folders(Folder_path: str, Folder_name: str, CSV_name: str) -> None: 
@@ -75,8 +78,37 @@ def create_folders(Folder_path: str, Folder_name: str, CSV_name: str) -> None:
 
 # ? Create folders
 
-def unknown() -> None: 
-    pass
+def creating_data_students(Dataframe: pd.DataFrame, Iter: int, Folder_path: str, Save_dataframe: bool = False) -> pd.DataFrame: 
+    
+    # * Tuples for random generation.
+    Random_Name = ('Tom', 'Nick', 'Chris', 'Jack', 'Thompson')
+    Random_Classroom = ('A', 'B', 'C', 'D', 'E')
+
+    for i in range(Iter):
+
+        # *
+        New_row = {'Name':random.choice(Random_Name),
+                   'Age':randint(16, 21),
+                   'Classroom':random.choice(Random_Classroom),
+                   'Height':randint(160, 190),
+                   'Math':randint(70, 100),
+                   'Chemistry':randint(70, 100),
+                   'Physics':randint(70, 100),
+                   'Literature':randint(70, 100)}
+
+        Dataframe = Dataframe.append(New_row, ignore_index = True)
+
+        # *
+        print('Iteration complete: {}'.format(i))
+
+    # *
+    if(Save_dataframe == True):
+      Dataframe_Key_name = 'Dataframe_filekeys.csv'.format()
+      Dataframe_Key_folder = os.path.join(Folder_path, Dataframe_Key_name)
+
+      Dataframe.to_csv(Dataframe_Key_folder)
+
+    return Dataframe
 
 # ? Generate keys
 
