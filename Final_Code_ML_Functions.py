@@ -173,9 +173,9 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
     # * Conditional if the class problem was biclass or multiclass
 
     if Class_problem == 2:
-        Class_problem_prefix = 'Biclass_'
+        Class_problem_prefix = 'Biclass'
     elif Class_problem > 2:
-        Class_problem_prefix = 'Multiclass_'
+        Class_problem_prefix = 'Multiclass'
 
     if len(Class_labels) == 2:
 
@@ -218,6 +218,7 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
         print("\n")
 
         Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
+        Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe, index = False)
 
         # * Figure's size
         plt.figure(figsize = (Width, Height))
@@ -246,7 +247,8 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
         plt.legend(loc = 'lower right')
 
         # * Save this figure in the folder given
-        Class_problem_name = Class_problem_prefix + str(Model_name) + str(Enhancement_technique) + '_' + '.png'
+        #Class_problem_name = Class_problem_prefix + str(Model_name) + str(Enhancement_technique) + '_' + '.png'
+        Class_problem_name = "{}_{}_{}.csv".format(Class_problem_prefix, Model_name, Enhancement_technique)
         Class_problem_folder = os.path.join(Folder_models, Class_problem_name)
 
         plt.savefig(Class_problem_folder)
@@ -302,7 +304,8 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
         print("\n")
 
         Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
-
+        Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe, index = False)
+        
         # * Figure's size
         plt.figure(figsize = (Width, Height))
         plt.subplot(X_size_figure, Y_size_figure, 1)

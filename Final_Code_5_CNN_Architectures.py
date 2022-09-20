@@ -793,7 +793,9 @@ def deep_learning_models_folder(**kwargs):
 
   End_testing_time = time.time()
   
-  #################### * Total time of training and testing
+  #################### * Test evaluation
+
+  # * Total time of training and testing
 
   Total_training_time = End_training_time - Start_training_time 
   Total_testing_time = End_testing_time - Start_testing_time
@@ -813,8 +815,8 @@ def deep_learning_models_folder(**kwargs):
     Predict = Pretrained_model.predict(Test_data)
     y_pred = Pretrained_model.predict(Test_data).ravel()
 
-    print(Test_data.classes)
-    print(y_pred)
+    #print(Test_data.classes)
+    #print(y_pred)
     
     #y_pred = Pretrained_model.predict(X_test)
     #y_pred = Pretrained_model.predict(X_test).ravel()
@@ -983,13 +985,15 @@ def deep_learning_models_folder(**kwargs):
     print("\n")
 
     #labels = ['Benign', 'Benign_W_C', 'Malignant']
-    df_cm = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
+
+    Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
+    Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe_folder, index = False)
 
     plt.figure(figsize = (Width, Height))
     plt.subplot(X_size_figure, Y_size_figure, 4)
     sns.set(font_scale = font) # for label size
 
-    ax = sns.heatmap(df_cm, annot = True, fmt = 'd', annot_kws = {"size": Annot_kws}) # font size
+    ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": Annot_kws}) # font size
     #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values ')
@@ -1184,7 +1188,7 @@ def Model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretraine
   12: ResNet152V2_Model
   13: MobileNet_Model
   14: MobileNetV3Small_Model
-  15: MobileNetV3Large_Model
+  15: MobileNetV3Large_Model\anytimeshield
   16: Xception_Model
   17: VGG16_Model
   18: VGG19_Model
@@ -1394,7 +1398,6 @@ def Model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretraine
 
         raise OSError("No model chosen") 
 
-        
   Model_name, Model_name_letters, Model_index_chosen = model_pretrained_index(Model_pretrained_value)
 
   model_pretrained_print(Model_name, Model_name_letters)

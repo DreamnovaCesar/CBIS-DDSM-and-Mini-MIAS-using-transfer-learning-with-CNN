@@ -1975,9 +1975,10 @@ def concat_dataframe(*dfs: pd.DataFrame, **kwargs: str) -> pd.DataFrame:
 
 # ? Split folders into train/test/validation
 
-def split_folders_train_test_val(Folder_path:str) -> str:
+def split_folders_train_test_val(Folder_path:str, Only_train_test: bool) -> str:
   """
-  Create a new folder with the folders of the class problem and its distribution of training, test and validation
+  Create a new folder with the folders of the class problem and its distribution of training, test and validation.
+  The split is 80 and 20. If there is a validation set, it'll be 80, 10, and 10.
 
   Args:
       Folder_path (str): Folder's dataset for distribution
@@ -2005,7 +2006,16 @@ def split_folders_train_test_val(Folder_path:str) -> str:
   #1337
   
   try:
-    splitfolders.ratio(Folder_path, output = New_Folder_name, seed = 22, ratio = (Train_split, Test_split, Validation_split)) 
+
+    if(Only_train_test == False):
+
+      splitfolders.ratio(Folder_path, output = New_Folder_name, seed = 22, ratio = (Train_split, Test_split, Validation_split)) 
+    
+    else:
+
+      Test_split: float = 0.2
+      splitfolders.ratio(Folder_path, output = New_Folder_name, seed = 22, ratio = (Train_split, Test_split)) 
+
   except OSError as e:
     print('Cannot split the following folder {}, Type error: {} ❌'.format(str(Folder_path), str(type(e)))) #! Alert
 
