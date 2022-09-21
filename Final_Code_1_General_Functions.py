@@ -2532,32 +2532,34 @@ class BarChart:
 
 def test_figure_plot(Height: int, Width: int, Annot_kws: int, font: int, CM_dataframe: pd.DataFrame, History_dataframe: pd.DataFrame, ROC_dataframe: pd.DataFrame) -> None: 
 
+  # *
   X_size_figure = 2
   Y_size_figure = 2
 
+  # *
   Confusion_matrix_dataframe = pd.read_csv(CM_dataframe)
-
-  #Column_names = ["accuracy", "loss", "val_accuracy", "val_loss"]
   History_data_dataframe = pd.read_csv(History_dataframe)
   
+  # *
   Accuracy = History_data_dataframe.accuracy.to_list()
   Loss = History_data_dataframe.loss.to_list()
   Val_accuracy = History_data_dataframe.val_accuracy.to_list()
   Val_loss = History_data_dataframe.val_loss.to_list()
 
+  # *
   print(Loss)
   print(Val_loss)
 
   #Column_names = ["FPR", "TPR"]
   Roc_curve_dataframe = pd.read_csv(ROC_dataframe)
   
+  # *
   FPR = Roc_curve_dataframe.FPR.to_list()
   TPR = Roc_curve_dataframe.TPR.to_list()
 
   print(FPR)
 
   # * Figure's size
-  
   plt.figure(figsize = (Width, Height))
   plt.suptitle('MobileNet', fontsize = 20)
   plt.subplot(X_size_figure, Y_size_figure, 4)
