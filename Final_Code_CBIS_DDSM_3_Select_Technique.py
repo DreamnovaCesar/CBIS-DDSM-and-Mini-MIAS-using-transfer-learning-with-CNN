@@ -42,22 +42,27 @@ def preprocessing_technique_Biclass(New_technique, Folder_normal, Folder_tumor, 
         DataFrame_Normal = Normalization_Normal.normalize_technique()
         DataFrame_Tumor = Normalization_Tumor.normalize_technique()
 
+    # *
     elif New_technique == 'CLAHE':
         DataFrame_Normal = Normalization_Normal.CLAHE_technique()
         DataFrame_Tumor = Normalization_Tumor.CLAHE_technique()
 
+    # *
     elif New_technique == 'HE':
         DataFrame_Normal = Normalization_Normal.histogram_equalization_technique()
         DataFrame_Tumor = Normalization_Tumor.histogram_equalization_technique()
 
+    # *
     elif New_technique == 'UM':
         DataFrame_Normal = Normalization_Normal.unsharp_masking_technique()
         DataFrame_Tumor = Normalization_Tumor.unsharp_masking_technique()
 
+    # *
     elif New_technique == 'CS':
         DataFrame_Normal = Normalization_Normal.contrast_stretching_technique()
         DataFrame_Tumor = Normalization_Tumor.contrast_stretching_technique()
     
+    # *
     elif New_technique == 'MF':
         DataFrame_Normal = Normalization_Normal.median_filter_technique()
         DataFrame_Tumor = Normalization_Tumor.median_filter_technique()
@@ -66,7 +71,7 @@ def preprocessing_technique_Biclass(New_technique, Folder_normal, Folder_tumor, 
         raise ValueError("Choose a new technique")      #! Alert
 
     # * Concatenate dataframes with this function
-    concat_dataframe(DataFrame_Normal, DataFrame_Tumor, folder = Biclass_Data_CSV, classp = Biclass, technique = New_technique, savefile = True)
+    concat_dataframe(DataFrame_Normal, DataFrame_Tumor, folder = '', classp = Biclass, technique = New_technique, savefile = True)
 
 def preprocessing_technique_Multiclass(New_technique, Folder_normal, Folder_benign, Folder_malignant, New_folder_normal, New_folder_benign, New_folder_malignant):
 
@@ -97,31 +102,37 @@ def preprocessing_technique_Multiclass(New_technique, Folder_normal, Folder_beni
     Normalization_Malignant = ImageProcessing(Folder = Folder_malignant, Newfolder = New_folder_malignant, Severity = Label_Malignant, Label = Malignant_images_class,
                                             cliplimit = Cliplimit, division = Division, radius = Radius, amount = Amount)
 
+    # *
     if New_technique == 'NO':
         DataFrame_Normal = Normalization_Normal.normalize_technique()
         DataFrame_Benign = Normalization_Benign.normalize_technique()
         DataFrame_Malignant = Normalization_Malignant.normalize_technique()
 
+    # *
     elif New_technique == 'CLAHE':
         DataFrame_Normal = Normalization_Normal.CLAHE_technique()
         DataFrame_Benign = Normalization_Benign.CLAHE_technique()
         DataFrame_Malignant = Normalization_Malignant.CLAHE_technique()
 
+    # *
     elif New_technique == 'HE':
         DataFrame_Normal = Normalization_Normal.histogram_equalization_technique()
         DataFrame_Benign = Normalization_Benign.histogram_equalization_technique()
         DataFrame_Malignant = Normalization_Malignant.histogram_equalization_technique()
 
+    # *
     elif New_technique == 'UM':
         DataFrame_Normal = Normalization_Normal.unsharp_masking_technique()
         DataFrame_Benign = Normalization_Benign.unsharp_masking_technique()
         DataFrame_Malignant = Normalization_Malignant.unsharp_masking_technique()
 
+    # *
     elif New_technique == 'CS':
         DataFrame_Normal = Normalization_Normal.contrast_stretching_technique()
         DataFrame_Benign = Normalization_Benign.contrast_stretching_technique()
         DataFrame_Malignant = Normalization_Malignant.contrast_stretching_technique()
 
+    # *
     elif New_technique == 'MF':
         DataFrame_Normal = Normalization_Normal.median_filter_technique()
         DataFrame_Benign = Normalization_Benign.median_filter_technique()
@@ -131,4 +142,4 @@ def preprocessing_technique_Multiclass(New_technique, Folder_normal, Folder_beni
         raise ValueError("Choose a new technique")    #! Alert
 
     # * Concatenate dataframes with this function
-    concat_dataframe(DataFrame_Normal, DataFrame_Benign, DataFrame_Malignant, Folder = Multiclass_Data_CSV, Class = Multiclass, Technique = New_technique)
+    concat_dataframe(DataFrame_Normal, DataFrame_Benign, DataFrame_Malignant, Folder = '', Class = Multiclass, Technique = New_technique)

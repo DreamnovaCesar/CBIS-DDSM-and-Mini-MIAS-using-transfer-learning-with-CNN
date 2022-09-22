@@ -4,49 +4,55 @@ import numpy as np
 
 from Final_Code_3_Data_Augmentation import DataAugmentation
 
-def preprocessing_DataAugmentation_Biclass_ML(Folder_mass, Folder_calcification, Folder_destination):
+# ? Data augmentation for CNN using RAM
 
+def preprocessing_DataAugmentation_Biclass_CNN(Folder_paths, Folder_destination, Labels, Iters, Iter_instance):
+    
+    # * 
+    Data_agumentation = []
+    Image_class_value = []
+    
     # * List to add images and labels.
-    Images = []
-    Labels = []
+    #Images = []
+    #Labels = []
 
     # * General parameters
-    #Iter_Mass = 20 
-    #Iter_tumor = 40 
+    #Iter_normal = 20 
+    #Iter_Clasification = 40 
 
-    #Iter_mass = 5 
-    #Iter_calcification = 4 
+    #Iter_normal = 18 
+    #Iter_Clasification = 34
 
-    Iter_mass = 10 
-    Iter_calcification = 9  
+    Iter_one = 18 
+    Iter_two = 34  
 
-    Label_mass = 'Mass' 
-    Label_calcification = 'Calcification'  
+    Images_class = 0 
+    Images_class = 1 
 
-    Mass_images_class = 0 
-    Calcification_images_class = 1 
+    for i in range(Iter_instance):
+        Data_agumentation.append(DataAugmentation(Folder = Folder_paths[i], NewFolder = Folder_destination, Severity = Labels[i], Sampling = Iters[i], Label = Images_class_one, Saveimages = True))
 
     # * With this class we use the technique called data augmentation to create new images with their transformations
-    Data_augmentation_mass = DataAugmentation(Folder = Folder_mass, NewFolder = Folder_destination, Severity = Label_mass, Sampling = Iter_mass, Label = Mass_images_class, Saveimages = False)
-    Data_augmentation_calcification = DataAugmentation(Folder = Folder_calcification, NewFolder = Folder_destination, Severity = Label_calcification, Sampling = Iter_calcification, Label = Calcification_images_class, Saveimages = False)
+    Data_augmentation_one = DataAugmentation(Folder = Folder_path_one, NewFolder = Folder_destination, Severity = Label_one, Sampling = Iter_one, Label = Images_class_one, Saveimages = True)
+    Data_augmentation_two = DataAugmentation(Folder = Folder_path_two, NewFolder = Folder_destination, Severity = Label_two, Sampling = Iter_two, Label = Images_class_two, Saveimages = True)
 
-    Images_mass, Labels_mass = Data_augmentation_mass.no_data_augmentation()
-    Images_calcification, Labels_calcification = Data_augmentation_calcification.no_data_augmentation()
+    Images_one, Labels_one = Data_augmentation_one.data_augmentation_test_images()
+    Images_two, Labels_two = Data_augmentation_two.data_augmentation_test_images()
 
     # * Add the value in the lists already created
 
-    Images.append(Images_mass)
-    Images.append(Images_calcification)
+    Images_total = Images_one + Images_two
+    Labels_total = np.concatenate((Labels_one, Labels_two), axis = None)
 
-    Labels.append(Labels_mass)
-    Labels.append(Labels_calcification)
+    print(Images_one)
+    print(Images_two)
 
-    print(len(Images_mass))
-    print(len(Images_calcification))
+    #print(len(Images_mass))
+    #print(len(Images_calcification))
 
-    return Images, Labels
+    return Images_total, Labels_total
 
-def preprocessing_DataAugmentation_Biclass_CNN(Folder_mass, Folder_calcification, Folder_destination):
+def preprocessing_DataAugmentation_Biclass_CNN(Folder_path_one, Folder_path_two, Folder_destination, Label_one, Label_two):
 
     # * List to add images and labels.
     #Images = []
@@ -59,30 +65,74 @@ def preprocessing_DataAugmentation_Biclass_CNN(Folder_mass, Folder_calcification
     #Iter_normal = 18 
     #Iter_Clasification = 34
 
-    Iter_mass = 10 
-    Iter_calcification = 10  
+    Iter_one = 18 
+    Iter_two = 34  
 
-    Label_mass = 'Mass' 
-    Label_calcification = 'Calcification'  
-
-    Mass_images_class = 0 
-    Clasification_images_class = 1 
+    Images_class_one = 0 
+    Images_class_two = 1 
 
     # * With this class we use the technique called data augmentation to create new images with their transformations
-    Data_augmentation_mass = DataAugmentation(Folder = Folder_mass, NewFolder = Folder_destination, Severity = Label_mass, Sampling = Iter_mass, Label = Mass_images_class, Saveimages = True)
-    Data_augmentation_calcification = DataAugmentation(Folder = Folder_calcification, NewFolder = Folder_destination, Severity = Label_calcification, Sampling = Iter_calcification, Label = Clasification_images_class, Saveimages = True)
+    Data_augmentation_one = DataAugmentation(Folder = Folder_path_one, NewFolder = Folder_destination, Severity = Label_one, Sampling = Iter_one, Label = Images_class_one, Saveimages = True)
+    Data_augmentation_two = DataAugmentation(Folder = Folder_path_two, NewFolder = Folder_destination, Severity = Label_two, Sampling = Iter_two, Label = Images_class_two, Saveimages = True)
 
-    Images_mass, Labels_mass = Data_augmentation_mass.data_augmentation_test_images()
-    Images_calcification, Labels_calcification = Data_augmentation_calcification.data_augmentation_test_images()
+    Images_one, Labels_one = Data_augmentation_one.data_augmentation_test_images()
+    Images_two, Labels_two = Data_augmentation_two.data_augmentation_test_images()
 
     # * Add the value in the lists already created
 
-    Images_total = Images_mass + Images_calcification
-    Labels_total = np.concatenate((Labels_mass, Labels_calcification), axis = None)
+    Images_total = Images_one + Images_two
+    Labels_total = np.concatenate((Labels_one, Labels_two), axis = None)
 
-    print(Images_mass)
-    print(Images_calcification)
+    print(Images_one)
+    print(Images_two)
 
+    #print(len(Images_mass))
+    #print(len(Images_calcification))
+
+    return Images_total, Labels_total
+
+def preprocessing_DataAugmentation_Multiclass_CNN(Folder_path_one, Folder_path_two, Folder_path_three, Folder_destination, Label_one, Label_two, Label_three):
+
+    # * List to add images and labels.
+    #Images = []
+    #Labels = []
+
+    # * General parameters
+    #Iter_normal = 2
+    #Iter_benign = 70
+    #Iter_calcification = 90 
+
+    Iter_one = 25
+    Iter_two = 4
+    Iter_three = 3 
+
+    #Iter_normal = 2
+    #Iter_mass = 8
+    #Iter_calcification = 10 
+
+    Images_class_one = 0 
+    Images_class_two = 1 
+    Images_class_three = 2 
+
+    # * With this class we use the technique called data augmentation to create new images with their transformations
+    Data_augmentation_one = DataAugmentation(Folder = Folder_path_one, NewFolder = Folder_destination, Severity = Label_one, Sampling = Iter_one, Label = Images_class_one, Saveimages = True)
+    Data_augmentation_two = DataAugmentation(Folder = Folder_path_two, NewFolder = Folder_destination, Severity = Label_two, Sampling = Iter_two, Label = Images_class_two, Saveimages = True)
+    Data_augmentation_three = DataAugmentation(Folder = Folder_path_three, NewFolder = Folder_destination, Severity = Label_three, Sampling = Iter_two, Label = Images_class_three, Saveimages = True)
+
+    Images_one, Labels_one = Data_augmentation_one.data_augmentation_test_images()
+    Images_two, Labels_two = Data_augmentation_two.data_augmentation_test_images()
+    Images_three, Labels_three = Data_augmentation_three.data_augmentation_test_images()
+
+    # * Add the value in the lists already created
+
+    Images_total = Images_one + Images_two + Images_three
+    Labels_total = np.concatenate((Labels_one, Labels_two, Labels_three), axis = None)
+    
+    print(Images_one)
+    print(Images_two)
+    print(Images_three)
+
+    #print(len(Images_normal))
     #print(len(Images_mass))
     #print(len(Images_calcification))
 
@@ -103,14 +153,14 @@ def preprocessing_DataAugmentation_Biclass_Folder(Folder_path, First_label, Seco
     #First_number_iter = 18 #*
     #Second_number_iter = 34  #* 
 
-    Total_files:int = 0
-    Total_dir:int = 0
+    Total_files: int = 0
+    Total_dir: int = 0
 
     #First_number_iter = 1 
     #Second_number_iter = 1  
 
-    First_images_class:int = 0 
-    Second_images_class:int = 1 
+    First_images_class: int = 0 
+    Second_images_class: int = 1 
 
     Dir_total_training = []
     Dir_total_val = []
@@ -221,4 +271,121 @@ def preprocessing_DataAugmentation_Biclass_Folder(Folder_path, First_label, Seco
 
     print(len(Images_total))
     print(len(Labels_total))
+    """
+
+def preprocessing_DataAugmentation_Multiclass_Folder(Folder_path, First_label, Second_label, Third_label, First_number_iter, Second_number_iter, Third_number_iter):
+
+    # * List to add images and labels.
+    #Images = []
+    #Labels = []
+
+    # * General parameters
+
+    Total_files:int = 0
+    Total_dir:int = 0
+
+    #First_number_iter = 10
+    vSecond_number_iter = 1
+    #Third_number_iter = 1 
+
+    First_images_class:int = 0 
+    Second_images_class:int = 1
+    Third_images_class:int = 1 
+
+    Dir_total_training = []
+    Dir_total_test = []
+    Dir_total_val = []
+
+    Folder_path_train_classes = []
+    Folder_path_test_classes = []
+    Folder_path_val_classes = []
+
+    Folder_path_train ='{}/train/'.format(Folder_path)
+    Folder_path_test ='{}/test/'.format(Folder_path)
+    Folder_path_val ='{}/val/'.format(Folder_path)
+
+    for Base, Dirs, Files in os.walk(Folder_path_train):
+        print('Searching in : ', Base)
+        for Dir in Dirs:
+            Dir_total_training.append(Dir)
+            Total_dir += 1
+        for Index, File in enumerate(Files):
+            Total_files += 1
+    """
+    for base, dirs, files in os.walk(Folder_path_test):
+        print('Searching in : ', base)
+        for dir in dirs:
+            Dir_total_test.append(dir)
+            Total_dir += 1
+        for file in files:
+            Total_files += 1
+
+    for base, dirs, files in os.walk(Folder_path_val):
+        print('Searching in : ', base)
+        for dir in dirs:
+            Dir_total_val.append(dir)
+            Total_dir += 1
+        for file in files:
+            Total_files += 1
+    """
+    #print(Dir_total[0])
+    #print(Dir_total[1])
+    #print(len(Dir_total))
+    #print(Total_dir)
+    #print(Total_files)
+
+    for Index, dir in enumerate(Dir_total_training):
+        print(Index)
+        Folder_path_train_classes.append('{}{}'.format(Folder_path_train, dir))
+        print(Folder_path_train_classes[Index])
+    """
+    for Index, dir in enumerate(Dir_total_test):
+        print(Index)
+        Folder_path_test_classes.append('{}{}'.format(Folder_path_test, dir))
+        print(Folder_path_test_classes[Index])
+
+    for Index, dir in enumerate(Dir_total_val):
+        print(Index)
+        Folder_path_val_classes.append('{}{}'.format(Folder_path_val, dir))
+        print(Folder_path_val_classes[Index])
+    """    
+    # * With this class we use the technique called data augmentation to create new images with their transformations
+
+    Data_augmentation_normal = DataAugmentation(Folder = Folder_path_train_classes[0], NewFolder = Folder_path_train_classes[0], Severity = First_label, Sampling = First_number_iter, Label = First_images_class, Saveimages = True)
+    Data_augmentation_benign = DataAugmentation(Folder = Folder_path_train_classes[1], NewFolder = Folder_path_train_classes[1], Severity = Second_label, Sampling = Second_number_iter, Label = Second_images_class, Saveimages = True)
+    Data_augmentation_malignant = DataAugmentation(Folder = Folder_path_train_classes[2], NewFolder = Folder_path_train_classes[2], Severity = Third_label, Sampling = Third_number_iter, Label = Third_images_class, Saveimages = True)
+
+    Images_Normal, Labels_Normal = Data_augmentation_normal.data_augmentation_same_folder()
+    Images_Benign, Labels_Benign = Data_augmentation_benign.data_augmentation_same_folder()
+    Images_Malignant, Labels_Malignant = Data_augmentation_malignant.data_augmentation_same_folder()
+    # * Add the value in the lists already created
+
+    Images_total = Images_Normal + Images_Benign + Images_Malignant
+    Labels_total = np.concatenate((Labels_Normal, Labels_Benign, Labels_Malignant), axis = None)
+    
+    #print(Images_Normal)
+    #print(Images_Benign)
+    #print(Images_Malignant)
+    
+    print(len(Images_Normal))
+    print(len(Images_Benign))
+    print(len(Images_Malignant))
+
+    """
+    Data_augmentation_normal = DataAugmentation(Folder = Folder_path_val_classes[0], NewFolder = Folder_path_val_classes[0], Severity = Label_benign, Sampling = Iter_benign, Label = Benign_images_class, Saveimages = True)
+    Data_augmentation_benign = DataAugmentation(Folder = Folder_path_val_classes[1], NewFolder = Folder_path_val_classes[1], Severity = Label_malignant, Sampling = Iter_malignant, Label = Malignant_images_class, Saveimages = True)
+    Data_augmentation_malignant = DataAugmentation(Folder = Folder_path_val_classes[2], NewFolder = Folder_path_val_classes[2], Severity = Label_normal, Sampling = Iter_normal, Label = Normal_images_class, Saveimages = True)
+
+    Images_Normal, Labels_Normal = Data_augmentation_normal.data_augmentation_same_folder()
+    Images_Benign, Labels_Benign = Data_augmentation_benign.data_augmentation_same_folder()
+    Images_Malignant, Labels_Malignant = Data_augmentation_malignant.data_augmentation_same_folder()
+
+    # * Add the value in the lists already created
+
+    Images_total = Images_Normal + Images_Benign + Images_Malignant
+    Labels_total = np.concatenate((Labels_Normal, Labels_Benign, Labels_Malignant), axis = None)
+    
+    print(len(Images_Normal))
+    print(len(Images_Benign))
+    print(len(Images_Malignant))
     """
