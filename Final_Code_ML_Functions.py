@@ -1,3 +1,4 @@
+from ast import Index
 import os
 import time
 import numpy as np
@@ -42,7 +43,9 @@ from sklearn.multiclass import OneVsRestClassifier
 
 from imblearn.over_sampling import SMOTE
 
-def machine_learning_config(Dataframe, Dataframe_save, Folder_path, Column_names, ML_model, Enhancement_technique, Extract_feature_technique, Class_labels, Folder_data, Folder_models):
+#Dataframe, Dataframe_save, Folder_path, Column_names, ML_model, Enhancement_technique, Extract_feature_technique, Class_labels, Folder_data, Folder_models
+
+def machine_learning_config(**kwargs):
 
     """
 	  Extract features from each image, it could be FOS, GLCM or GRLM.
@@ -58,19 +61,39 @@ def machine_learning_config(Dataframe, Dataframe_save, Folder_path, Column_names
 	  list:Returning all metadata of each model trained.
     
    	"""
+
+    # * General attributes
+    Dataframe = kwargs.get('dataframe', None)
+    Dataframe_save = kwargs.get('dataframesave', None)
+
+    # *
+    Folder_path = kwargs.get('folderpath', None)
+    Folder_CSV = kwargs.get('foldercsv', None)
+    Folder_models = kwargs.get('foldermodels', None)
+    Folder_models_esp = kwargs.get('foldermodelsesp', None)
+
+    # *
+    Models = kwargs.get('models', None)
+
+    # *
+    Extract_feature_technique = kwargs.get('MLT', None)
+    Enhancement_technique = kwargs.get('technique', None)
+    Class_labels = kwargs.get('labels', None)
+    Column_names = kwargs.get('columns', None)
+
     sm = SMOTE()
     sc = StandardScaler()
     #ALL_ML_model = len(ML_model)
 
-    for Index, Model in enumerate(ML_model):
+    # * Class problem definition
+    Class_problem = len(Class_labels)
 
-        # * Class problem definition
-        Class_problem = len(Class_labels)
+    if Class_problem == 2:
+        Class_problem_prefix = 'Biclass'
+    elif Class_problem >= 3:
+        Class_problem_prefix = 'Multiclass'
 
-        if Class_problem == 2:
-            Class_problem_prefix = 'Biclass_'
-        elif Class_problem >= 3:
-            Class_problem_prefix = 'Multiclass_'
+    for Index, Model in enumerate(Models):
 
         # * Extract data and label
         Dataframe_len_columns = len(Dataframe.columns)
@@ -98,20 +121,21 @@ def machine_learning_config(Dataframe, Dataframe_save, Folder_path, Column_names
         #print(y_test)
 
         # * Chose the machine learning.
-        Info_model = Machine_learning_models(Model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models)
+        Info_model = machine_learning_models(Model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models)
     
-        Dataframe_results = Overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
+        Dataframe_results = overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
     # * Save dataframe in the folder given
-    Class_problem_dataframe = str(Class_problem_prefix) + 'Dataframe_' + str(Extract_feature_technique) + '_' + str(Enhancement_technique) + '.csv'
-    Class_problem_folder = os.path.join(Folder_data, Class_problem_dataframe)
+    #Class_problem_dataframe = str(Class_problem_prefix) + 'Dataframe_' + str(Extract_feature_technique) + '_' + str(Enhancement_technique) + '.csv'
+    Class_problem_dataframe = "{}_Dataframe_{}_{}.csv".format(Class_problem_prefix, Extract_feature_technique, Enhancement_technique)
+    Class_problem_folder = os.path.join(Folder_CSV, Class_problem_dataframe)
     Dataframe.to_csv(Class_problem_folder)
 
     return Dataframe_results
 
 # ?
-
-def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models):
+#ML_model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models, Dataframe_save, Folder_path, Info_model, Column_names, Index
+def machine_learning_models(**kwargs):
 
     """
 	  General configuration for each model, extracting features and printing theirs values (Machine Learning).
@@ -131,6 +155,35 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
 	  int:Returning all data from each model.
     
    	"""
+
+    # * General attributes
+    #Dataframe = kwargs.get('dataframe', None)
+    Dataframe_save = kwargs.get('dataframesave', None)
+
+    # *
+    Folder_path = kwargs.get('folderpath', None)
+    Folder_CSV = kwargs.get('foldercsv', None)
+    Folder_models = kwargs.get('foldermodels', None)
+    Folder_models_esp = kwargs.get('foldermodelsesp', None)
+
+    # *
+    Model = kwargs.get('model', None)
+
+    # *
+    Enhancement_technique = kwargs.get('technique', None)
+    Class_labels = kwargs.get('labels', None)
+    Column_names = kwargs.get('columns', None)
+
+    # *
+    X_train = kwargs.get('Xtrain', None)
+    y_train = kwargs.get('ytrain', None)
+
+    X_test = kwargs.get('Xtest', None)
+    y_test = kwargs.get('ytest', None)
+
+    # *
+    Index = kwargs.get('index', None)
+
     # * Parameters plt
 
     Height = 5
@@ -162,9 +215,10 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
 
     Digits = 4
 
-    # * Lists
-
+    # * List
     Info = []
+    ROC_curve_FPR = []
+    ROC_curve_TPR = []
     Labels_multiclass = []
     
     # * Class problem definition
@@ -177,10 +231,99 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
     elif Class_problem > 2:
         Class_problem_prefix = 'Multiclass'
 
+    Column_names = ["Model name", "Model", "Accuracy", "Precision", "Recall", "F1 Score", 
+                    "Precision Mass", "Recall Mass", "F1_Score Mass", "Images support Mass",
+                    "Precision Calcification", "Recall Calcification", "F1_Score Calcification", "Images support Calcification",
+                    "Precision macro avg", "Recall macro avg", "F1_Score macro avg", "Images support macro avg",
+                    "Precision weighted avg", "Recall weighted avg", "F1_Score weighted avg", "Images support weighted avg",
+                    "Training images", "Test images", "Time training", "Technique", "TN", "FP", "FN", "TP", "AUC"]
+
+    Dataframe_save = pd.DataFrame(columns = Column_names)
+
+    # * Save dataframe in the folder given
+    #Dataframe_save_name = 'Biclass' + '_Dataframe_' + 'FOF_' + str(Enhancement_technique)  + '.csv'
+    Dataframe_save_name = "{}_Dataframe_Folder_Data_Models_{}.csv".format(Class_problem_prefix, Enhancement_technique)
+    Dataframe_save_folder = os.path.join(Folder_CSV, Dataframe_save_name)
+
+    # *
+    #Confusion_matrix_dataframe_name = 'Dataframe_' + str(Class_problem_prefix) + str(Pretrained_model_name) + str(Enhancement_technique) + '.csv'
+    Confusion_matrix_dataframe_name = "Dataframe_Confusion_Matrix_{}_{}_{}.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
+    Confusion_matrix_dataframe_folder = os.path.join(Folder_path_in, Confusion_matrix_dataframe_name)
+
+    # * 
+    #Dir_name = str(Class_problem_prefix) + 'Model_s' + str(Enhancement_technique) + '_dir'
+    Dir_name_csv = "{}_Folder_Data_Models_{}".format(Class_problem_prefix, Enhancement_technique)
+    Dir_name_images = "{}_Folder_Images_Models_{}".format(Class_problem_prefix, Enhancement_technique)
+        
+    Dir_name_csv_model = "{}_Folder_Data_Model_{}_{}".format(Class_problem_prefix, Pretrained_model_name_letters, Enhancement_technique)
+    Dir_name_images_model = "{}_Folder_Images_Model_{}_{}".format(Class_problem_prefix, Pretrained_model_name_letters, Enhancement_technique)
+    #print(Folder_CSV + '/' + Dir_name)
+    #print('\n')
+
+    # * 
+    Dataframe_ROC_name = "{}_Dataframe_ROC_Curve_Values_{}_{}.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
+    Dataframe_ROC_folder = os.path.join(Folder_path_in, Dataframe_ROC_name)
+
+    # * Save this figure in the folder given
+    #Class_problem_name = str(Class_problem_prefix) + str(Pretrained_model_name) + str(Enhancement_technique) + '.png'
+    Class_problem_name = "{}_{}_{}.png".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
+    Class_problem_folder = os.path.join(Folder_path_images_in, Class_problem_name)
+
+    # *
+    Dir_data_csv = Folder_CSV + '/' + Dir_name_csv
+    Dir_data_images = Folder_CSV + '/' + Dir_name_images
+
+    Exist_dir_csv = os.path.isdir(Dir_data_csv)
+    Exist_dir_images = os.path.isdir(Dir_data_images)
+
+    # *
+    if Exist_dir_csv == False:
+        Folder_path = os.path.join(Folder_CSV, Dir_name_csv)
+        os.mkdir(Folder_path)
+        print(Folder_path)
+    else:
+        Folder_path = os.path.join(Folder_CSV, Dir_name_csv)
+        print(Folder_path)
+
+    if Exist_dir_images == False:
+        Folder_path_images = os.path.join(Folder_CSV, Dir_name_images)
+        os.mkdir(Folder_path_images)
+        print(Folder_path_images)
+    else:
+        Folder_path_images = os.path.join(Folder_CSV, Dir_name_images)
+        print(Folder_path_images)
+
+    Dir_data_csv_model = Folder_path + '/' + Dir_name_csv_model
+    Dir_data_images_model = Folder_path_images + '/' + Dir_name_images_model
+    
+    Exist_dir_csv_model = os.path.isdir(Dir_data_csv_model)
+    Exist_dir_images_model = os.path.isdir(Dir_data_images_model)
+
+    # *
+    if Exist_dir_csv_model == False:
+        Folder_path_in = os.path.join(Folder_path, Dir_name_csv_model)
+        os.mkdir(Folder_path_in)
+        print(Folder_path_in)
+    else:
+        Folder_path_in = os.path.join(Folder_path, Dir_name_csv_model)
+        print(Folder_path_in)
+
+    if Exist_dir_images_model == False:
+        Folder_path_images_in = os.path.join(Folder_path_images, Dir_name_images_model)
+        os.mkdir(Folder_path_images_in)
+        print(Folder_path_images_in)
+    else:
+        Folder_path_images_in = os.path.join(Folder_path_images, Dir_name_images_model)
+        print(Folder_path_images_in)
+
+    # *
+    Dataframe_save.to_csv(Dataframe_save_folder)
+    #Dataframe_save = pd.read_csv(Dataframe_save_folder)
+
     if len(Class_labels) == 2:
 
         # * Get the data from the model chosen
-        Y_pred, Total_time_training, Model_name = ML_model(X_train, y_train, X_test)
+        Y_pred, Total_time_training, Model_name = Model(X_train, y_train, X_test)
 
         # * Confusion Matrix
         Confusion_matrix = confusion_matrix(y_test, Y_pred)
@@ -218,7 +361,7 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
         print("\n")
 
         Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
-        Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe, index = False)
+        Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe_folder, index = False)
 
         # * Figure's size
         plt.figure(figsize = (Width, Height))
@@ -250,6 +393,19 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
         #Class_problem_name = Class_problem_prefix + str(Model_name) + str(Enhancement_technique) + '_' + '.png'
         Class_problem_name = "{}_{}_{}.csv".format(Class_problem_prefix, Model_name, Enhancement_technique)
         Class_problem_folder = os.path.join(Folder_models, Class_problem_name)
+        
+        for i in range(len(FPR)):
+            ROC_curve_FPR.append(FPR[i])
+
+        for i in range(len(TPR)):
+            ROC_curve_TPR.append(TPR[i])
+
+        # * Dict_roc_curve
+
+        Dict_roc_curve = {'FPR': ROC_curve_FPR, 'TPR': ROC_curve_TPR} 
+        Dataframe_ROC = pd.DataFrame(Dict_roc_curve)
+
+        Dataframe_ROC.to_csv(Dataframe_ROC_folder)
 
         plt.savefig(Class_problem_folder)
         #plt.show()
@@ -257,7 +413,7 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
     elif len(Class_labels) >= 3:
 
         # * Get the data from the model chosen
-        Y_pred, Total_time_training, Model_name = ML_model(X_train, y_train, X_test)
+        Y_pred, Total_time_training, Model_name = Model(X_train, y_train, X_test)
 
         # * Binarize labels to get multiples ROC curves
         for i in range(len(Class_labels)):
@@ -304,7 +460,7 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
         print("\n")
 
         Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
-        Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe, index = False)
+        Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe_folder, index = False)
 
         # * Figure's size
         plt.figure(figsize = (Width, Height))
@@ -375,11 +531,13 @@ def machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
         for i in range(Class_problem):
             Info.append(Roc_auc[i])
 
+    Dataframe_updated = overwrite_row_CSV(Dataframe_save, Folder_path, Info, Column_names, Index)
+
     return Info
 
 # ? Folder Update CSV changing value
 
-def overwrite_row_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Row):
+def overwrite_row_CSV(Folder_path, Dataframe, Info, Column_names, Row):
 
     """
 	  Updates final CSV dataframe to see all values
@@ -396,14 +554,146 @@ def overwrite_row_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Ro
     
    	"""
 
-    for i in range(len(Info_list)):
-        Dataframe.loc[Row, Column_names[i]] = Info_list[i]
+    for i in range(len(Info)):
+        Dataframe.loc[Row, Column_names[i]] = Info[i]
   
     Dataframe.to_csv(Folder_path, index = False)
   
     print(Dataframe)
 
     return Dataframe
+
+def ML_model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretrained_value: int):
+    """
+    Model configuration.
+
+    Model_pretrained_value is a import variable that chose the model required.
+    The next index show every model this function has:
+
+    1:  EfficientNetB7_Model
+    2:  EfficientNetB6_Model
+    3:  EfficientNetB5_Model
+    4:  EfficientNetB4_Model
+    5:  EfficientNetB3_Model
+    6:  EfficientNetB2_Model
+    7:  EfficientNetB1_Model
+    8:  EfficientNetB0_Model
+    9:  ResNet50_Model
+    10: ResNet50V2_Model
+    11: ResNet152_Model
+    12: ResNet152V2_Model
+    13: MobileNet_Model
+    14: MobileNetV3Small_Model
+    15: MobileNetV3Large_Model\anytimeshield
+    16: Xception_Model
+    17: VGG16_Model
+    18: VGG19_Model
+    19: InceptionV3_Model
+    20: DenseNet121_Model
+    21: DenseNet201_Model
+    22: NASNetLarge_Model
+
+    Args:
+        X_size (int): X's size value.
+        Y_size (int): Y's size value.
+        Num_classes (int): Number total of classes.
+        Model_pretrained_value (int): Index of the model.
+
+    Returns:
+        _type_: _description_
+        string: Returning Model.
+        string: Returning Model Name.
+    """
+    # * Folder attribute (ValueError, TypeError)
+
+    if not isinstance(Model_pretrained_value, int):
+        raise TypeError("The index value must be integer") #! Alert
+
+    # * Function to show the pretrained model.
+    def model_pretrained_print(Model_name, Model_name_letters):
+        print('The model chosen is: {} -------- {} ✅'.format(Model_name, Model_name_letters))
+
+    # * Function to choose pretrained model.
+    def model_pretrained_index(Model_pretrained_value: int):
+
+        if (Model_pretrained_value == 1):
+
+            Model_name = 'Support Vector Machine'
+            Model_name_letters = 'SVM'
+            Model_index_chosen = SVC()
+            
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        elif (Model_pretrained_value == 2):
+
+            Model_name = 'Multi Support Vector Machine'
+            Model_name_letters = 'MSVM'
+            Model_index_chosen = OneVsRestClassifier(SVC())
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        elif (Model_pretrained_value == 3):
+
+            Model_name = 'Multi Layer Perceptron'
+            Model_name_letters = 'MLP'
+            Model_index_chosen = MLPClassifier
+        
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        elif (Model_pretrained_value == 4):
+
+            Model_name = 'Decision Tree'
+            Model_name_letters = 'DT'
+            Model_index_chosen = DecisionTreeClassifier
+
+            return Model_name, Model_name_letters, Model_index_chosen
+        
+        elif (Model_pretrained_value == 5):
+
+            Model_name = 'K Neighbors'
+            Model_name_letters = 'KNN'
+            Model_index_chosen = KNeighborsClassifier
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        elif (Model_pretrained_value == 6):
+
+            Model_name = 'Random Forest'
+            Model_name_letters = 'RF'
+            Model_index_chosen = RandomForestClassifier
+
+            return Model_name, Model_name_letters, Model_index_chosen
+        
+        elif (Model_pretrained_value == 7):
+
+            Model_name = 'Gradient Boostin Classifier'
+            Model_name_letters = 'GBC'
+            Model_index_chosen = GradientBoostingClassifier
+
+            return Model_name, Model_name_letters, Model_index_chosen
+
+        else:
+
+            raise OSError("No model chosen") 
+
+    Model_name, Model_name_letters, Model_index_chosen = model_pretrained_index(Model_pretrained_value)
+
+    model_pretrained_print(Model_name, Model_name_letters)
+
+    Start_training_time = time.time()
+    
+    # Data Custom model
+    classifier = Model_index_chosen(kernel = 'rbf', C = 1)
+    classifier.fit(X_train, y_train)
+
+    End_training_time = time.time()
+
+    Total_time_training = End_training_time - Start_training_time
+
+    Y_pred = classifier.predict(X_test)
+
+  return Model_name_letters, Model_name, Model_CNN
+
 
 # ?
 
