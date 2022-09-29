@@ -1,6 +1,7 @@
 import os
 import random
 import datetime
+from re import I
 import cv2
 import string
 import shutil
@@ -2392,6 +2393,7 @@ class BarChart:
     self.Plot_column = kwargs.get('column', None)
     self.Plot_reverse = kwargs.get('reverse', None)
     self.Num_classes = kwargs.get('classes', None)
+    self.Name = kwargs.get('name', None)
 
   def barchart_horizontal(self) -> None:
     """
@@ -2410,11 +2412,11 @@ class BarChart:
 	  void
    	"""
     # * General parameters
-    X_figure_size = 22
-    Y_figure_size = 24
-    Font_size_title = 40
-    Font_size_general = 25
-    Font_size_ticks = 15
+    X_figure_size = 12
+    Y_figure_size = 10
+    Font_size_title = X_figure_size * 1.2
+    Font_size_general = X_figure_size * 0.8
+    Font_size_ticks = (X_figure_size * Y_figure_size) * 0.05
 
     # * General lists
 
@@ -2434,18 +2436,18 @@ class BarChart:
 
     # * Chosing label
     if self.Num_classes == 2:
-      Label_class_name = 'Biclass_'
+      Label_class_name = 'Biclass'
     elif self.Num_classes > 2:
-      Label_class_name = 'Multiclass_'
+      Label_class_name = 'Multiclass'
 
     # Initialize the lists for X and Y
     #data = pd.read_csv("D:\MIAS\MIAS VS\DataCSV\DataFrame_Binary_MIAS_Data.csv")
 
     # * Read dataframe csv
-    Dataframe = pd.DataFrame(self.CSV_path)
+    Dataframe = pd.read_csv(self.CSV_path)
 
     # * Get X and Y values
-    X = list(Dataframe.iloc[:, 0])
+    X = list(Dataframe.iloc[:, 1])
     Y = list(Dataframe.iloc[:, self.Plot_column])
 
     plt.figure(figsize = (X_figure_size, Y_figure_size))
@@ -2495,18 +2497,22 @@ class BarChart:
                 X_slowest_list_value.append(i)
                 Y_slowest_list_value.append(k)
 
-                
+  
+
     # * Plot the data using bar() method
     plt.barh(X_slow_list_values, Y_slow_list_values, label = "Bad", color = 'gray')
+
     plt.barh(X_slowest_list_value, Y_slowest_list_value, label = "Worse", color = 'black')
+
     plt.barh(X_fast_list_values, Y_fast_list_values, label = "Better", color = 'lightcoral')
+
     plt.barh(X_fastest_list_value, Y_fastest_list_value, label = "Best", color = 'red')
 
     for Index, value in enumerate(Y_slowest_list_value):
-        plt.text(0, 68, 'Worse value: {} -------> {}'.format(str(value), str(X_slowest_list_value[0])), fontweight = 'bold', fontsize = Font_size_general)
+        plt.text(0, len(Y) + 3, 'Worse value: {} -------> {}'.format(str(value), str(X_slowest_list_value[0])), fontweight = 'bold', fontsize = Font_size_general + 1)
 
     for Index, value in enumerate(Y_fastest_list_value):
-        plt.text(0, 70, 'Worse value: {} -------> {}'.format(str(value), str(X_fastest_list_value[0])), fontweight = 'bold', fontsize = Font_size_general)
+        plt.text(0, len(Y) + 4, 'Best value: {} -------> {}'.format(str(value), str(X_fastest_list_value[0])), fontweight = 'bold', fontsize = Font_size_general + 1)
 
     plt.legend(fontsize = Font_size_general)
 
@@ -2518,10 +2524,27 @@ class BarChart:
     plt.grid(color = Colors[0], linestyle = '-', linewidth = 0.2)
 
     # * Name graph and save it
-    Graph_name = '{}_Dataframe_{}.png'.format(str(Label_class_name), str(self.Plot_title))
+    Graph_name = '{}_Dataframe_{}_{}.png'.format(Label_class_name, self.Plot_title, self.Name)
     Graph_name_folder = os.path.join(self.Folder_path_save, Graph_name)
 
+    # *
+    axes = plt.gca()
+    ymin, ymax = axes.get_ylim()
+    xmin, xmax = axes.get_xlim()
+
+    for i, value in enumerate(Y_slow_list_values):
+        plt.text(xmax + (0.05 * xmax), i, "{:.8f}".format(value), ha = 'center', fontsize = Font_size_ticks, color = 'black')
+
+        Next_value = i
+
+    Next_value = Next_value + 1
+
+    for i, value in enumerate(Y_fast_list_values):
+        plt.text(xmax + (0.05 * xmax), Next_value + i, "{:.8f}".format(value), ha = 'center', fontsize = Font_size_ticks, color = 'black')
+
     plt.savefig(Graph_name_folder)
+
+    #plt.show()
 
 
   def barchart_vertical(self) -> None:  
