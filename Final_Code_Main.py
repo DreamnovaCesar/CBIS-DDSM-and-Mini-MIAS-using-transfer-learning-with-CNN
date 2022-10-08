@@ -9,8 +9,6 @@ from Final_Code_1_General_Functions import BarChart
 #Model_CNN = (Model_pretrained, Model_pretrained)
 Model_CNN = (13, 14)
 
-def decorator():
-    creating_data_students()
 
 def plot_data():
     

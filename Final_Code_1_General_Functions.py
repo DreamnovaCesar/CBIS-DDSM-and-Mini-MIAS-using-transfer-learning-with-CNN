@@ -2415,29 +2415,65 @@ class DCM_format():
 
 # ?
 
-class GeneralFunctionsplt():
+class FigureAdjust():
+  
+  def __init__(self, **kwargs) -> None:
 
+    # *
+    self.Folder_path = kwargs.get('folder', None)
+    self.Title = kwargs.get('title', None)
+
+    # *
+    self.X_figure_size = 12
+    self.Y_figure_size = 12
+
+    # * 
+    #self.Annot_kws = kwargs.get('annot_kws', None)
+    #self.Font = kwargs.get('font', None)
+  
+  # ? Decorator
+
+  @staticmethod
+  def show_figure(Show_image: bool = False) -> None:
+
+    if(Show_image == True):
+      plt.show()
+    
+    else: 
+      pass
+
+
+  # ? Decorator
+
+  @staticmethod
+  def save_figure(Save_figure: bool, Title: int, Func_: str, Folder: str) -> None:
+
+      if(Save_figure == True):
+        
+        Figure_name = 'Figure_{}_{}.png'.format(Title, Func_)
+        Figure_folder = os.path.join(Folder, Figure_name)
+        plt.savefig(Figure_folder)
+
+      else:
+        pass
+      
 # ?
 
-class BarChart:
+class BarChart(FigureAdjust):
   """
   _summary_
 
   _extended_summary_
   """
   def __init__(self, **kwargs) -> None:
-    """
-    _summary_
-
-    _extended_summary_
-    """
+    super().__init__(**kwargs)
 
     # *
-    self.Folder_path_save = kwargs.get('foldersave', None)
+    #self.Folder_path = kwargs.get('folder', None)
     self.CSV_path = kwargs.get('csv', None)
 
     # *
-    self.Plot_title = kwargs.get('title', None)
+    #self.Plot_title = kwargs.get('title', None)
     self.Plot_x_label = kwargs.get('label', None)
     self.Plot_column = kwargs.get('column', None)
     self.Plot_reverse = kwargs.get('reverse', None)
@@ -2448,6 +2484,11 @@ class BarChart:
 
     # *
     self.Colors = ('gray', 'red', 'blue', 'green', 'cyan', 'magenta', 'indigo', 'azure', 'tan', 'purple')
+
+    # *
+    self.X_figure_size = 12
+    self.Y_figure_size = 12
+
   def barchart_horizontal(self) -> None:
     """
 	  Show CSV's barchar of all models
@@ -2465,11 +2506,11 @@ class BarChart:
 	  void
    	"""
     # * General parameters
-    X_figure_size = 12
-    Y_figure_size = 10
-    Font_size_title = X_figure_size * 1.2
-    Font_size_general = X_figure_size * 0.8
-    Font_size_ticks = (X_figure_size * Y_figure_size) * 0.05
+    #X_figure_size = 12
+    #Y_figure_size = 10
+    Font_size_title = self.X_figure_size * 1.2
+    Font_size_general = self.X_figure_size * 0.8
+    Font_size_ticks = (self.X_figure_size * self.Y_figure_size) * 0.05
 
     # * General lists
 
@@ -2607,26 +2648,20 @@ class BarChart:
 
 # ? Create class folders
 
-class FigurePlot():
+class FigurePlot(FigureAdjust):
   
   def __init__(self, **kwargs) -> None:
-    """
-    _summary_
+    super().__init__(**kwargs)
 
-    _extended_summary_
-
-    Raises:
-        ValueError: _description_
-    """
     # * 
-    self.Folder = kwargs.get('folder', None)
+    self.Folder_path = kwargs.get('folder', None)
     self.Title = kwargs.get('title', False)
     self.Show_image = kwargs.get('SI', False)
     self.Save_figure = kwargs.get('SF', False)
 
     # * 
-    self.Height = kwargs.get('height', 12)
-    self.Width = kwargs.get('width', 12)
+    #self.Height = kwargs.get('height', 12)
+    #self.Width = kwargs.get('width', 12)
 
     # * 
     self.Annot_kws = kwargs.get('annot_kws', None)
@@ -2638,8 +2673,8 @@ class FigurePlot():
     self.ROC_dataframe = kwargs.get('ROCdf', None)
 
     # *
-    self.X_size_figure = 2
-    self.Y_size_figure = 2
+    self.X_size_figure_subplot = 2
+    self.Y_size_figure_subplot = 2
 
     # *
     self.Confusion_matrix_dataframe = pd.read_csv(self.CM_dataframe)
@@ -2654,31 +2689,6 @@ class FigurePlot():
     self.FPR = self.Roc_curve_dataframe.FPR.to_list()
     self.TPR = self.Roc_curve_dataframe.TPR.to_list()
 
-  # ? Decorator
-
-  @staticmethod
-  def show_figure(Show_image: bool = False) -> None:
-
-    if(Show_image == True):
-      plt.show()
-    
-    else: 
-      pass
-
-
-  # ? Decorator
-
-  @staticmethod
-  def save_figure(Save_figure: bool, Title: int, Func_: str, Folder: str) -> None:
-
-      if(Save_figure == True):
-        
-        Figure_name = 'Figure_{}_{}.png'.format(Title, Func_)
-        Figure_folder = os.path.join(Folder, Figure_name)
-        plt.savefig(Figure_folder)
-
-      else:
-        pass
 
   @timer_func
   def figure_plot_four(self) -> None: 
@@ -2687,9 +2697,9 @@ class FigurePlot():
     Four_plot = 'Four_plot'
 
     # * Figure's size
-    plt.figure(figsize = (self.Width, self.Height))
+    plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
     plt.suptitle(self.Title, fontsize = 20)
-    plt.subplot(self.X_size_figure, self.Y_size_figure, 4)
+    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 4)
 
     # * Confusion matrix heatmap
     sns.set(font_scale = self.Font)
@@ -2701,7 +2711,7 @@ class FigurePlot():
     ax.set_ylabel('Actual Values')
 
     # * Subplot training accuracy
-    plt.subplot(self.X_size_figure, self.Y_size_figure, 1)
+    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 1)
     plt.plot(self.Accuracy, label = 'Training Accuracy')
     plt.plot(self.Val_accuracy, label = 'Validation Accuracy')
     plt.ylim([0, 1])
@@ -2710,7 +2720,7 @@ class FigurePlot():
     plt.xlabel('Epoch')
 
     # * Subplot training loss
-    plt.subplot(self.X_size_figure, self.Y_size_figure, 2)
+    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 2)
     plt.plot(self.Loss, label = 'Training Loss')
     plt.plot(self.Val_loss, label = 'Validation Loss')
     plt.ylim([0, 2.0])
@@ -2722,7 +2732,7 @@ class FigurePlot():
     Auc = auc(self.FPR, self.TPR)
 
     # * Subplot ROC curve
-    plt.subplot(self.X_size_figure, self.Y_size_figure, 3)
+    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 3)
     plt.plot([0, 1], [0, 1], 'k--')
     plt.plot(self.FPR, self.TPR, label = 'Test' + '(area = {:.4f})'.format(Auc))
     plt.xlabel('False positive rate')
@@ -2730,7 +2740,7 @@ class FigurePlot():
     plt.title('ROC curve')
     plt.legend(loc = 'lower right')
     
-    self.save_figure(self.Save_figure, self.Title, Four_plot, self.Folder)
+    self.save_figure(self.Save_figure, self.Title, Four_plot, self.Folder_path)
     self.show_figure(self.Show_image)
 
   @timer_func
@@ -2755,7 +2765,7 @@ class FigurePlot():
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values')
 
-    self.save_figure(self.Save_figure, self.Title, CM_plot, self.Folder)
+    self.save_figure(self.Save_figure, self.Title, CM_plot, self.Folder_path)
     self.show_figure(self.Show_image)
 
   @timer_func
@@ -2776,7 +2786,7 @@ class FigurePlot():
     plt.title('Training and Validation Accuracy')
     plt.xlabel('Epoch')
 
-    self.save_figure(self.Save_figure, self.Title, ACC_plot, self.Folder)
+    self.save_figure(self.Save_figure, self.Title, ACC_plot, self.Folder_path)
     self.show_figure(self.Show_image)
 
   @timer_func
@@ -2798,7 +2808,7 @@ class FigurePlot():
     plt.title('Training and Validation Loss')
     plt.xlabel('Epoch')
 
-    self.save_figure(self.Save_figure, self.Title, Loss_plot, self.Folder)
+    self.save_figure(self.Save_figure, self.Title, Loss_plot, self.Folder_path)
     self.show_figure(self.Show_image)
 
   @timer_func
@@ -2822,5 +2832,5 @@ class FigurePlot():
     plt.title('ROC curve')
     plt.legend(loc = 'lower right')
 
-    self.save_figure(self.Save_figure, self.Title, ROC_plot, self.Folder)
+    self.save_figure(self.Save_figure, self.Title, ROC_plot, self.Folder_path)
     self.show_figure(self.Show_image)
