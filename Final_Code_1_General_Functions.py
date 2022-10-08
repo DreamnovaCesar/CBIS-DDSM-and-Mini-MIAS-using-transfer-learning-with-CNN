@@ -1,7 +1,9 @@
 import os
 import random
 import datetime
-from re import I
+
+from time import time
+
 import cv2
 import string
 import shutil
@@ -29,8 +31,75 @@ from sklearn.metrics import auc
 import random
 from random import randint
 
+################################################## ? Decorators
+
+# ? Decorator
+
+def asterisk_row_print(func):
+     
+    # added arguments inside the inner1,
+    # if function takes any arguments,
+    # can be added like this.
+    def inner1(*args, **kwargs):
+ 
+        # storing time before function execution
+        print("\n")
+        print("*" * 30)
+         
+        func(*args, **kwargs)
+ 
+        # storing time after function execution
+        print("*" * 30)
+        print("\n")
+ 
+    return inner1
+
+# ? Decorator
+
+@asterisk_row_print
+def timer_func(func):
+    # This function shows the execution time of 
+    # the function object passed
+    def wrapper(*args, **kwargs):
+        t1 = time()
+        result = func(*args, **kwargs)
+        t2 = time()
+        #print(f'Function {func.__name__!r} executed in {(t2-t1):.4f}s')
+        print('Function {} executed in {:.4f}'.format(func.__name__, t2 - t1))
+        return result
+    return wrapper
+
+# ? Detect fi GPU exist in your PC for CNN Decorator
+
+def detect_GPU() -> None:
+    """
+    This function shows if a gpu device is available and its name. This function is good if the training is using a GPU  
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    GPU_name: string = tf.test.gpu_device_name()
+    GPU_available: list = tf.config.list_physical_devices()
+    print("\n")
+    print(GPU_available)
+    print("\n")
+    #if GPU_available == True:
+        #print("GPU device is available")
+
+    if "GPU" not in GPU_name:
+        print("GPU device not found")
+        print("\n")
+    print('Found GPU at: {}'.format(GPU_name))
+    print("\n")
+
+################################################## ? Decorators
+
 # ? Create folders
 
+@timer_func
 def create_folders(Folder_path: str, Folder_name: str, CSV_name: str) -> None: 
 
   Path_names = []
@@ -76,9 +145,9 @@ def create_folders(Folder_path: str, Folder_name: str, CSV_name: str) -> None:
   Dataframe = pd.DataFrame({'Names':Path_names, 'Path names':Path_absolute_dir})
   Dataframe.to_csv(Dataframe_folder)
 
-
 # ? Create folders
 
+@timer_func
 def creating_data_students(Dataframe: pd.DataFrame, Iter: int, Folder_path: str, Save_dataframe: bool = False) -> pd.DataFrame: 
     
     # * Tuples for random generation.
@@ -113,6 +182,7 @@ def creating_data_students(Dataframe: pd.DataFrame, Iter: int, Folder_path: str,
 
 # ? Generate keys
 
+@timer_func
 def generate_key(Folder_path: str, Number_keys: int = 2) -> None: 
 
     Names = []
@@ -149,7 +219,8 @@ def generate_key(Folder_path: str, Number_keys: int = 2) -> None:
 
 # ? Encrypt files
 
-def Encrypt_files(**kwargs) -> None:
+@timer_func
+def encrypt_files(**kwargs) -> None:
 
     # * General parameters
     Folder_path = kwargs.get('folderpath', None)
@@ -240,7 +311,8 @@ def Encrypt_files(**kwargs) -> None:
 
 # ? Decrypt files
 
-def Decrypt_files(**kwargs) -> None: 
+@timer_func
+def decrypt_files(**kwargs) -> None: 
 
     # * General parameters
     Folder_path = kwargs.get('folderpath', None)
@@ -286,50 +358,6 @@ def Decrypt_files(**kwargs) -> None:
 
         except OSError:
                 print('Is not a key {} ❌'.format(str(Key_path))) #! Alert
-# ? Decorator
-
-def asterisk_row_print(func):
-     
-    # added arguments inside the inner1,
-    # if function takes any arguments,
-    # can be added like this.
-    def inner1(*args, **kwargs):
- 
-        # storing time before function execution
-        print("*" * 30)
-         
-        func(*args, **kwargs)
- 
-        # storing time after function execution
-        print("*" * 30)
- 
-    return inner1
-
-# ? Detect fi GPU exist in your PC for CNN
-
-def detect_GPU() -> None:
-    """
-    This function shows if a gpu device is available and its name. This function is good if the training is using a GPU  
-
-    Args:
-        None
-
-    Returns:
-        None
-    """
-    GPU_name: string = tf.test.gpu_device_name()
-    GPU_available: list = tf.config.list_physical_devices()
-    print("\n")
-    print(GPU_available)
-    print("\n")
-    #if GPU_available == True:
-        #print("GPU device is available")
-
-    if "GPU" not in GPU_name:
-        print("GPU device not found")
-        print("\n")
-    print('Found GPU at: {}'.format(GPU_name))
-    print("\n")
 
 # ? Sort Files
 
@@ -426,7 +454,6 @@ def random_remove_files(Folder_path: str, Value: int) -> None:
         os.remove(os.path.join(Folder_path, File_sample))
 
 # ? ####################################################### Mini-MIAS #######################################################
-
 
 # ? Extract the mean of each column
 
@@ -2431,7 +2458,8 @@ class BarChart:
 
     X_slowest_list_value = []
     Y_slowest_list_value = []
-    
+
+    # *
     Colors = ('gray', 'red', 'blue', 'green', 'cyan', 'magenta', 'indigo', 'azure', 'tan', 'purple')
 
     # * Chosing label
@@ -2508,9 +2536,11 @@ class BarChart:
 
     plt.barh(X_fastest_list_value, Y_fastest_list_value, label = "Best", color = 'red')
 
+    # *
     for Index, value in enumerate(Y_slowest_list_value):
         plt.text(0, len(Y) + 3, 'Worse value: {} -------> {}'.format(str(value), str(X_slowest_list_value[0])), fontweight = 'bold', fontsize = Font_size_general + 1)
 
+    # *
     for Index, value in enumerate(Y_fastest_list_value):
         plt.text(0, len(Y) + 4, 'Best value: {} -------> {}'.format(str(value), str(X_fastest_list_value[0])), fontweight = 'bold', fontsize = Font_size_general + 1)
 
@@ -2532,6 +2562,7 @@ class BarChart:
     ymin, ymax = axes.get_ylim()
     xmin, xmax = axes.get_xlim()
 
+    # *
     for i, value in enumerate(Y_slow_list_values):
         plt.text(xmax + (0.05 * xmax), i, "{:.8f}".format(value), ha = 'center', fontsize = Font_size_ticks, color = 'black')
 
@@ -2539,6 +2570,7 @@ class BarChart:
 
     Next_value = Next_value + 1
 
+    # *
     for i, value in enumerate(Y_fast_list_values):
         plt.text(xmax + (0.05 * xmax), Next_value + i, "{:.8f}".format(value), ha = 'center', fontsize = Font_size_ticks, color = 'black')
 
@@ -2550,10 +2582,36 @@ class BarChart:
   def barchart_vertical(self) -> None:  
     pass
 
+# ? Create class folders
 
-# ? Create folders
+class FigurePlot():
+  
+  def __init__(self, **kwargs) -> None:
+    """
+    _summary_
 
-def test_figure_plot(Height: int, Width: int, Annot_kws: int, font: int, CM_dataframe: pd.DataFrame, History_dataframe: pd.DataFrame, ROC_dataframe: pd.DataFrame) -> None: 
+    _extended_summary_
+
+    Raises:
+        ValueError: _description_
+    """
+    # * 
+    self.Folder = kwargs.get('Folder', None)
+    self.New_folder = kwargs.get('Newfolder', None)
+    self.Severity = kwargs.get('Severity', None)
+    self.Label = kwargs.get('Label', None)
+
+    # * 
+    self.Height = kwargs.get('height', 12)
+    self.Width = kwargs.get('width', 12)
+
+    # * 
+    self.Division = kwargs.get('CMdf', None)
+    self.Division = kwargs.get('Hdf', None)
+    self.Clip_limit = kwargs.get('ROCdf', None)
+
+
+def figure_plot_four(Height: int, Width: int, Annot_kws: int, font: int, CM_dataframe: pd.DataFrame, History_dataframe: pd.DataFrame, ROC_dataframe: pd.DataFrame) -> None: 
 
   # *
   X_size_figure = 2
@@ -2638,3 +2696,4 @@ def test_figure_plot(Height: int, Width: int, Annot_kws: int, font: int, CM_data
   ax.set_ylabel('Actual Values')
 
   plt.show()
+

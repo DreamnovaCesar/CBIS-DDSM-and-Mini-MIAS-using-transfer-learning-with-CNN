@@ -26,7 +26,7 @@ from skimage.filters import unsharp_mask
 from Final_Code_1_General_Functions import sort_images
 from Final_Code_1_General_Functions import remove_all_files
 
-class ImageProcessing:
+class ImageProcessing():
   """
   _summary_
 

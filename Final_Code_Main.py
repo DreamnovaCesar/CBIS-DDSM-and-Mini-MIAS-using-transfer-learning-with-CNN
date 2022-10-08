@@ -1,11 +1,16 @@
 
 import numpy as np
 
+from Final_Code_1_General_Functions import *
+
 from Final_Code_Preprocessing_1_CNN_Models import Testing_CNN_Models_Biclass_From_Folder
 from Final_Code_1_General_Functions import BarChart
 
 #Model_CNN = (Model_pretrained, Model_pretrained)
 Model_CNN = (13, 14)
+
+def decorator():
+    creating_data_students()
 
 def plot_data():
     
