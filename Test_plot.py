@@ -1,7 +1,13 @@
-from Final_Code_1_General_Functions import generate_key
-from Final_Code_1_General_Functions import encrypt_files
-from Final_Code_1_General_Functions import decrypt_files
+from Final_Code_1_General_Functions import *
 
-generate_key('D:\Test_crypto', 1000)
-#encrypt_files(folderpath = r'D:\Test_crypto\dd', keyspath = r"D:\Test_crypto", newkeypath = r'D:\Matlab', randomkey = True)
-#decrypt_files(folderpath = r'D:\Test_crypto\dd', keypath = r"D:\Matlab\filekey_44.key")
+"D:\Test\Biclass_Folder_Data_Models_TEST\Biclass_Folder_Data_Model_MobileNetV3Small_Model_TEST\Biclass_Dataframe_CNN_Folder_Data_TEST.csv"
+ROC = "D:\Test\Biclass_Folder_Data_Models_TEST\Biclass_Folder_Data_Model_MobileNetV3Small_Model_TEST\Biclass_Dataframe_ROC_Curve_Values_MNV3S_TEST.csv"
+"D:\Test\Biclass_Folder_Data_Models_TEST\Biclass_Folder_Data_Model_MobileNetV3Small_Model_TEST\Biclass_MNV3S_TEST_Best_Model_Weights.h5"
+H = "D:\Test\Biclass_Folder_Data_Models_TEST\Biclass_Folder_Data_Model_MobileNetV3Small_Model_TEST\Biclass_MNV3S_TEST_logger.csv"
+CM = "D:\Test\Biclass_Folder_Data_Models_TEST\Biclass_Folder_Data_Model_MobileNetV3Small_Model_TEST\Dataframe_Confusion_Matrix_Biclass_MNV3S_TEST.csv"
+
+Fol = "D:\Test\Biclass_Folder_Data_Models_TEST\Biclass_Folder_Data_Model_MobileNetV3Small_Model_TEST"
+
+f = FigurePlot(folder = Fol, title = 'MobileNetV3', SI = True, SF = True, height = 12, width = 12, annot_kws = 20, font = 1, CMdf = CM, Hdf = H, ROCdf = ROC)
+
+f.figure_plot_four()

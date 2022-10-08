@@ -40,7 +40,7 @@ def asterisk_row_print(func):
     # added arguments inside the inner1,
     # if function takes any arguments,
     # can be added like this.
-    def inner1(*args, **kwargs):
+    def wrapper(*args, **kwargs):
  
         # storing time before function execution
         print("\n")
@@ -52,11 +52,10 @@ def asterisk_row_print(func):
         print("*" * 30)
         print("\n")
  
-    return inner1
+    return wrapper
 
 # ? Decorator
 
-@asterisk_row_print
 def timer_func(func):
     # This function shows the execution time of 
     # the function object passed
@@ -65,13 +64,20 @@ def timer_func(func):
         result = func(*args, **kwargs)
         t2 = time()
         #print(f'Function {func.__name__!r} executed in {(t2-t1):.4f}s')
+        print("\n")
+        print("*" * 30)
+
         print('Function {} executed in {:.4f}'.format(func.__name__, t2 - t1))
+
+        print("*" * 30)
+        print("\n")
+
         return result
     return wrapper
 
 # ? Detect fi GPU exist in your PC for CNN Decorator
 
-def detect_GPU() -> None:
+def detect_GPU(func) -> None:
     """
     This function shows if a gpu device is available and its name. This function is good if the training is using a GPU  
 
@@ -81,20 +87,74 @@ def detect_GPU() -> None:
     Returns:
         None
     """
-    GPU_name: string = tf.test.gpu_device_name()
-    GPU_available: list = tf.config.list_physical_devices()
-    print("\n")
-    print(GPU_available)
-    print("\n")
-    #if GPU_available == True:
-        #print("GPU device is available")
 
-    if "GPU" not in GPU_name:
-        print("GPU device not found")
-        print("\n")
-    print('Found GPU at: {}'.format(GPU_name))
-    print("\n")
+    def wrapper(*args, **kwargs):
 
+      func(*args, **kwargs)
+
+      GPU_name: string = tf.test.gpu_device_name()
+      GPU_available: list = tf.config.list_physical_devices()
+      print("\n")
+      print(GPU_available)
+      print("\n")
+      #if GPU_available == True:
+          #print("GPU device is available")
+
+      if "GPU" not in GPU_name:
+          print("GPU device not found")
+          print("\n")
+      print('Found GPU at: {}'.format(GPU_name))
+      print("\n")
+
+    return wrapper
+
+# ? Decorator
+
+def show_figure(*args, **kwargs):
+
+    Show_image = kwargs.get('SI', False)
+
+    def inner(func):
+      def wrapper(*args, **kwargs):
+
+        if(Show_image == True):
+          func(*args, **kwargs)
+          plt.show()
+          print('True')
+        
+        else: 
+          func(*args, **kwargs)
+          print('False')
+
+      return wrapper
+    return inner
+
+# ? Decorator
+
+def save_figure(func):
+  # This function shows the execution time of 
+  # the function object passed
+  def wrapper(*args, **kwargs):
+      
+      Folder = kwargs.get('folder', None)
+      Title = kwargs.get('title', False)
+      Save_figure = kwargs.get('SF', False)
+
+      if(Save_figure == True):
+        
+        # *
+        func_val = func(*args, **kwargs)
+
+        # * Save this figure in the folder given
+        Figure_name = 'Figure_{}_{}.png'.format(Title, func_val)
+        Figure_folder = os.path.join(Folder, Figure_name)
+
+        plt.savefig(Figure_folder)
+
+      else:
+        func(*args, **kwargs)
+
+  return wrapper     
 ################################################## ? Decorators
 
 # ? Create folders
@@ -401,6 +461,7 @@ def sort_images(Folder_path: str) -> tuple[list[str], int]:
 
 # ? Remove all files in folder
 
+@timer_func
 def remove_all_files(Folder_path: str) -> None:
     """
     Remove all files inside the folder path obtained.
@@ -427,6 +488,7 @@ def remove_all_files(Folder_path: str) -> None:
 
 # ? Random remove all files in folder
 
+@timer_func
 def random_remove_files(Folder_path: str, Value: int) -> None:
     """
     Remove all files inside the folder path obtained.
@@ -526,7 +588,7 @@ def mini_mias_csv_clean(Dataframe:pd.DataFrame) -> pd.DataFrame:
   return Dataframe_Mini_MIAS
 
 # ?
-
+@timer_func
 class ChangeFormat:
   """
   _summary_
@@ -698,7 +760,7 @@ class ChangeFormat:
     print('{} of {} tranformed ✅'.format(str(Count), str(Total_images))) #! Alert
 
 # ? Class for images cropping.
-
+@timer_func
 class CropImages():
   """
   _summary_
@@ -982,7 +1044,7 @@ class CropImages():
         Index += 1   
 
 # ? Kmeans algorithm
-
+@timer_func
 def kmeans_function(Folder_csv, Folder_graph, Technique_name, X_data, Clusters, Filename, Severity):
   """
   _summary_
@@ -1055,7 +1117,7 @@ def kmeans_function(Folder_csv, Folder_graph, Technique_name, X_data, Clusters, 
   return DataFrame
 
   # ? Remove Data from K-means function
-
+@timer_func
 def kmeans_remove_data(Folder, CSV_folder, Technique_name, Dataframe, Cluster_to_remove, Severity):
 
   # * General lists
@@ -1968,7 +2030,7 @@ def CBIS_DDSM_CSV_severity_labeled(Folder_CSV: str, Column: int, Severity: int)-
     return Dataset_severity_labeled
 
 # ? Concat multiple dataframes
-
+@timer_func
 def concat_dataframe(*dfs: pd.DataFrame, **kwargs: str) -> pd.DataFrame:
   """
   Concat multiple dataframes and name it using technique and the class problem
@@ -2034,7 +2096,7 @@ def concat_dataframe(*dfs: pd.DataFrame, **kwargs: str) -> pd.DataFrame:
   return Final_dataframe
 
 # ? Split folders into train/test/validation
-
+@timer_func
 def split_folders_train_test_val(Folder_path:str, Only_train_test: bool) -> str:
   """
   Create a new folder with the folders of the class problem and its distribution of training, test and validation.
@@ -2082,7 +2144,7 @@ def split_folders_train_test_val(Folder_path:str, Only_train_test: bool) -> str:
   return New_Folder_name
 
 # ? .
-
+@timer_func
 class DCM_format():
 
   def __init__(self, **kwargs:string) -> None:
@@ -2596,104 +2658,207 @@ class FigurePlot():
         ValueError: _description_
     """
     # * 
-    self.Folder = kwargs.get('Folder', None)
-    self.New_folder = kwargs.get('Newfolder', None)
-    self.Severity = kwargs.get('Severity', None)
-    self.Label = kwargs.get('Label', None)
+    self.Folder = kwargs.get('folder', None)
+    self.Title = kwargs.get('title', False)
+    self.Show_image = kwargs.get('SI', False)
+    self.Save_figure = kwargs.get('SF', False)
 
     # * 
     self.Height = kwargs.get('height', 12)
     self.Width = kwargs.get('width', 12)
 
     # * 
-    self.Division = kwargs.get('CMdf', None)
-    self.Division = kwargs.get('Hdf', None)
-    self.Clip_limit = kwargs.get('ROCdf', None)
+    self.Annot_kws = kwargs.get('annot_kws', None)
+    self.Font = kwargs.get('font', None)
 
+    # * 
+    self.CM_dataframe = kwargs.get('CMdf', None)
+    self.History_dataframe = kwargs.get('Hdf', None)
+    self.ROC_dataframe = kwargs.get('ROCdf', None)
 
-def figure_plot_four(Height: int, Width: int, Annot_kws: int, font: int, CM_dataframe: pd.DataFrame, History_dataframe: pd.DataFrame, ROC_dataframe: pd.DataFrame) -> None: 
+    # *
+    self.X_size_figure = 2
+    self.Y_size_figure = 2
 
-  # *
-  X_size_figure = 2
-  Y_size_figure = 2
+    # *
+    self.Confusion_matrix_dataframe = pd.read_csv(self.CM_dataframe)
+    self.History_data_dataframe = pd.read_csv(self.History_dataframe)
+    self.Roc_curve_dataframe = pd.read_csv(self.ROC_dataframe)
+    
+    # *
+    self.Accuracy = self.History_data_dataframe.accuracy.to_list()
+    self.Loss = self.History_data_dataframe.loss.to_list()
+    self.Val_accuracy = self.History_data_dataframe.val_accuracy.to_list()
+    self.Val_loss = self.History_data_dataframe.val_loss.to_list()
+    self.FPR = self.Roc_curve_dataframe.FPR.to_list()
+    self.TPR = self.Roc_curve_dataframe.TPR.to_list()
 
-  # *
-  Confusion_matrix_dataframe = pd.read_csv(CM_dataframe)
-  History_data_dataframe = pd.read_csv(History_dataframe)
-  
-  # *
-  Accuracy = History_data_dataframe.accuracy.to_list()
-  Loss = History_data_dataframe.loss.to_list()
-  Val_accuracy = History_data_dataframe.val_accuracy.to_list()
-  Val_loss = History_data_dataframe.val_loss.to_list()
+  @timer_func
+  def figure_plot_four(self) -> None: 
 
-  # *
-  print(Loss)
-  print(Val_loss)
+    # *
+    Four_plot = 'Four_plot'
 
-  #Column_names = ["FPR", "TPR"]
-  Roc_curve_dataframe = pd.read_csv(ROC_dataframe)
-  
-  # *
-  FPR = Roc_curve_dataframe.FPR.to_list()
-  TPR = Roc_curve_dataframe.TPR.to_list()
+    # * Figure's size
+    plt.figure(figsize = (self.Width, self.Height))
+    plt.suptitle(self.Title, fontsize = 20)
+    plt.subplot(self.X_size_figure, self.Y_size_figure, 4)
 
-  print(FPR)
+    # * Confusion matrix heatmap
+    sns.set(font_scale = self.Font)
 
-  # * Figure's size
-  plt.figure(figsize = (Width, Height))
-  plt.suptitle('MobileNet', fontsize = 20)
-  plt.subplot(X_size_figure, Y_size_figure, 4)
-  sns.set(font_scale = font)
+    # *
+    ax = sns.heatmap(self.Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Annot_kws})
+    #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
+    ax.set_xlabel('\nPredicted Values')
+    ax.set_ylabel('Actual Values')
 
-  # * Confusion matrix heatmap
-  ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": Annot_kws})
-  #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
-  ax.set_xlabel('\nPredicted Values')
-  ax.set_ylabel('Actual Values')
+    # * Subplot training accuracy
+    plt.subplot(self.X_size_figure, self.Y_size_figure, 1)
+    plt.plot(self.Accuracy, label = 'Training Accuracy')
+    plt.plot(self.Val_accuracy, label = 'Validation Accuracy')
+    plt.ylim([0, 1])
+    plt.legend(loc = 'lower right')
+    plt.title('Training and Validation Accuracy')
+    plt.xlabel('Epoch')
 
-  # * Subplot Training accuracy
-  plt.subplot(X_size_figure, Y_size_figure, 1)
-  plt.plot(Accuracy, label = 'Training Accuracy')
-  plt.plot(Val_accuracy, label = 'Validation Accuracy')
-  plt.ylim([0, 1])
-  plt.legend(loc = 'lower right')
-  plt.title('Training and Validation Accuracy')
-  plt.xlabel('Epoch')
+    # * Subplot training loss
+    plt.subplot(self.X_size_figure, self.Y_size_figure, 2)
+    plt.plot(self.Loss, label = 'Training Loss')
+    plt.plot(self.Val_loss, label = 'Validation Loss')
+    plt.ylim([0, 2.0])
+    plt.legend(loc = 'upper right')
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epoch')
 
-  plt.subplot(X_size_figure, Y_size_figure, 2)
-  plt.plot(Loss, label = 'Training Loss')
-  plt.plot(Val_loss, label = 'Validation Loss')
-  plt.ylim([0, 2.0])
-  plt.legend(loc = 'upper right')
-  plt.title('Training and Validation Loss')
-  plt.xlabel('Epoch')
+    # * FPR and TPR values for the ROC curve
+    Auc = auc(self.FPR, self.TPR)
 
-  # * FPR and TPR values for the ROC curve
-  Auc = auc(FPR, TPR)
+    # * Subplot ROC curve
+    plt.subplot(self.X_size_figure, self.Y_size_figure, 3)
+    plt.plot([0, 1], [0, 1], 'k--')
+    plt.plot(self.FPR, self.TPR, label = 'Test' + '(area = {:.4f})'.format(Auc))
+    plt.xlabel('False positive rate')
+    plt.ylabel('True positive rate')
+    plt.title('ROC curve')
+    plt.legend(loc = 'lower right')
 
-  # * Subplot ROC curve
-  plt.subplot(X_size_figure, Y_size_figure, 3)
-  plt.plot([0, 1], [0, 1], 'k--')
-  plt.plot(FPR, TPR, label = 'Test' + '(area = {:.4f})'.format(Auc))
-  plt.xlabel('False positive rate')
-  plt.ylabel('True positive rate')
-  plt.title('ROC curve')
-  plt.legend(loc = 'lower right')
+    #plt.show()
+    
+    # *
+    if(self.Save_figure == True):
+      return Four_plot
+    else:
+      return None
 
-  plt.show()
+  @timer_func
+  def figure_plot_CM(self) -> None:
+    
+    # *
+    CM_plot = 'CM_plot'
 
-  # * Figure's size
-  
-  plt.figure(figsize = (Width/2, Height/2))
-  plt.title('MobileNet', fontsize = 20)
-  sns.set(font_scale = font)
+    # *
+    Confusion_matrix_dataframe = pd.read_csv(self.CM_dataframe)
 
-  # * Confusion matrix heatmap
-  ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": Annot_kws})
-  #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
-  ax.set_xlabel('\nPredicted Values')
-  ax.set_ylabel('Actual Values')
+    # * Figure's size
+    plt.figure(figsize = (self.Width / 2, self.Height / 2))
+    plt.title(self.Title, fontsize = 20)
 
-  plt.show()
+    # * Confusion matrix heatmap
+    sns.set(font_scale = self.Font)
 
+    # *
+    ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Annot_kws})
+    #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
+    ax.set_xlabel('\nPredicted Values')
+    ax.set_ylabel('Actual Values')
+
+    #plt.show()
+
+    # *
+    if(self.Save_figure == True):
+      return CM_plot
+    else:
+      return None
+
+  @timer_func
+  def figure_plot_acc(self) -> None:
+
+    # *
+    ACC_plot = 'ACC_plot'
+
+    # * Figure's size
+    plt.figure(figsize = (self.Width / 2, self.Height / 2))
+    plt.title(self.Title, fontsize = 20)
+
+    # * Plot training accuracy
+    plt.plot(self.Accuracy, label = 'Training Accuracy')
+    plt.plot(self.Val_accuracy, label = 'Validation Accuracy')
+    plt.ylim([0, 1])
+    plt.legend(loc = 'lower right')
+    plt.title('Training and Validation Accuracy')
+    plt.xlabel('Epoch')
+
+    #plt.show()
+
+    # *
+    if(self.Save_figure == True):
+      return ACC_plot
+    else:
+      return None
+
+  @timer_func
+  def figure_plot_loss(self) -> None:
+
+    # *
+    Loss_plot = 'Loss_plot'
+
+    # * Figure's size
+    
+    plt.figure(figsize = (self.Width / 2, self.Height / 2))
+    plt.title(self.Title, fontsize = 20)
+
+    # * Plot training loss
+    plt.plot(self.Loss, label = 'Training Loss')
+    plt.plot(self.Val_loss, label = 'Validation Loss')
+    plt.ylim([0, 2.0])
+    plt.legend(loc = 'upper right')
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epoch')
+
+    #plt.show()
+
+    # *
+    if(self.Save_figure == True):
+      return Loss_plot
+    else:
+      return None
+
+  @timer_func
+  def figure_ROC_curve(self) -> None:
+    
+    # *
+    ROC_plot = 'ROC_plot'
+
+    # * Figure's size
+    plt.figure(figsize = (self.Width / 2, self.Height / 2))
+    plt.title(self.Title, fontsize = 20)
+
+    # * FPR and TPR values for the ROC curve
+    AUC = auc(self.FPR, self.TPR)
+
+    # * Plot ROC curve
+    plt.plot([0, 1], [0, 1], 'k--')
+    plt.plot(self.FPR, self.TPR, label = 'Test' + '(area = {:.4f})'.format(AUC))
+    plt.xlabel('False positive rate')
+    plt.ylabel('True positive rate')
+    plt.title('ROC curve')
+    plt.legend(loc = 'lower right')
+
+    #plt.show()
+
+    # *
+    if(self.Save_figure == True):
+      return ROC_plot
+    else:
+      return None
