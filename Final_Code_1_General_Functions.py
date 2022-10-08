@@ -108,53 +108,6 @@ def detect_GPU(func) -> None:
 
     return wrapper
 
-# ? Decorator
-
-def show_figure(*args, **kwargs):
-
-    Show_image = kwargs.get('SI', False)
-
-    def inner(func):
-      def wrapper(*args, **kwargs):
-
-        if(Show_image == True):
-          func(*args, **kwargs)
-          plt.show()
-          print('True')
-        
-        else: 
-          func(*args, **kwargs)
-          print('False')
-
-      return wrapper
-    return inner
-
-# ? Decorator
-
-def save_figure(func):
-  # This function shows the execution time of 
-  # the function object passed
-  def wrapper(*args, **kwargs):
-      
-      Folder = kwargs.get('folder', None)
-      Title = kwargs.get('title', False)
-      Save_figure = kwargs.get('SF', False)
-
-      if(Save_figure == True):
-        
-        # *
-        func_val = func(*args, **kwargs)
-
-        # * Save this figure in the folder given
-        Figure_name = 'Figure_{}_{}.png'.format(Title, func_val)
-        Figure_folder = os.path.join(Folder, Figure_name)
-
-        plt.savefig(Figure_folder)
-
-      else:
-        func(*args, **kwargs)
-
-  return wrapper     
 ################################################## ? Decorators
 
 # ? Create folders
@@ -2462,6 +2415,10 @@ class DCM_format():
 
 # ?
 
+class GeneralFunctionsplt():
+
+# ?
+
 class BarChart:
   """
   _summary_
@@ -2474,16 +2431,23 @@ class BarChart:
 
     _extended_summary_
     """
-  
-    self.CSV_path = kwargs.get('csv', None)
+
+    # *
     self.Folder_path_save = kwargs.get('foldersave', None)
+    self.CSV_path = kwargs.get('csv', None)
+
+    # *
     self.Plot_title = kwargs.get('title', None)
     self.Plot_x_label = kwargs.get('label', None)
     self.Plot_column = kwargs.get('column', None)
     self.Plot_reverse = kwargs.get('reverse', None)
+
+    # *
     self.Num_classes = kwargs.get('classes', None)
     self.Name = kwargs.get('name', None)
 
+    # *
+    self.Colors = ('gray', 'red', 'blue', 'green', 'cyan', 'magenta', 'indigo', 'azure', 'tan', 'purple')
   def barchart_horizontal(self) -> None:
     """
 	  Show CSV's barchar of all models
@@ -2520,9 +2484,6 @@ class BarChart:
 
     X_slowest_list_value = []
     Y_slowest_list_value = []
-
-    # *
-    Colors = ('gray', 'red', 'blue', 'green', 'cyan', 'magenta', 'indigo', 'azure', 'tan', 'purple')
 
     # * Chosing label
     if self.Num_classes == 2:
@@ -2613,7 +2574,7 @@ class BarChart:
     plt.xticks(fontsize = Font_size_ticks)
     plt.ylabel("Models", fontsize = Font_size_general)
     plt.yticks(fontsize = Font_size_ticks)
-    plt.grid(color = Colors[0], linestyle = '-', linewidth = 0.2)
+    plt.grid(color = self.Colors[0], linestyle = '-', linewidth = 0.2)
 
     # * Name graph and save it
     Graph_name = '{}_Dataframe_{}_{}.png'.format(Label_class_name, self.Plot_title, self.Name)
@@ -2693,6 +2654,32 @@ class FigurePlot():
     self.FPR = self.Roc_curve_dataframe.FPR.to_list()
     self.TPR = self.Roc_curve_dataframe.TPR.to_list()
 
+  # ? Decorator
+
+  @staticmethod
+  def show_figure(Show_image: bool = False) -> None:
+
+    if(Show_image == True):
+      plt.show()
+    
+    else: 
+      pass
+
+
+  # ? Decorator
+
+  @staticmethod
+  def save_figure(Save_figure: bool, Title: int, Func_: str, Folder: str) -> None:
+
+      if(Save_figure == True):
+        
+        Figure_name = 'Figure_{}_{}.png'.format(Title, Func_)
+        Figure_folder = os.path.join(Folder, Figure_name)
+        plt.savefig(Figure_folder)
+
+      else:
+        pass
+
   @timer_func
   def figure_plot_four(self) -> None: 
 
@@ -2742,14 +2729,9 @@ class FigurePlot():
     plt.ylabel('True positive rate')
     plt.title('ROC curve')
     plt.legend(loc = 'lower right')
-
-    #plt.show()
     
-    # *
-    if(self.Save_figure == True):
-      return Four_plot
-    else:
-      return None
+    self.save_figure(self.Save_figure, self.Title, Four_plot, self.Folder)
+    self.show_figure(self.Show_image)
 
   @timer_func
   def figure_plot_CM(self) -> None:
@@ -2773,13 +2755,8 @@ class FigurePlot():
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values')
 
-    #plt.show()
-
-    # *
-    if(self.Save_figure == True):
-      return CM_plot
-    else:
-      return None
+    self.save_figure(self.Save_figure, self.Title, CM_plot, self.Folder)
+    self.show_figure(self.Show_image)
 
   @timer_func
   def figure_plot_acc(self) -> None:
@@ -2799,13 +2776,8 @@ class FigurePlot():
     plt.title('Training and Validation Accuracy')
     plt.xlabel('Epoch')
 
-    #plt.show()
-
-    # *
-    if(self.Save_figure == True):
-      return ACC_plot
-    else:
-      return None
+    self.save_figure(self.Save_figure, self.Title, ACC_plot, self.Folder)
+    self.show_figure(self.Show_image)
 
   @timer_func
   def figure_plot_loss(self) -> None:
@@ -2826,13 +2798,8 @@ class FigurePlot():
     plt.title('Training and Validation Loss')
     plt.xlabel('Epoch')
 
-    #plt.show()
-
-    # *
-    if(self.Save_figure == True):
-      return Loss_plot
-    else:
-      return None
+    self.save_figure(self.Save_figure, self.Title, Loss_plot, self.Folder)
+    self.show_figure(self.Show_image)
 
   @timer_func
   def figure_ROC_curve(self) -> None:
@@ -2855,10 +2822,5 @@ class FigurePlot():
     plt.title('ROC curve')
     plt.legend(loc = 'lower right')
 
-    #plt.show()
-
-    # *
-    if(self.Save_figure == True):
-      return ROC_plot
-    else:
-      return None
+    self.save_figure(self.Save_figure, self.Title, ROC_plot, self.Folder)
+    self.show_figure(self.Show_image)
