@@ -2446,7 +2446,6 @@ class FigureAdjust():
 
 
   # ? Decorator
-
   @staticmethod
   def save_figure(Save_figure: bool, Title: int, Func_: str, Folder: str) -> None:
 
@@ -2815,6 +2814,7 @@ class FigurePlot(FigureAdjust):
       Roc_auc[i] = auc(self.FPRs[i], self.TPRs[i])
 
     # * Plot ROC curve
+    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 3)
     plt.plot([0, 1], [0, 1], 'k--')
 
     for i in range(len(self.Roc_curve_dataframes)):

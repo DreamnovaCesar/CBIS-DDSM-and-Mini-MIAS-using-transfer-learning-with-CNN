@@ -1110,10 +1110,10 @@ def deep_learning_models_folder(**kwargs):
                                 font = font, CMdf = Confusion_matrix_dataframe_folder, Hdf = CSV_logger_info_folder, ROCdf = [i for i in Dataframe_ROCs], labels = Class_labels)
 
     Plot_model.figure_plot_four_multiclass()
+    Plot_model.figure_plot_ROC_curve_multiclass()
     Plot_model.figure_plot_CM()
     Plot_model.figure_plot_acc()
     Plot_model.figure_plot_loss()
-    Plot_model.figure_plot_ROC_curve_multiclass
 
     """
     # *
