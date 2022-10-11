@@ -2,6 +2,8 @@ import os
 import random
 import datetime
 
+from itertools import cycle
+
 from time import time
 
 import cv2
@@ -2666,6 +2668,7 @@ class FigurePlot(FigureAdjust):
     # * 
     self.Annot_kws = kwargs.get('annot_kws', None)
     self.Font = kwargs.get('font', None)
+    self.Labels = kwargs.get('labels', None)
 
     # * 
     self.CM_dataframe = kwargs.get('CMdf', None)
@@ -2679,21 +2682,37 @@ class FigurePlot(FigureAdjust):
     # *
     self.Confusion_matrix_dataframe = pd.read_csv(self.CM_dataframe)
     self.History_data_dataframe = pd.read_csv(self.History_dataframe)
-    self.Roc_curve_dataframe = pd.read_csv(self.ROC_dataframe)
     
-    # *
-    self.Confusion_matrix_dataframe_actual = pd.read_csv(self.CM_dataframe)
-    self.History_data_dataframe_actual = pd.read_csv(self.History_dataframe)
-    self.Roc_curve_dataframe_actual = pd.read_csv(self.ROC_dataframe)
+    self.Roc_curve_dataframes = []
+    for Dataframe in self.ROC_dataframe:
+      self.Roc_curve_dataframes.append(pd.read_csv(Dataframe))
 
     # *
     self.Accuracy = self.History_data_dataframe.accuracy.to_list()
     self.Loss = self.History_data_dataframe.loss.to_list()
     self.Val_accuracy = self.History_data_dataframe.val_accuracy.to_list()
     self.Val_loss = self.History_data_dataframe.val_loss.to_list()
-    self.FPR = self.Roc_curve_dataframe.FPR.to_list()
-    self.TPR = self.Roc_curve_dataframe.TPR.to_list()
 
+    self.FPRs = []
+    self.TPRs = []
+    for i in range(len(self.Roc_curve_dataframes)):
+      self.FPRs.append(self.Roc_curve_dataframes[i].FPR.to_list())
+      self.TPRs.append(self.Roc_curve_dataframes[i].TPR.to_list())
+
+
+    # * Roc_curve_dataframe attribute
+  @property
+  def Roc_curve_dataframe_property(self):
+      return self.Roc_curve_dataframe
+
+  @Roc_curve_dataframe_property.setter
+  def Roc_curve_dataframe_property(self, New_value):
+      self.Roc_curve_dataframe = New_value
+  
+  @Roc_curve_dataframe_property.deleter
+  def Roc_curve_dataframe_property(self):
+      print("Deleting Roc_curve_dataframe...")
+      del self.Roc_curve_dataframe
 
   @timer_func
   def figure_plot_four(self) -> None: 
@@ -2734,12 +2753,72 @@ class FigurePlot(FigureAdjust):
     plt.xlabel('Epoch')
 
     # * FPR and TPR values for the ROC curve
-    Auc = auc(self.FPR, self.TPR)
+    Auc = auc(self.FPRs[0], self.TPRs[0])
 
     # * Subplot ROC curve
     plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 3)
     plt.plot([0, 1], [0, 1], 'k--')
-    plt.plot(self.FPR, self.TPR, label = 'Test' + '(area = {:.4f})'.format(Auc))
+    plt.plot(self.FPRs[0], self.TPRs[0], label = 'Test' + '(area = {:.4f})'.format(Auc))
+    plt.xlabel('False positive rate')
+    plt.ylabel('True positive rate')
+    plt.title('ROC curve')
+    plt.legend(loc = 'lower right')
+    
+    self.save_figure(self.Save_figure, self.Title, Four_plot, self.Folder_path)
+    self.show_figure(self.Show_image)
+
+  @timer_func
+  def figure_plot_four_multiclass(self) -> None: 
+    
+    # * Colors for ROC curves
+    Colors = ['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan']
+
+    # *
+    Four_plot = 'Four_plot'
+    Roc_auc = dict()
+
+
+    # * Figure's size
+    plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
+    plt.suptitle(self.Title, fontsize = 20)
+    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 4)
+
+    # * Confusion matrix heatmap
+    sns.set(font_scale = self.Font)
+
+    # *
+    ax = sns.heatmap(self.Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Annot_kws})
+    #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
+    ax.set_xlabel('\nPredicted Values')
+    ax.set_ylabel('Actual Values')
+
+    # * Subplot training accuracy
+    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 1)
+    plt.plot(self.Accuracy, label = 'Training Accuracy')
+    plt.plot(self.Val_accuracy, label = 'Validation Accuracy')
+    plt.ylim([0, 1])
+    plt.legend(loc = 'lower right')
+    plt.title('Training and Validation Accuracy')
+    plt.xlabel('Epoch')
+
+    # * Subplot training loss
+    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 2)
+    plt.plot(self.Loss, label = 'Training Loss')
+    plt.plot(self.Val_loss, label = 'Validation Loss')
+    plt.ylim([0, 2.0])
+    plt.legend(loc = 'upper right')
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epoch')
+
+    # * FPR and TPR values for the ROC curve
+    for i in range(len(self.Roc_curve_dataframes)):
+      Roc_auc[i] = auc(self.FPRs[i], self.TPRs[i])
+
+    # * Plot ROC curve
+    plt.plot([0, 1], [0, 1], 'k--')
+
+    for i in range(len(self.Roc_curve_dataframes)):
+      plt.plot(self.FPRs[i], self.TPRs[i], color = Colors[i], label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(self.Labels[i], Roc_auc[i]))
     plt.xlabel('False positive rate')
     plt.ylabel('True positive rate')
     plt.title('ROC curve')
@@ -2759,7 +2838,7 @@ class FigurePlot(FigureAdjust):
 
     # * Figure's size
     plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
-    plt.title(self.Title, fontsize = 20)
+    plt.title('Confusion Matrix with {}'.format(self.Title))
 
     # * Confusion matrix heatmap
     sns.set(font_scale = self.Font)
@@ -2781,14 +2860,13 @@ class FigurePlot(FigureAdjust):
 
     # * Figure's size
     plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
-    plt.title(self.Title, fontsize = 20)
+    plt.title('Training and Validation Accuracy with {}'.format(self.Title))
 
     # * Plot training accuracy
     plt.plot(self.Accuracy, label = 'Training Accuracy')
     plt.plot(self.Val_accuracy, label = 'Validation Accuracy')
     plt.ylim([0, 1])
     plt.legend(loc = 'lower right')
-    plt.title('Training and Validation Accuracy')
     plt.xlabel('Epoch')
 
     self.save_figure(self.Save_figure, self.Title, ACC_plot, self.Folder_path)
@@ -2803,14 +2881,13 @@ class FigurePlot(FigureAdjust):
     # * Figure's size
     
     plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
-    plt.title(self.Title, fontsize = 20)
+    plt.title('Training and Validation Loss with {}'.format(self.Title))
 
     # * Plot training loss
     plt.plot(self.Loss, label = 'Training Loss')
     plt.plot(self.Val_loss, label = 'Validation Loss')
     plt.ylim([0, 2.0])
     plt.legend(loc = 'upper right')
-    plt.title('Training and Validation Loss')
     plt.xlabel('Epoch')
 
     self.save_figure(self.Save_figure, self.Title, Loss_plot, self.Folder_path)
@@ -2824,53 +2901,43 @@ class FigurePlot(FigureAdjust):
 
     # * Figure's size
     plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
-    plt.title(self.Title, fontsize = 20)
+    plt.title('ROC curve Loss with {}'.format(self.Title))
 
     # * FPR and TPR values for the ROC curve
-    AUC = auc(self.FPR, self.TPR)
+    AUC = auc(self.FPRs[0], self.TPRs[0])
 
     # * Plot ROC curve
     plt.plot([0, 1], [0, 1], 'k--')
-    plt.plot(self.FPR, self.TPR, label = 'Test' + '(area = {:.4f})'.format(AUC))
+    plt.plot(self.FPRs[0], self.TPRs[0], label = 'Test' + '(area = {:.4f})'.format(AUC))
     plt.xlabel('False positive rate')
     plt.ylabel('True positive rate')
-    plt.title('ROC curve')
     plt.legend(loc = 'lower right')
 
     self.save_figure(self.Save_figure, self.Title, ROC_plot, self.Folder_path)
     self.show_figure(self.Show_image)
 
   def figure_plot_ROC_curve_multiclass(self) -> None:
-    pass
-    
-    """
-    FPR = dict()
-    TPR = dict()
-    Roc_auc = dict()
-
-    for i in range(Class_problem):
-      FPR[i], TPR[i], _ = roc_curve(y_test_roc[:, i], y_pred_roc[:, i])
-      Roc_auc[i] = auc(FPR[i], TPR[i])
 
     # * Colors for ROC curves
-    Colors = cycle(['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan'])
+    Colors = ['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan']
 
     # *
     ROC_plot = 'ROC_plot'
+    Roc_auc = dict()
 
     # * Figure's size
     plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
     plt.title(self.Title, fontsize = 20)
 
     # * FPR and TPR values for the ROC curve
-    AUC = auc(self.FPR, self.TPR)
+    for i in range(len(self.Roc_curve_dataframes)):
+      Roc_auc[i] = auc(self.FPRs[i], self.TPRs[i])
 
     # * Plot ROC curve
     plt.plot([0, 1], [0, 1], 'k--')
-    plt.plot(self.FPR, self.TPR, label = 'Test' + '(area = {:.4f})'.format(AUC))
 
-    for i, color, lbl in zip(range(Class_problem), Colors, Class_labels):
-      plt.plot(self.FPR[i], self.TPR[i], color = color, label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(lbl, Roc_auc[i]))
+    for i in range(len(self.Roc_curve_dataframes)):
+      plt.plot(self.FPRs[i], self.TPRs[i], color = Colors[i], label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(self.Labels[i], Roc_auc[i]))
 
     plt.xlabel('False positive rate')
     plt.ylabel('True positive rate')
@@ -2879,4 +2946,3 @@ class FigurePlot(FigureAdjust):
 
     self.save_figure(self.Save_figure, self.Title, ROC_plot, self.Folder_path)
     self.show_figure(self.Show_image)
-    """

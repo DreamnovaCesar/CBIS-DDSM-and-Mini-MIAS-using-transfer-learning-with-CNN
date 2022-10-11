@@ -1,9 +1,9 @@
 
 import numpy as np
 
-from Final_Code_1_General_Functions import *
-
 from Final_Code_1_General_Functions import BarChart
+from Final_Code_1_General_Functions import split_folders_train_test_val
+
 from Final_Code_5_CNN_Architectures import *
 
 #Model_CNN = (Model_pretrained, Model_pretrained)
@@ -102,9 +102,15 @@ def main():
 
     Model_CNN = (13, 14)
 
-    configuration_models_folder(folder = 'D:\Mini-MIAS\Mini_MIAS_NO_Cropped_Images_Biclass' + '_Split', foldermodels = 'D:\Test',
-                                    foldermodelesp = 'D:\Test', foldercsv = 'D:\Test', models = Model_CNN, technique = 'TEST', labels = ['Normal', 'Tumor'],
-                                        X = 224, Y = 224, epochs = 3)
+    Bic = 'D:\Mini-MIAS\Mini_MIAS_NO_Cropped_Images_Biclass'
+    Multic = "D:\Mini-MIAS\CBIS_DDSM_NO_Images_Multiclass"
+    
+    MulticSplit = split_folders_train_test_val(Multic, False)
+
+    configuration_models_folder(folder = MulticSplit, foldermodels = 'D:\Test',
+                                    foldermodelesp = 'D:\Test', foldercsv = 'D:\Test', 
+                                        models = Model_CNN, technique = 'TEST', 
+                                            labels = ['A', 'B', 'C'], X = 224, Y = 224, epochs = 2)
     
 
 if __name__ == "__main__":

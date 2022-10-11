@@ -1,4 +1,4 @@
-from ast import Index
+
 import os
 import string
 import sys
@@ -85,7 +85,8 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau
 
 from keras.preprocessing.image import ImageDataGenerator
 
-from Final_Code_1_General_Functions import *
+from Final_Code_1_General_Functions import FigureAdjust
+from Final_Code_1_General_Functions import FigurePlot
 
 ##################################################################################################################################################################
 
@@ -542,7 +543,7 @@ def configuration_models_folder(**kwargs):
     #Name_dir = os.path.dirname(Folder)
     #Name_base = os.path.basename(Folder)
 
-    batch_size = 32
+    Batch_size = 32
 
     Shape = (X_size, Y_size)
 
@@ -554,12 +555,17 @@ def configuration_models_folder(**kwargs):
     val_datagen = ImageDataGenerator()
     test_datagen = ImageDataGenerator()
 
+    if(len(Class_labels) <= 2):
+      Class_mode = "binary"
+    else:
+      Class_mode = "categorical"
+
     train_generator = train_datagen.flow_from_directory(
         directory = Name_folder_training,
         target_size = Shape,
         color_mode = "rgb",
-        batch_size = batch_size,
-        class_mode = "binary",
+        batch_size = Batch_size,
+        class_mode = Class_mode,
         shuffle = True,
         seed = 42
     )
@@ -568,8 +574,8 @@ def configuration_models_folder(**kwargs):
         directory = Name_folder_val,
         target_size = Shape,
         color_mode = "rgb",
-        batch_size = batch_size,
-        class_mode = "binary",
+        batch_size = Batch_size,
+        class_mode = Class_mode,
         shuffle = False,
         seed = 42        
     )
@@ -578,8 +584,8 @@ def configuration_models_folder(**kwargs):
         directory = Name_folder_test,
         target_size = Shape,
         color_mode = "rgb",
-        batch_size = batch_size,
-        class_mode = "binary",
+        batch_size = Batch_size,
+        class_mode = Class_mode,
         shuffle = False,
         seed = 42
     )
@@ -637,14 +643,14 @@ def deep_learning_models_folder(**kwargs):
   Enhancement_technique = kwargs.get('technique', None)
 
   Class_labels = kwargs.get('labels', None)
-  Column_names = kwargs.get('columns', None)
+  #Column_names = kwargs.get('columns', None)
 
   X_size = kwargs.get('X', None)
   Y_size = kwargs.get('Y', None)
   Epochs = kwargs.get('epochs', None)
 
   Index = kwargs.get('index', None)
-  Index_Model = kwargs.get('indexmodel', None)
+  #Index_Model = kwargs.get('indexmodel', None)
 
   # * Parameters plt
 
@@ -652,9 +658,6 @@ def deep_learning_models_folder(**kwargs):
   Width = 12
   Annot_kws = 12
   font = 0.7
-
-  X_size_figure = 2
-  Y_size_figure = 2
 
   # * Parameters dic classification report
 
@@ -697,18 +700,6 @@ def deep_learning_models_folder(**kwargs):
   # * List
   Pretrained_model_name, Pretrained_model_name_letters, Pretrained_model = Model_pretrained(X_size, Y_size, Class_problem, Pretrained_model_index)
 
-  # * Lists
-  Column_names = ['Name Model', "Model used", "Accuracy Training FE", "Accuracy Training LE", "Accuracy Testing", "Loss Train", "Loss Test", 
-                  "Training images", "Validation images", "Test images", "Precision", "Recall", "F1_Score", 
-                  "Accuracy normal", "Precision normal", "Recall normal", "F1_Score normal", "Images support normal",
-                  "Accuracy tumor", "Precision tumor", "Recall tumor", "F1_Score tumor", "Images support tumor",
-                  "Precision macro avg", "Recall macro avg", "F1_Score macro avg", "Images support macro avg",
-                  "Precision weighted avg", "Recall weighted avg", "F1_Score weighted avg", "Images support weighted avg",
-                  "Time training", "Time testing", "Technique used", "TN", "FP", "FN", "TP", "Epochs", "Auc"]
-
-  #Dataframe_keys = ['Model function', 'Technique', 'Labels', 'Xsize', 'Ysize', 'Validation split', 'Epochs', 'Images 1', 'Labels 1', 'Images 2', 'Labels 2']
-  
-  Dataframe_save = pd.DataFrame(columns = Column_names)
 
   #Dir_name = str(Class_problem_prefix) + 'Model_s' + str(Enhancement_technique) + '_dir'
   Dir_name_csv = "{}_Folder_Data_Models_{}".format(Class_problem_prefix, Enhancement_technique)
@@ -821,9 +812,6 @@ def deep_learning_models_folder(**kwargs):
   # * 
   Callbacks = [Model_checkpoint_callback, EarlyStopping_callback, Log_CSV]
 
-  # * 
-  Dataframe_save.to_csv(Dataframe_save_folder)
-
   #################### * Training fit
 
   Start_training_time = time.time()
@@ -859,6 +847,20 @@ def deep_learning_models_folder(**kwargs):
   Pretrained_model_name_technique = "{}_{}".format(Pretrained_model_name_letters, Enhancement_technique)
 
   if Class_problem == 2:
+
+    # * Lists
+    Column_names_ = ['Name Model', "Model used", "Accuracy Training FE", "Accuracy Training LE", "Accuracy Testing", "Loss Train", "Loss Test", 
+                    "Training images", "Validation images", "Test images", "Precision", "Recall", "F1_Score", 
+                    "Accuracy normal", "Precision normal", "Recall normal", "F1_Score normal", "Images support normal",
+                    "Accuracy tumor", "Precision tumor", "Recall tumor", "F1_Score tumor", "Images support tumor",
+                    "Precision macro avg", "Recall macro avg", "F1_Score macro avg", "Images support macro avg",
+                    "Precision weighted avg", "Recall weighted avg", "F1_Score weighted avg", "Images support weighted avg",
+                    "Time training", "Time testing", "Technique used", "TN", "FP", "FN", "TP", "Epochs", "Auc"]
+    
+    Dataframe_save = pd.DataFrame(columns = Column_names_)
+
+    # * 
+    Dataframe_save.to_csv(Dataframe_save_folder)
 
     Labels_biclass_number = []
 
@@ -946,7 +948,7 @@ def deep_learning_models_folder(**kwargs):
 
     Plot_model = FigurePlot(folder = Folder_path_images_in, title = Pretrained_model_name, 
                               SI = False, SF = True, height = Height, width = Width, annot_kws = Annot_kws, 
-                                font = font, CMdf = Confusion_matrix_dataframe, Hdf = CSV_logger_info_folder, ROCdf = Dataframe_ROC_folder)
+                                font = font, CMdf = Confusion_matrix_dataframe_folder, Hdf = CSV_logger_info_folder, ROCdf = [Dataframe_ROC_folder])
 
     Plot_model.figure_plot_four()
     Plot_model.figure_plot_CM()
@@ -1000,7 +1002,22 @@ def deep_learning_models_folder(**kwargs):
     """
 
   elif Class_problem >= 3:
-  
+    
+    # * Lists
+    Column_names_ = ['Name Model', "Model used", "Accuracy Training FE", "Accuracy Training LE", "Accuracy Testing", "Loss Train", "Loss Test", 
+                    "Training images", "Validation images", "Test images", "Precision", "Recall", "F1_Score",      
+                    "Precision normal", "Recall normal", "F1_Score normal", "Images support normal", 
+                    "Precision tumor", "Recall tumor", "F1_Score tumor", "Images support tumor",
+                    "Precision C", "Recall C", "F1_Score C", "Images support C",
+                    "Precision macro avg", "Recall macro avg", "F1_Score macro avg", "Images support macro avg",
+                    "Precision weighted avg", "Recall weighted avg", "F1_Score weighted avg", "Images support weighted avg",
+                    "Time training", "Time testing", "Technique used", "TN", "FP", "FN", "TP", "Epochs", "A", "B", "C"]
+    
+    Dataframe_save = pd.DataFrame(columns = Column_names_)
+
+    # * 
+    Dataframe_save.to_csv(Dataframe_save_folder)
+
     Labels_multiclass_number = []
 
     for i in range(len(Class_labels)):
@@ -1049,8 +1066,6 @@ def deep_learning_models_folder(**kwargs):
     print(f"F1: {round(F1_score, Digits)}")
     print("\n")
 
-    #labels = ['Benign', 'Benign_W_C', 'Malignant']
-
     Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
     Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe_folder, index = False)
 
@@ -1065,27 +1080,43 @@ def deep_learning_models_folder(**kwargs):
     # * Colors for ROC curves
     Colors = cycle(['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan'])
 
-    for i in range(len(FPR)):
-      for j in range(len(FPR[i])):
-        ROC_curve_FPR.append(FPR[j])
+    for i, FPR_row in enumerate(list(FPR.values())):
+      ROC_curve_FPR.append(FPR_row)
+      print(ROC_curve_FPR)
+    for i, TPR_row in enumerate(list(TPR.values())):
+      ROC_curve_TPR.append(TPR_row)
+      print(ROC_curve_TPR)
 
-    for i in range(len(TPR)):
-      for j in range(len(TPR[i])):
-        ROC_curve_TPR.append(TPR[j])
+    Dataframe_ROCs = []
+
+    for j in range(len(ROC_curve_TPR)):
+
+      Dict_roc_curve = {'FPR': ROC_curve_FPR[j], 'TPR': ROC_curve_TPR[j]}
+      Dataframe_ROC = pd.DataFrame(Dict_roc_curve)
+
+      Dataframe_ROC_name = "{}_Dataframe_ROC_Curve_Values_{}_{}_{}.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique, j)
+      Dataframe_ROC_folder = os.path.join(Folder_path_in, Dataframe_ROC_name)
+      Dataframe_ROC.to_csv(Dataframe_ROC_folder)
+      Dataframe_ROCs.append(Dataframe_ROC_folder)
 
     Accuracy = Pretrained_Model_History.history['accuracy']
     Validation_accuracy = Pretrained_Model_History.history['val_accuracy']
 
     Loss = Pretrained_Model_History.history['loss']
     Validation_loss = Pretrained_Model_History.history['val_loss']
-    
-    # * Dict_roc_curve
-    Dict_roc_curve = {'FPR': ROC_curve_FPR, 'TPR': ROC_curve_TPR} 
-    Dataframe_ROC = pd.DataFrame(Dict_roc_curve)
-    Dataframe_ROC.to_csv(Dataframe_ROC_folder)
+
+    Plot_model = FigurePlot(folder = Folder_path_images_in, title = Pretrained_model_name, 
+                              SI = False, SF = True, height = Height, width = Width, annot_kws = Annot_kws, 
+                                font = font, CMdf = Confusion_matrix_dataframe_folder, Hdf = CSV_logger_info_folder, ROCdf = [i for i in Dataframe_ROCs], labels = Class_labels)
+
+    Plot_model.figure_plot_four_multiclass()
+    Plot_model.figure_plot_CM()
+    Plot_model.figure_plot_acc()
+    Plot_model.figure_plot_loss()
+    Plot_model.figure_plot_ROC_curve_multiclass
 
     """
-    # * 
+    # *
     Plot_model = FigurePlot(folder = Folder_path_images_in, title = Pretrained_model_name, 
                               SI = False, SF = True, height = Height, width = Width, annot_kws = Annot_kws, 
                                 font = font, CMdf = Confusion_matrix_dataframe, Hdf = CSV_logger_info_folder, ROCdf = Dataframe_ROC_folder)
@@ -1201,8 +1232,11 @@ def deep_learning_models_folder(**kwargs):
     for i in range(Class_problem):
       Info.append(Roc_auc[i])
 
+  #df2 = {'Name': 'Amy', 'Maths': 89, 'Science': 93}
+  #df = df.append(df2, ignore_index = True)
+
   #Dataframe_save = pd.read_csv(Dataframe_save_folder)
-  overwrite_row_CSV_folder(Dataframe_save, Dataframe_save_folder, Info, Column_names, Index)
+  overwrite_row_CSV_folder(Dataframe_save, Dataframe_save_folder, Info, Column_names_, Index)
 
 # ? Folder Update CSV changing value
 
@@ -1222,6 +1256,9 @@ def overwrite_row_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Ro
 	  void
     
    	"""
+
+    print(len(Column_names))
+    print(len(Info_list))
 
     for i in range(len(Info_list)):
         Dataframe.loc[Row, Column_names[i]] = Info_list[i]
@@ -1524,7 +1561,7 @@ def Model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretraine
       metrics = ['accuracy']
   )
 
-  return Model_name_letters, Model_name, Model_CNN
+  return Model_name, Model_name_letters, Model_CNN
 
 # ? Custom AlexNet12
 
