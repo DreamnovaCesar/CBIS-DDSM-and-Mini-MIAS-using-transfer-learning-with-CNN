@@ -83,6 +83,8 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.callbacks import CSVLogger
 from tensorflow.keras.callbacks import ReduceLROnPlateau
 
+from keras.preprocessing.image import ImageDataGenerator
+
 ##################################################################################################################################################################
 
 # ? Configuration of each DCNN model
@@ -501,11 +503,12 @@ def overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
 def configuration_models_folder(**kwargs):
 
     # * General attributes
-    Training_data = kwargs.get('trainingdata', None)
-    Validation_data = kwargs.get('validationdata', None)
-    Test_data = kwargs.get('testdata', None)
+    #Training_data = kwargs.get('trainingdata', None)
+    #Validation_data = kwargs.get('validationdata', None)
+    #Test_data = kwargs.get('testdata', None)
 
-    #Folder_path = kwargs.get('folderpath', None)
+    # *
+    Folder = kwargs.get('folder', None)
     Folder_models = kwargs.get('foldermodels', None)
     Folder_models_esp = kwargs.get('foldermodelsesp', None)
     Folder_CSV = kwargs.get('foldercsv', None)
@@ -527,13 +530,64 @@ def configuration_models_folder(**kwargs):
     #Model_index = Models.values()
 
 
+    # * Parameters
+    #Labels_biclass = ['Abnormal', 'Normal']
+    #Labels_triclass = ['Normal', 'Benign', 'Malignant']
+    #X_size = 224
+    #Y_size = 224
+    #Epochs = 4
+
+    #Name_dir = os.path.dirname(Folder)
+    #Name_base = os.path.basename(Folder)
+
+    batch_size = 32
+
+    Shape = (X_size, Y_size)
+
+    Name_folder_training = Folder + '/' + 'train'
+    Name_folder_val = Folder + '/' + 'val'
+    Name_folder_test = Folder + '/' + 'test'
+
+    train_datagen = ImageDataGenerator()
+    val_datagen = ImageDataGenerator()
+    test_datagen = ImageDataGenerator()
+
+    train_generator = train_datagen.flow_from_directory(
+        directory = Name_folder_training,
+        target_size = Shape,
+        color_mode = "rgb",
+        batch_size = batch_size,
+        class_mode = "binary",
+        shuffle = True,
+        seed = 42
+    )
+
+    valid_generator = val_datagen.flow_from_directory(
+        directory = Name_folder_val,
+        target_size = Shape,
+        color_mode = "rgb",
+        batch_size = batch_size,
+        class_mode = "binary",
+        shuffle = False,
+        seed = 42        
+    )
+
+    test_generator = test_datagen.flow_from_directory(
+        directory = Name_folder_test,
+        target_size = Shape,
+        color_mode = "rgb",
+        batch_size = batch_size,
+        class_mode = "binary",
+        shuffle = False,
+        seed = 42
+    )
+
     for Index, Model in enumerate(Models):
       
-      Dataframe_updated = deep_learning_models_folder(trainingdata = Training_data, validationdata = Validation_data, testdata = Test_data, foldermodels = Folder_models,
+      Dataframe_updated = deep_learning_models_folder(trainingdata = train_generator, validationdata = valid_generator, testdata = test_generator, foldermodels = Folder_models,
                                                         foldermodelesp = Folder_models_esp, foldercsv = Folder_CSV, model = Model, technique = Enhancement_technique, labels = Class_labels, 
                                                           X = X_size, Y = Y_size, epochs = Epochs, index = Index)
       
-      #Dataframe_updated = overwrite_row_CSV_folder(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
     return Dataframe_updated
 

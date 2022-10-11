@@ -101,5 +101,9 @@ def main():
     plot_data_ML()
     #Testing_CNN_Models_Biclass_From_Folder(Model_CNN, 'D:\Mini-MIAS\Mini_MIAS_NO_Cropped_Images_Biclass' + '_Split', 'TEST')
 
+    Info_dataframe = configuration_models_folder(Folder = , trainingdata = train_generator, validationdata = valid_generator, testdata = test_generator, foldermodels = 'D:\Test',
+                                                    foldermodelesp = 'D:\Test', foldercsv = 'D:\Test', models = Models, technique = Technique, labels = Labels_biclass,
+                                                        X = X_size, Y = Y_size, epochs = Epochs)
+
 if __name__ == "__main__":
     main()
