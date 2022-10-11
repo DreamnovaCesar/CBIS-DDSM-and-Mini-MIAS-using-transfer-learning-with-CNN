@@ -65,11 +65,11 @@ def timer_func(func):
         t2 = time()
         #print(f'Function {func.__name__!r} executed in {(t2-t1):.4f}s')
         print("\n")
-        print("*" * 30)
+        print("*" * 60)
 
         print('Function {} executed in {:.4f}'.format(func.__name__, t2 - t1))
 
-        print("*" * 30)
+        print("*" * 60)
         print("\n")
 
         return result
@@ -2682,6 +2682,11 @@ class FigurePlot(FigureAdjust):
     self.Roc_curve_dataframe = pd.read_csv(self.ROC_dataframe)
     
     # *
+    self.Confusion_matrix_dataframe_actual = pd.read_csv(self.CM_dataframe)
+    self.History_data_dataframe_actual = pd.read_csv(self.History_dataframe)
+    self.Roc_curve_dataframe_actual = pd.read_csv(self.ROC_dataframe)
+
+    # *
     self.Accuracy = self.History_data_dataframe.accuracy.to_list()
     self.Loss = self.History_data_dataframe.loss.to_list()
     self.Val_accuracy = self.History_data_dataframe.val_accuracy.to_list()
@@ -2753,7 +2758,7 @@ class FigurePlot(FigureAdjust):
     Confusion_matrix_dataframe = pd.read_csv(self.CM_dataframe)
 
     # * Figure's size
-    plt.figure(figsize = (self.Width / 2, self.Height / 2))
+    plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
     plt.title(self.Title, fontsize = 20)
 
     # * Confusion matrix heatmap
@@ -2775,7 +2780,7 @@ class FigurePlot(FigureAdjust):
     ACC_plot = 'ACC_plot'
 
     # * Figure's size
-    plt.figure(figsize = (self.Width / 2, self.Height / 2))
+    plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
     plt.title(self.Title, fontsize = 20)
 
     # * Plot training accuracy
@@ -2797,7 +2802,7 @@ class FigurePlot(FigureAdjust):
 
     # * Figure's size
     
-    plt.figure(figsize = (self.Width / 2, self.Height / 2))
+    plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
     plt.title(self.Title, fontsize = 20)
 
     # * Plot training loss
@@ -2812,13 +2817,13 @@ class FigurePlot(FigureAdjust):
     self.show_figure(self.Show_image)
 
   @timer_func
-  def figure_ROC_curve(self) -> None:
+  def figure_plot_ROC_curve(self) -> None:
     
     # *
     ROC_plot = 'ROC_plot'
 
     # * Figure's size
-    plt.figure(figsize = (self.Width / 2, self.Height / 2))
+    plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
     plt.title(self.Title, fontsize = 20)
 
     # * FPR and TPR values for the ROC curve
@@ -2834,3 +2839,44 @@ class FigurePlot(FigureAdjust):
 
     self.save_figure(self.Save_figure, self.Title, ROC_plot, self.Folder_path)
     self.show_figure(self.Show_image)
+
+  def figure_plot_ROC_curve_multiclass(self) -> None:
+    pass
+    
+    """
+    FPR = dict()
+    TPR = dict()
+    Roc_auc = dict()
+
+    for i in range(Class_problem):
+      FPR[i], TPR[i], _ = roc_curve(y_test_roc[:, i], y_pred_roc[:, i])
+      Roc_auc[i] = auc(FPR[i], TPR[i])
+
+    # * Colors for ROC curves
+    Colors = cycle(['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan'])
+
+    # *
+    ROC_plot = 'ROC_plot'
+
+    # * Figure's size
+    plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
+    plt.title(self.Title, fontsize = 20)
+
+    # * FPR and TPR values for the ROC curve
+    AUC = auc(self.FPR, self.TPR)
+
+    # * Plot ROC curve
+    plt.plot([0, 1], [0, 1], 'k--')
+    plt.plot(self.FPR, self.TPR, label = 'Test' + '(area = {:.4f})'.format(AUC))
+
+    for i, color, lbl in zip(range(Class_problem), Colors, Class_labels):
+      plt.plot(self.FPR[i], self.TPR[i], color = color, label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(lbl, Roc_auc[i]))
+
+    plt.xlabel('False positive rate')
+    plt.ylabel('True positive rate')
+    plt.title('ROC curve')
+    plt.legend(loc = 'lower right')
+
+    self.save_figure(self.Save_figure, self.Title, ROC_plot, self.Folder_path)
+    self.show_figure(self.Show_image)
+    """

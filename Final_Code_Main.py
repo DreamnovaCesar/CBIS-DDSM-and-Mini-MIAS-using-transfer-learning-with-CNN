@@ -3,11 +3,10 @@ import numpy as np
 
 from Final_Code_1_General_Functions import *
 
-from Final_Code_Preprocessing_1_CNN_Models import Testing_CNN_Models_Biclass_From_Folder
 from Final_Code_1_General_Functions import BarChart
+from Final_Code_5_CNN_Architectures import *
 
 #Model_CNN = (Model_pretrained, Model_pretrained)
-Model_CNN = (13, 14)
 
 
 def plot_data():
@@ -98,12 +97,15 @@ def plot_data_ML():
     Data_show5.barchart_horizontal()
 
 def main():
-    plot_data_ML()
+    #plot_data_ML()
     #Testing_CNN_Models_Biclass_From_Folder(Model_CNN, 'D:\Mini-MIAS\Mini_MIAS_NO_Cropped_Images_Biclass' + '_Split', 'TEST')
 
-    Info_dataframe = configuration_models_folder(Folder = , trainingdata = train_generator, validationdata = valid_generator, testdata = test_generator, foldermodels = 'D:\Test',
-                                                    foldermodelesp = 'D:\Test', foldercsv = 'D:\Test', models = Models, technique = Technique, labels = Labels_biclass,
-                                                        X = X_size, Y = Y_size, epochs = Epochs)
+    Model_CNN = (13, 14)
+
+    configuration_models_folder(folder = 'D:\Mini-MIAS\Mini_MIAS_NO_Cropped_Images_Biclass' + '_Split', foldermodels = 'D:\Test',
+                                    foldermodelesp = 'D:\Test', foldercsv = 'D:\Test', models = Model_CNN, technique = 'TEST', labels = ['Normal', 'Tumor'],
+                                        X = 224, Y = 224, epochs = 3)
+    
 
 if __name__ == "__main__":
     main()

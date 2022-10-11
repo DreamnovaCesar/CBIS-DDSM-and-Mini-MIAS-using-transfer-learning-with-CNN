@@ -85,6 +85,8 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau
 
 from keras.preprocessing.image import ImageDataGenerator
 
+from Final_Code_1_General_Functions import *
+
 ##################################################################################################################################################################
 
 # ? Configuration of each DCNN model
@@ -584,12 +586,11 @@ def configuration_models_folder(**kwargs):
 
     for Index, Model in enumerate(Models):
       
-      Dataframe_updated = deep_learning_models_folder(trainingdata = train_generator, validationdata = valid_generator, testdata = test_generator, foldermodels = Folder_models,
-                                                        foldermodelesp = Folder_models_esp, foldercsv = Folder_CSV, model = Model, technique = Enhancement_technique, labels = Class_labels, 
-                                                          X = X_size, Y = Y_size, epochs = Epochs, index = Index)
+      deep_learning_models_folder(trainingdata = train_generator, validationdata = valid_generator, testdata = test_generator, foldermodels = Folder_models,
+                                      foldermodelesp = Folder_models_esp, foldercsv = Folder_CSV, model = Model, technique = Enhancement_technique, labels = Class_labels, 
+                                        X = X_size, Y = Y_size, epochs = Epochs, index = Index)
       
 
-    return Dataframe_updated
 
 # ? Folder Pretrained model configurations
 
@@ -770,21 +771,21 @@ def deep_learning_models_folder(**kwargs):
   # * Save dataframe in the folder given
 
   # *
-  Dataframe_save_name = "{}_Dataframe_CNN_Folder_Data_{}.csv".format(Class_problem_prefix, Enhancement_technique)
+  Dataframe_save_name = "{}_Dataframe_CNN_Folder_Data_{}_{}.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
   Dataframe_save_folder = os.path.join(Folder_path_in, Dataframe_save_name)
 
   # *
-  Best_model_name_weights = "{}_{}_{}_Best_Model_Weights.h5".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
+  Best_model_name_weights = "{}_Best_Model_Weights_{}_{}.h5".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
   Best_model_folder_name_weights = os.path.join(Folder_path_in, Best_model_name_weights)
   
   # *
   #Confusion_matrix_dataframe_name = 'Dataframe_' + str(Class_problem_prefix) + str(Pretrained_model_name) + str(Enhancement_technique) + '.csv'
-  Confusion_matrix_dataframe_name = "Dataframe_Confusion_Matrix_{}_{}_{}.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
+  Confusion_matrix_dataframe_name = "{}_Dataframe_Confusion_Matrix_{}_{}.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
   Confusion_matrix_dataframe_folder = os.path.join(Folder_path_in, Confusion_matrix_dataframe_name)
   
   # * 
   #CSV_logger_info = str(Class_problem_prefix) + str(Pretrained_model_name) + '_' + str(Enhancement_technique) + '.csv'
-  CSV_logger_info = "{}_{}_{}_logger.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
+  CSV_logger_info = "{}_Logger_{}_{}.csv".format(Class_problem_prefix, Pretrained_model_name, Enhancement_technique)
   CSV_logger_info_folder = os.path.join(Folder_path_in, CSV_logger_info)
 
   # * 
@@ -922,6 +923,38 @@ def deep_learning_models_folder(**kwargs):
     Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
     Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe_folder, index = False)
 
+    # * FPR and TPR values for the ROC curve
+    FPR, TPR, _ = roc_curve(Test_data.classes, y_pred_class)
+    Auc = auc(FPR, TPR)
+    
+    for i in range(len(FPR)):
+      ROC_curve_FPR.append(FPR[i])
+
+    for i in range(len(TPR)):
+      ROC_curve_TPR.append(TPR[i])
+
+    Accuracy = Pretrained_Model_History.history['accuracy']
+    Validation_accuracy = Pretrained_Model_History.history['val_accuracy']
+
+    Loss = Pretrained_Model_History.history['loss']
+    Validation_loss = Pretrained_Model_History.history['val_loss']
+
+    # * Dict_roc_curve
+    Dict_roc_curve = {'FPR': ROC_curve_FPR, 'TPR': ROC_curve_TPR} 
+    Dataframe_ROC = pd.DataFrame(Dict_roc_curve)
+    Dataframe_ROC.to_csv(Dataframe_ROC_folder)
+
+    Plot_model = FigurePlot(folder = Folder_path_images_in, title = Pretrained_model_name, 
+                              SI = False, SF = True, height = Height, width = Width, annot_kws = Annot_kws, 
+                                font = font, CMdf = Confusion_matrix_dataframe, Hdf = CSV_logger_info_folder, ROCdf = Dataframe_ROC_folder)
+
+    Plot_model.figure_plot_four()
+    Plot_model.figure_plot_CM()
+    Plot_model.figure_plot_acc()
+    Plot_model.figure_plot_loss()
+    Plot_model.figure_plot_ROC_curve()
+
+    """
     # * Figure's size
     plt.figure(figsize = (Width, Height))
     plt.subplot(X_size_figure, Y_size_figure, 4)
@@ -934,16 +967,6 @@ def deep_learning_models_folder(**kwargs):
     ax.set_ylabel('Actual Values')
     ax.set_xticklabels(Class_labels)
     ax.set_yticklabels(Class_labels)
-
-    Accuracy = Pretrained_Model_History.history['accuracy']
-    Validation_accuracy = Pretrained_Model_History.history['val_accuracy']
-
-    Loss = Pretrained_Model_History.history['loss']
-    Validation_loss = Pretrained_Model_History.history['val_loss']
-
-    # * FPR and TPR values for the ROC curve
-    FPR, TPR, _ = roc_curve(Test_data.classes, y_pred_class)
-    Auc = auc(FPR, TPR)
 
     # * Subplot Training accuracy
     plt.subplot(X_size_figure, Y_size_figure, 1)
@@ -972,21 +995,9 @@ def deep_learning_models_folder(**kwargs):
     plt.title('ROC curve')
     plt.legend(loc = 'lower right')
 
-    for i in range(len(FPR)):
-      ROC_curve_FPR.append(FPR[i])
-
-    for i in range(len(TPR)):
-      ROC_curve_TPR.append(TPR[i])
-
-    # * Dict_roc_curve
-
-    Dict_roc_curve = {'FPR': ROC_curve_FPR, 'TPR': ROC_curve_TPR} 
-    Dataframe_ROC = pd.DataFrame(Dict_roc_curve)
-
-    Dataframe_ROC.to_csv(Dataframe_ROC_folder)
-
     plt.savefig(Class_problem_folder)
     #plt.show()
+    """
 
   elif Class_problem >= 3:
   
@@ -1043,6 +1054,50 @@ def deep_learning_models_folder(**kwargs):
     Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
     Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe_folder, index = False)
 
+    FPR = dict()
+    TPR = dict()
+    Roc_auc = dict()
+
+    for i in range(Class_problem):
+      FPR[i], TPR[i], _ = roc_curve(y_test_roc[:, i], y_pred_roc[:, i])
+      Roc_auc[i] = auc(FPR[i], TPR[i])
+
+    # * Colors for ROC curves
+    Colors = cycle(['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan'])
+
+    for i in range(len(FPR)):
+      for j in range(len(FPR[i])):
+        ROC_curve_FPR.append(FPR[j])
+
+    for i in range(len(TPR)):
+      for j in range(len(TPR[i])):
+        ROC_curve_TPR.append(TPR[j])
+
+    Accuracy = Pretrained_Model_History.history['accuracy']
+    Validation_accuracy = Pretrained_Model_History.history['val_accuracy']
+
+    Loss = Pretrained_Model_History.history['loss']
+    Validation_loss = Pretrained_Model_History.history['val_loss']
+    
+    # * Dict_roc_curve
+    Dict_roc_curve = {'FPR': ROC_curve_FPR, 'TPR': ROC_curve_TPR} 
+    Dataframe_ROC = pd.DataFrame(Dict_roc_curve)
+    Dataframe_ROC.to_csv(Dataframe_ROC_folder)
+
+    """
+    # * 
+    Plot_model = FigurePlot(folder = Folder_path_images_in, title = Pretrained_model_name, 
+                              SI = False, SF = True, height = Height, width = Width, annot_kws = Annot_kws, 
+                                font = font, CMdf = Confusion_matrix_dataframe, Hdf = CSV_logger_info_folder, ROCdf = Dataframe_ROC_folder)
+
+    # *
+    Plot_model.figure_plot_four()
+    Plot_model.figure_plot_CM()
+    Plot_model.figure_plot_acc()
+    Plot_model.figure_plot_loss()
+    Plot_model.figure_plot_ROC_curve()
+
+
     plt.figure(figsize = (Width, Height))
     plt.subplot(X_size_figure, Y_size_figure, 4)
     sns.set(font_scale = font) # for label size
@@ -1059,17 +1114,6 @@ def deep_learning_models_folder(**kwargs):
 
     Loss = Pretrained_Model_History.history['loss']
     Validation_Loss = Pretrained_Model_History.history['val_loss']
-
-    FPR = dict()
-    TPR = dict()
-    Roc_auc = dict()
-
-    for i in range(Class_problem):
-      FPR[i], TPR[i], _ = roc_curve(y_test_roc[:, i], y_pred_roc[:, i])
-      Roc_auc[i] = auc(FPR[i], TPR[i])
-
-    # * Colors for ROC curves
-    Colors = cycle(['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan'])
     
     # * Subplot Training accuracy
     plt.subplot(X_size_figure, Y_size_figure, 1)
@@ -1123,8 +1167,8 @@ def deep_learning_models_folder(**kwargs):
     #Class_problem_folder = os.path.join(Folder_models, Class_problem_name)
 
     plt.savefig(Class_problem_folder)
-    #plt.show()
-  
+    """
+
   Info.append(Pretrained_model_name_technique)
   Info.append(Pretrained_model_name)
   Info.append(Accuracy[Epochs - 1])
@@ -1158,9 +1202,7 @@ def deep_learning_models_folder(**kwargs):
       Info.append(Roc_auc[i])
 
   #Dataframe_save = pd.read_csv(Dataframe_save_folder)
-  Dataframe_updated = overwrite_row_CSV_folder(Dataframe_save, Dataframe_save_folder, Info, Column_names, Index)
-
-  return Dataframe_updated
+  overwrite_row_CSV_folder(Dataframe_save, Dataframe_save_folder, Info, Column_names, Index)
 
 # ? Folder Update CSV changing value
 
@@ -1187,8 +1229,6 @@ def overwrite_row_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Ro
     Dataframe.to_csv(Folder_path, index = False)
   
     print(Dataframe)
-
-    return Dataframe
 
 ##################################################################################################################################################################
 

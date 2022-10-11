@@ -8,6 +8,7 @@ CM = "D:\Test\Biclass_Folder_Data_Models_TEST\Biclass_Folder_Data_Model_MobileNe
 
 Fol = "D:\Test\Biclass_Folder_Data_Models_TEST\Biclass_Folder_Data_Model_MobileNetV3Small_Model_TEST"
 
-f = FigurePlot(folder = Fol, title = 'MobileNetV3', SI = True, SF = True, height = 12, width = 12, annot_kws = 20, font = 1, CMdf = CM, Hdf = H, ROCdf = ROC)
+f = FigurePlot(folder = Fol, title = 'MobileNetV3', SI = False, SF = True, height = 12, width = 12, annot_kws = 20, font = 1, CMdf = CM, Hdf = H, ROCdf = ROC)
 
 f.figure_plot_four()
+f.figure_plot_CM()
