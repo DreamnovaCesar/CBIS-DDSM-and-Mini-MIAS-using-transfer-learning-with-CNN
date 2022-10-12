@@ -686,6 +686,7 @@ def deep_learning_models_folder(**kwargs):
 
   # * List
   Info = []
+  Info_dic = {}
   ROC_curve_FPR = []
   ROC_curve_TPR = []
 
@@ -700,23 +701,23 @@ def deep_learning_models_folder(**kwargs):
   # * List
   Pretrained_model_name, Pretrained_model_name_letters, Pretrained_model = Model_pretrained(X_size, Y_size, Class_problem, Pretrained_model_index)
 
-
-  #Dir_name = str(Class_problem_prefix) + 'Model_s' + str(Enhancement_technique) + '_dir'
+  # *
   Dir_name_csv = "{}_Folder_Data_Models_{}".format(Class_problem_prefix, Enhancement_technique)
   Dir_name_images = "{}_Folder_Images_Models_{}".format(Class_problem_prefix, Enhancement_technique)
 
+  # *
   Dir_name_csv_model = "{}_Folder_Data_Model_{}_{}".format(Class_problem_prefix, Pretrained_model_name_letters, Enhancement_technique)
   Dir_name_images_model = "{}_Folder_Images_Model_{}_{}".format(Class_problem_prefix, Pretrained_model_name_letters, Enhancement_technique)
-  #print(Folder_CSV + '/' + Dir_name)
-  #print('\n')
 
+  # *
   Dir_data_csv = Folder_CSV + '/' + Dir_name_csv
   Dir_data_images = Folder_CSV + '/' + Dir_name_images
 
+  # *
   Exist_dir_csv = os.path.isdir(Dir_data_csv)
   Exist_dir_images = os.path.isdir(Dir_data_images)
 
-
+  # *
   if Exist_dir_csv == False:
     Folder_path = os.path.join(Folder_CSV, Dir_name_csv)
     os.mkdir(Folder_path)
@@ -739,6 +740,7 @@ def deep_learning_models_folder(**kwargs):
   Exist_dir_csv_model = os.path.isdir(Dir_data_csv_model)
   Exist_dir_images_model = os.path.isdir(Dir_data_images_model)
 
+  # *
   if Exist_dir_csv_model == False:
     Folder_path_in = os.path.join(Folder_path, Dir_name_csv_model)
     os.mkdir(Folder_path_in)
@@ -956,51 +958,6 @@ def deep_learning_models_folder(**kwargs):
     Plot_model.figure_plot_loss()
     Plot_model.figure_plot_ROC_curve()
 
-    """
-    # * Figure's size
-    plt.figure(figsize = (Width, Height))
-    plt.subplot(X_size_figure, Y_size_figure, 4)
-    sns.set(font_scale = font)
-
-    # * Confusion matrix heatmap
-    ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd')
-    #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
-    ax.set_xlabel('\nPredicted Values')
-    ax.set_ylabel('Actual Values')
-    ax.set_xticklabels(Class_labels)
-    ax.set_yticklabels(Class_labels)
-
-    # * Subplot Training accuracy
-    plt.subplot(X_size_figure, Y_size_figure, 1)
-    plt.plot(Accuracy, label = 'Training Accuracy')
-    plt.plot(Validation_accuracy, label = 'Validation Accuracy')
-    plt.ylim([0, 1])
-    plt.legend(loc = 'lower right')
-    plt.title('Training and Validation Accuracy')
-    plt.xlabel('epoch')
-
-    # * Subplot Training loss
-    plt.subplot(X_size_figure, Y_size_figure, 2)
-    plt.plot(Loss, label = 'Training Loss')
-    plt.plot(Validation_loss, label = 'Validation Loss')
-    plt.ylim([0, 2.0])
-    plt.legend(loc = 'upper right')
-    plt.title('Training and Validation Loss')
-    plt.xlabel('epoch')
-
-    # * Subplot ROC curve
-    plt.subplot(X_size_figure, Y_size_figure, 3)
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.plot(FPR, TPR, label = Pretrained_model_name + '(area = {:.4f})'.format(Auc))
-    plt.xlabel('False positive rate')
-    plt.ylabel('True positive rate')
-    plt.title('ROC curve')
-    plt.legend(loc = 'lower right')
-
-    plt.savefig(Class_problem_folder)
-    #plt.show()
-    """
-
   elif Class_problem >= 3:
     
     # * Lists
@@ -1114,91 +1071,6 @@ def deep_learning_models_folder(**kwargs):
     Plot_model.figure_plot_CM()
     Plot_model.figure_plot_acc()
     Plot_model.figure_plot_loss()
-
-    """
-    # *
-    Plot_model = FigurePlot(folder = Folder_path_images_in, title = Pretrained_model_name, 
-                              SI = False, SF = True, height = Height, width = Width, annot_kws = Annot_kws, 
-                                font = font, CMdf = Confusion_matrix_dataframe, Hdf = CSV_logger_info_folder, ROCdf = Dataframe_ROC_folder)
-
-    # *
-    Plot_model.figure_plot_four()
-    Plot_model.figure_plot_CM()
-    Plot_model.figure_plot_acc()
-    Plot_model.figure_plot_loss()
-    Plot_model.figure_plot_ROC_curve()
-
-
-    plt.figure(figsize = (Width, Height))
-    plt.subplot(X_size_figure, Y_size_figure, 4)
-    sns.set(font_scale = font) # for label size
-
-    ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": Annot_kws}) # font size
-    #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
-    ax.set_xlabel('\nPredicted Values')
-    ax.set_ylabel('Actual Values ')
-    ax.set_xticklabels(Class_labels)
-    ax.set_yticklabels(Class_labels)
-
-    Accuracy = Pretrained_Model_History.history['accuracy']
-    Validation_Accuracy = Pretrained_Model_History.history['val_accuracy']
-
-    Loss = Pretrained_Model_History.history['loss']
-    Validation_Loss = Pretrained_Model_History.history['val_loss']
-    
-    # * Subplot Training accuracy
-    plt.subplot(X_size_figure, Y_size_figure, 1)
-    plt.plot(Accuracy, label = 'Training Accuracy')
-    plt.plot(Validation_Accuracy, label = 'Validation Accuracy')
-    plt.ylim([0, 1])
-    plt.legend(loc = 'lower right')
-    plt.title('Training and Validation Accuracy')
-    plt.xlabel('epoch')
-
-    # * Subplot Training loss
-    plt.subplot(X_size_figure, Y_size_figure, 2)
-    plt.plot(Loss, label = 'Training Loss')
-    plt.plot(Validation_Loss, label = 'Validation Loss')
-    plt.ylim([0, 2.0])
-    plt.legend(loc = 'upper right')
-    plt.title('Training and Validation Loss')
-    plt.xlabel('epoch')
-
-    # * Subplot ROC curves
-    plt.subplot(X_size_figure, Y_size_figure, 3)
-    plt.plot([0, 1], [0, 1], 'k--')
-
-    for i, color, lbl in zip(range(Class_problem), Colors, Class_labels):
-      plt.plot(FPR[i], TPR[i], color = color, label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(lbl, Roc_auc[i]))
-
-    plt.legend(loc = 'lower right')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False positive rate')
-    plt.ylabel('True positive rate')
-    plt.title('ROC curve Multiclass')
-    
-    for i in range(len(FPR)):
-      for j in range(len(FPR[i])):
-        ROC_curve_FPR.append(FPR[j])
-
-    for i in range(len(TPR)):
-      for j in range(len(TPR[i])):
-        ROC_curve_TPR.append(TPR[j])
-
-    # * Dict_roc_curve
-
-    Dict_roc_curve = {'FPR': ROC_curve_FPR, 'TPR': ROC_curve_TPR} 
-    Dataframe_ROC = pd.DataFrame(Dict_roc_curve)
-
-    Dataframe_ROC.to_csv(Dataframe_ROC_folder)
-
-    # * Save this figure in the folder given
-    #Class_problem_name = str(Class_problem_prefix) + str(Pretrained_model_name) + str(Enhancement_technique) + '.png'
-    #Class_problem_folder = os.path.join(Folder_models, Class_problem_name)
-
-    plt.savefig(Class_problem_folder)
-    """
 
   Info.append(Pretrained_model_name_technique)
   Info.append(Pretrained_model_name)
