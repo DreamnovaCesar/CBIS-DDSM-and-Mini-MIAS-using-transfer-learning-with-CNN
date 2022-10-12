@@ -686,9 +686,13 @@ def deep_learning_models_folder(**kwargs):
 
   # * List
   Info = []
-  Info_dic = {}
+  Dataframe_ROCs = []
   ROC_curve_FPR = []
   ROC_curve_TPR = []
+  Classification_report_names = []
+
+  # *
+  Info_dic = {}
 
   # * Class problem definition
   Class_problem = len(Class_labels)
@@ -960,6 +964,11 @@ def deep_learning_models_folder(**kwargs):
 
   elif Class_problem >= 3:
     
+    # * Dicts
+    FPR = dict()
+    TPR = dict()
+    Roc_auc = dict()
+
     # * Lists
     Column_names_ = ['Name Model', "Model used", "Accuracy Training FE", "Accuracy Training LE", "Accuracy Testing", "Loss Train", "Loss Test", 
                     "Training images", "Validation images", "Test images", "Precision", "Recall", "F1_Score",      
@@ -988,8 +997,21 @@ def deep_learning_models_folder(**kwargs):
     y_pred_roc = label_binarize(y_pred, classes = Labels_multiclass_number)
     y_test_roc = label_binarize(Test_data.classes, classes = Labels_multiclass_number)
 
-    #print(y_pred)
-    #print(y_test)
+    # *
+    #Report = classification_report(Test_data.classes, y_pred, target_names = Class_labels)
+    Dict = classification_report(Test_data.classes, y_pred, target_names = Class_labels, output_dict = True)
+
+    for i, Report_labels in enumerate(Classification_report_labels):
+      for i, Metric_labels in enumerate(Classification_report_metrics_labels):
+        
+        # *
+        Classification_report_names.append('{} {}'.format(Metric_labels, Report_labels))
+        print('{} {}'.format(Metric_labels, Report_labels))
+        print(Dict[Report_labels][Metric_labels])
+        Classification_report_values.append(Dict[Report_labels][Metric_labels])
+        
+
+    print("\n")
 
     # * Confusion Matrix
     print('Confusion Matrix')
@@ -997,16 +1019,6 @@ def deep_learning_models_folder(**kwargs):
 
     print(Confusion_matrix)
     print(classification_report(Test_data.classes, y_pred, target_names = Class_labels))
-    
-    #Report = classification_report(Test_data.classes, y_pred, target_names = Class_labels)
-    Dict = classification_report(Test_data.classes, y_pred, target_names = Class_labels, output_dict = True)
-
-    for i, Report_labels in enumerate(Classification_report_labels):
-      for i, Metric_labels in enumerate(Classification_report_metrics_labels):
-
-        print(Dict[Report_labels][Metric_labels])
-        Classification_report_values.append(Dict[Report_labels][Metric_labels])
-        print("\n")
 
     # * Precision
     Precision = precision_score(Test_data.classes, y_pred, average = 'weighted')
@@ -1023,20 +1035,16 @@ def deep_learning_models_folder(**kwargs):
     print(f"F1: {round(F1_score, Digits)}")
     print("\n")
 
+    # *
     Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
     Confusion_matrix_dataframe.to_csv(Confusion_matrix_dataframe_folder, index = False)
 
-    FPR = dict()
-    TPR = dict()
-    Roc_auc = dict()
-
+    # *
     for i in range(Class_problem):
       FPR[i], TPR[i], _ = roc_curve(y_test_roc[:, i], y_pred_roc[:, i])
       Roc_auc[i] = auc(FPR[i], TPR[i])
 
-    # * Colors for ROC curves
-    Colors = cycle(['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan'])
-
+    # *
     for i, FPR_row in enumerate(list(FPR.values())):
       ROC_curve_FPR.append(FPR_row)
       print(ROC_curve_FPR)
@@ -1044,7 +1052,6 @@ def deep_learning_models_folder(**kwargs):
       ROC_curve_TPR.append(TPR_row)
       print(ROC_curve_TPR)
 
-    Dataframe_ROCs = []
 
     for j in range(len(ROC_curve_TPR)):
 
