@@ -176,3 +176,27 @@ import albumentations as A
 # *
 from glrlm import GLRLM
 from skimage.feature import graycomatrix, graycoprops
+
+from matplotlib.colors import ListedColormap
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+from sklearn.preprocessing import label_binarize
+from sklearn.multiclass import OneVsRestClassifier
+
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
+
+from sklearn.multiclass import OneVsRestClassifier
+
+#from sklearn.linear_model import LogisticRegression
+#from sklearn.naive_bayes import GaussianNB
+
+from imblearn.over_sampling import SMOTE

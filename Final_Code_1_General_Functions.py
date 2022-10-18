@@ -2400,6 +2400,62 @@ class FigureAdjust():
     #self.Annot_kws = kwargs.get('annot_kws', None)
     #self.Font = kwargs.get('font', None)
   
+  # * Folder_path attribute
+  @property
+  def Folder_path_property(self):
+      return self.Folder_path
+
+  @Folder_path_property.setter
+  def Folder_path_property(self, New_value):
+      self.Folder_path = New_value
+  
+  @Folder_path_property.deleter
+  def Folder_path_property(self):
+      print("Deleting Folder_path...")
+      del self.Folder_path
+
+  # * Title attribute
+  @property
+  def Title_property(self):
+      return self.Title
+
+  @Title_property.setter
+  def Title_property(self, New_value):
+      self.Title = New_value
+  
+  @Title_property.deleter
+  def Title_property(self):
+      print("Deleting Title...")
+      del self.Title
+
+  # * X_figure_size attribute
+  @property
+  def X_figure_size_property(self):
+      return self.X_figure_size
+
+  @X_figure_size_property.setter
+  def X_figure_size_property(self, New_value):
+      self.X_figure_size = New_value
+  
+  @X_figure_size_property.deleter
+  def X_figure_size_property(self):
+      print("Deleting X_figure_size...")
+      del self.X_figure_size
+
+  # * Y_figure_size attribute
+  @property
+  def Y_figure_size_property(self):
+      return self.Y_figure_size
+
+  @Y_figure_size_property.setter
+  def Y_figure_size_property(self, New_value):
+      self.Y_figure_size = New_value
+  
+  @Y_figure_size_property.deleter
+  def Y_figure_size_property(self):
+      print("Deleting Y_figure_size...")
+      del self.Y_figure_size
+
   # ? Decorator
 
   @staticmethod
@@ -2457,6 +2513,7 @@ class BarChart(FigureAdjust):
     self.X_figure_size = 12
     self.Y_figure_size = 12
 
+  @timer_func
   def barchart_horizontal(self) -> None:
     """
 	  Show CSV's barchar of all models
@@ -2510,7 +2567,7 @@ class BarChart(FigureAdjust):
     X = list(Dataframe.iloc[:, 1])
     Y = list(Dataframe.iloc[:, self.Plot_column])
 
-    plt.figure(figsize = (X_figure_size, Y_figure_size))
+    plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
 
     # * Reverse is a bool variable with the postion of the plot
     if self.Plot_reverse == True:
@@ -2557,15 +2614,10 @@ class BarChart(FigureAdjust):
                 X_slowest_list_value.append(i)
                 Y_slowest_list_value.append(k)
 
-  
-
     # * Plot the data using bar() method
     plt.barh(X_slow_list_values, Y_slow_list_values, label = "Bad", color = 'gray')
-
     plt.barh(X_slowest_list_value, Y_slowest_list_value, label = "Worse", color = 'black')
-
     plt.barh(X_fast_list_values, Y_fast_list_values, label = "Better", color = 'lightcoral')
-
     plt.barh(X_fastest_list_value, Y_fastest_list_value, label = "Best", color = 'red')
 
     # *
@@ -2578,7 +2630,7 @@ class BarChart(FigureAdjust):
 
     plt.legend(fontsize = Font_size_general)
 
-    plt.title(self.Plot_title, fontsize = Font_size_title)
+    plt.title(self.Title, fontsize = Font_size_title)
     plt.xlabel(self.Plot_x_label, fontsize = Font_size_general)
     plt.xticks(fontsize = Font_size_ticks)
     plt.ylabel("Models", fontsize = Font_size_general)
@@ -2586,8 +2638,8 @@ class BarChart(FigureAdjust):
     plt.grid(color = self.Colors[0], linestyle = '-', linewidth = 0.2)
 
     # * Name graph and save it
-    Graph_name = '{}_Dataframe_{}_{}.png'.format(Label_class_name, self.Plot_title, self.Name)
-    Graph_name_folder = os.path.join(self.Folder_path_save, Graph_name)
+    Graph_name = '{}_Dataframe_{}_{}.png'.format(Label_class_name, self.Title, self.Name)
+    Graph_name_folder = os.path.join(self.Folder_path, Graph_name)
 
     # *
     axes = plt.gca()
@@ -2602,17 +2654,163 @@ class BarChart(FigureAdjust):
 
     Next_value = Next_value + 1
 
-    # *
     for i, value in enumerate(Y_fast_list_values):
         plt.text(xmax + (0.05 * xmax), Next_value + i, "{:.8f}".format(value), ha = 'center', fontsize = Font_size_ticks, color = 'black')
 
-    plt.savefig(Graph_name_folder)
+    #plt.savefig(Graph_name_folder)
 
-    #plt.show()
+    self.save_figure(self.Save_figure, self.Title, Four_plot, self.Folder_path)
+    self.show_figure(self.Show_image)
 
-
+  @timer_func
   def barchart_vertical(self) -> None:  
-    pass
+
+    """
+	  Show CSV's barchar of all models
+
+    Parameters:
+    argument1 (folder): CSV that will be used.
+    argument2 (str): Title name.
+    argument3 (str): Xlabel name.
+    argument1 (dataframe): Dataframe that will be used.
+    argument2 (bool): if the value is false, higher values mean better, if the value is false higher values mean worse.
+    argument3 (folder): Folder to save the images.
+    argument3 (int): What kind of problem the function will classify
+
+    Returns:
+	  void
+   	"""
+    # * General parameters
+    #X_figure_size = 12
+    #Y_figure_size = 10
+    Font_size_title = self.X_figure_size * 1.2
+    Font_size_general = self.X_figure_size * 0.8
+    Font_size_ticks = (self.X_figure_size * self.Y_figure_size) * 0.05
+
+    # * General lists
+
+    X_fast_list_values = []
+    X_slow_list_values = []
+
+    Y_fast_list_values = []
+    Y_slow_list_values = []
+
+    X_fastest_list_value = []
+    Y_fastest_list_value = []
+
+    X_slowest_list_value = []
+    Y_slowest_list_value = []
+
+    # * Chosing label
+    if self.Num_classes == 2:
+      Label_class_name = 'Biclass'
+    elif self.Num_classes > 2:
+      Label_class_name = 'Multiclass'
+
+    # Initialize the lists for X and Y
+    #data = pd.read_csv("D:\MIAS\MIAS VS\DataCSV\DataFrame_Binary_MIAS_Data.csv")
+
+    # * Read dataframe csv
+    Dataframe = pd.read_csv(self.CSV_path)
+
+    # * Get X and Y values
+    X = list(Dataframe.iloc[:, 1])
+    Y = list(Dataframe.iloc[:, self.Plot_column])
+
+    plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
+
+    # * Reverse is a bool variable with the postion of the plot
+    if self.Plot_reverse == True:
+
+        for Index, (i, k) in enumerate(zip(X, Y)):
+            if k < np.mean(Y):
+                X_fast_list_values.append(i)
+                Y_fast_list_values.append(k)
+            elif k >= np.mean(Y):
+                X_slow_list_values.append(i)
+                Y_slow_list_values.append(k)
+
+        for Index, (i, k) in enumerate(zip(X_fast_list_values, Y_fast_list_values)):
+            if k == np.min(Y_fast_list_values):
+                X_fastest_list_value.append(i)
+                Y_fastest_list_value.append(k)
+                #print(X_fastest_list_value)
+                #print(Y_fastest_list_value)
+
+        for Index, (i, k) in enumerate(zip(X_slow_list_values, Y_slow_list_values)):
+            if k == np.max(Y_slow_list_values):
+                X_slowest_list_value.append(i)
+                Y_slowest_list_value.append(k)
+
+    else:
+
+        for Index, (i, k) in enumerate(zip(X, Y)):
+            if k < np.mean(Y):
+                X_slow_list_values.append(i)
+                Y_slow_list_values.append(k)
+            elif k >= np.mean(Y):
+                X_fast_list_values.append(i)
+                Y_fast_list_values.append(k)
+
+        for Index, (i, k) in enumerate(zip(X_fast_list_values, Y_fast_list_values)):
+            if k == np.max(Y_fast_list_values):
+                X_fastest_list_value.append(i)
+                Y_fastest_list_value.append(k)
+                #print(XFastest)
+                #print(YFastest)
+
+        for Index, (i, k) in enumerate(zip(X_slow_list_values, Y_slow_list_values)):
+            if k == np.min(Y_slow_list_values):
+                X_slowest_list_value.append(i)
+                Y_slowest_list_value.append(k)
+
+    # * Plot the data using bar() method
+    plt.bar(X_slow_list_values, Y_slow_list_values, label = "Bad", color = 'gray')
+    plt.bar(X_slowest_list_value, Y_slowest_list_value, label = "Worse", color = 'black')
+    plt.bar(X_fast_list_values, Y_fast_list_values, label = "Better", color = 'lightcoral')
+    plt.bar(X_fastest_list_value, Y_fastest_list_value, label = "Best", color = 'red')
+
+    # *
+    for Index, value in enumerate(Y_slowest_list_value):
+        plt.text(0, len(Y) + 3, 'Worse value: {} -------> {}'.format(str(value), str(X_slowest_list_value[0])), fontweight = 'bold', fontsize = Font_size_general + 1)
+
+    # *
+    for Index, value in enumerate(Y_fastest_list_value):
+        plt.text(0, len(Y) + 4, 'Best value: {} -------> {}'.format(str(value), str(X_fastest_list_value[0])), fontweight = 'bold', fontsize = Font_size_general + 1)
+
+    plt.legend(fontsize = Font_size_general)
+
+    plt.title(self.Title, fontsize = Font_size_title)
+    plt.xlabel(self.Plot_x_label, fontsize = Font_size_general)
+    plt.xticks(fontsize = Font_size_ticks)
+    plt.ylabel("Models", fontsize = Font_size_general)
+    plt.yticks(fontsize = Font_size_ticks)
+    plt.grid(color = self.Colors[0], linestyle = '-', linewidth = 0.2)
+
+    # * Name graph and save it
+    Graph_name = '{}_Dataframe_{}_{}.png'.format(Label_class_name, self.Title, self.Name)
+    Graph_name_folder = os.path.join(self.Folder_path, Graph_name)
+
+    # *
+    axes = plt.gca()
+    ymin, ymax = axes.get_ylim()
+    xmin, xmax = axes.get_xlim()
+
+    # *
+    for i, value in enumerate(Y_slow_list_values):
+        plt.text(xmax + (0.05 * xmax), i, "{:.8f}".format(value), ha = 'center', fontsize = Font_size_ticks, color = 'black')
+
+        Next_value = i
+
+    Next_value = Next_value + 1
+
+    for i, value in enumerate(Y_fast_list_values):
+        plt.text(xmax + (0.05 * xmax), Next_value + i, "{:.8f}".format(value), ha = 'center', fontsize = Font_size_ticks, color = 'black')
+
+    #plt.savefig(Graph_name_folder)
+
+    self.save_figure(self.Save_figure, self.Title, Four_plot, self.Folder_path)
+    self.show_figure(self.Show_image)
 
 # ? Create class folders
 
@@ -2666,7 +2864,7 @@ class FigurePlot(FigureAdjust):
       self.TPRs.append(self.Roc_curve_dataframes[i].TPR.to_list())
 
 
-    # * Roc_curve_dataframe attribute
+  # * Roc_curve_dataframe attribute
   @property
   def Roc_curve_dataframe_property(self):
       return self.Roc_curve_dataframe
