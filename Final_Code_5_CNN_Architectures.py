@@ -855,13 +855,10 @@ def deep_learning_models_folder(**kwargs):
   if Class_problem == 2:
 
     # * Lists
-    Column_names_ = ['Name Model', "Model used", "Accuracy Training FE", "Accuracy Training LE", "Accuracy Testing", "Loss Train", "Loss Test", 
-                    "Training images", "Validation images", "Test images", "Precision", "Recall", "F1_Score", 
-                    "Accuracy normal", "Precision normal", "Recall normal", "F1_Score normal", "Images support normal",
-                    "Accuracy tumor", "Precision tumor", "Recall tumor", "F1_Score tumor", "Images support tumor",
-                    "Precision macro avg", "Recall macro avg", "F1_Score macro avg", "Images support macro avg",
-                    "Precision weighted avg", "Recall weighted avg", "F1_Score weighted avg", "Images support weighted avg",
-                    "Time training", "Time testing", "Technique used", "TN", "FP", "FN", "TP", "Epochs", "Auc"]
+    Column_names_ = [ 'name model', "model used", "accuracy training FE", "accuracy training LE", 
+                      "accuracy testing", "loss train", "loss test", "training images", "validation images", 
+                      "test images", "time training", "time testing", "technique used", "TN", "FP", "FN", "TP", "epochs", 
+                      "precision", "recall", "f1_Score"]
     
     Dataframe_save = pd.DataFrame(columns = Column_names_)
 
@@ -970,19 +967,10 @@ def deep_learning_models_folder(**kwargs):
     Roc_auc = dict()
 
     # * Lists
-    Column_names_ = ['Name Model', "Model used", "Accuracy Training FE", "Accuracy Training LE", "Accuracy Testing", "Loss Train", "Loss Test", 
-                    "Training images", "Validation images", "Test images", "Precision", "Recall", "F1_Score",      
-                    "Precision normal", "Recall normal", "F1_Score normal", "Images support normal", 
-                    "Precision tumor", "Recall tumor", "F1_Score tumor", "Images support tumor",
-                    "Precision C", "Recall C", "F1_Score C", "Images support C",
-                    "Precision macro avg", "Recall macro avg", "F1_Score macro avg", "Images support macro avg",
-                    "Precision weighted avg", "Recall weighted avg", "F1_Score weighted avg", "Images support weighted avg",
-                    "Time training", "Time testing", "Technique used", "TN", "FP", "FN", "TP", "Epochs", "A", "B", "C"]
-    
-    Dataframe_save = pd.DataFrame(columns = Column_names_)
-
-    # * 
-    Dataframe_save.to_csv(Dataframe_save_folder)
+    Column_names_ = [ 'name model', "model used", "accuracy training FE", "accuracy training LE", 
+                      "accuracy testing", "loss train", "loss test", "training images", "validation images", 
+                      "test images", "time training", "time testing", "technique used", "TN", "FP", "FN", "TP", "epochs", 
+                      "precision", "recall", "f1_Score"]
 
     Labels_multiclass_number = []
 
@@ -1006,12 +994,20 @@ def deep_learning_models_folder(**kwargs):
         
         # *
         Classification_report_names.append('{} {}'.format(Metric_labels, Report_labels))
-        print('{} {}'.format(Metric_labels, Report_labels))
+        print(Classification_report_names)
         print(Dict[Report_labels][Metric_labels])
         Classification_report_values.append(Dict[Report_labels][Metric_labels])
-        
-
     print("\n")
+
+    # *
+    Column_names_.extend(Class_labels)
+    Column_names_.extend(Classification_report_names)
+    
+    # *
+    Dataframe_save = pd.DataFrame(columns = Column_names_)
+
+    # * 
+    Dataframe_save.to_csv(Dataframe_save_folder)
 
     # * Confusion Matrix
     print('Confusion Matrix')
@@ -1114,6 +1110,8 @@ def deep_learning_models_folder(**kwargs):
   #df2 = {'Name': 'Amy', 'Maths': 89, 'Science': 93}
   #df = df.append(df2, ignore_index = True)
 
+  print(Dataframe_save)
+
   #Dataframe_save = pd.read_csv(Dataframe_save_folder)
   overwrite_row_CSV_folder(Dataframe_save, Dataframe_save_folder, Info, Column_names_, Index)
 
@@ -1136,8 +1134,34 @@ def overwrite_row_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Ro
     
    	"""
 
-    print(len(Column_names))
-    print(len(Info_list))
+    for i in range(len(Info_list)):
+        Dataframe.loc[Row, Column_names[i]] = Info_list[i]
+  
+    Dataframe.to_csv(Folder_path, index = False)
+  
+    print(Dataframe)
+
+# ? Folder Update CSV changing value
+
+def overwrite_dic_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Row):
+
+    """
+	  Updates final CSV dataframe to see all values
+
+    Parameters:
+    argument1 (list): All values.
+    argument2 (dataframe): dataframe that will be updated
+    argument3 (list): Names of each column
+    argument4 (folder): Folder path to save the dataframe
+    argument5 (int): The index.
+
+    Returns:
+	  void
+    
+   	"""
+
+    df2 = {'Name': 'Amy', 'Maths': 89, 'Science': 93}
+    df = df.append(df2, ignore_index = True)
 
     for i in range(len(Info_list)):
         Dataframe.loc[Row, Column_names[i]] = Info_list[i]
