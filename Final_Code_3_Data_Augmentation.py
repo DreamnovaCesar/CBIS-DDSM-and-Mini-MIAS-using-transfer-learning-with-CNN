@@ -61,7 +61,7 @@ class DataAugmentation:
 
   def __str__(self):
 
-        Descripcion_class = "This is a class xD"
+        Descripcion_class = ''
         
         return Descripcion_class
 
@@ -582,23 +582,7 @@ class DataAugmentation:
 
     #Name_dir:str = os.path.dirname(self.Folder)
     Name_base:str = os.path.basename(self.Folder)
-
-    #Name_dir_dest:str = os.path.dirname(self.Folder_dest)
-    #Name_base_dest:str = os.path.basename(self.Folder_dest)
-    #print(self.Folder_dest + '/' + Name_base + '_DA')
-
-    """
-    Exist_dir:bool = os.path.isdir(self.Folder_dest + '/' + Name_base + '_DA') 
-
-    if self.Save_images == True:
-      if Exist_dir == False:
-        New_folder_dest:str = self.Folder_dest + '/' + Name_base + '_DA'
-        os.mkdir(New_folder_dest)
-      else:
-        New_folder_dest:str = self.Folder +  '/' + Name_base + '_DA'
-
-    """
-
+    
     # * Lists to save the images and their respective labels
     Images:list = [] 
     Labels:list = [] 
@@ -625,9 +609,6 @@ class DataAugmentation:
         # * Resize with the given values
         Path_file:str = os.path.join(self.Folder, File)
         Image:ndarray = cv2.imread(Path_file)
-
-        #Image = cv2.cvtColor(Image, cv2.COLOR_BGR2RGB)
-        #Imagen = cv2.resize(Resize_Imagen, dim, interpolation = cv2.INTER_CUBIC)
 
         # ? 1) Standard image
 

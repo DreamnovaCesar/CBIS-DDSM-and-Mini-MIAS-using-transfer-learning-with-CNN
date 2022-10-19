@@ -967,23 +967,23 @@ class CropImages():
 
 # ? Kmeans algorithm
 @timer_func
-def kmeans_function(Folder_csv, Folder_graph, Technique_name, X_data, Clusters, Filename, Severity):
+def kmeans_function(Folder_CSV: str, Folder_graph: str, Technique_name: str, X_data, Clusters: int, Filename: str, Severity: str) -> pd.DataFrame:
   """
   _summary_
 
   _extended_summary_
 
   Args:
-      CSV_folder (_type_): _description_
-      GRAPH_folder (_type_): _description_
-      Technique_name (_type_): _description_
+      Folder_CSV (str): _description_
+      Folder_graph (str): _description_
+      Technique_name (str): _description_
       X_data (_type_): _description_
-      Clusters (_type_): _description_
-      Filename (_type_): _description_
-      Severity (_type_): _description_
+      Clusters (int): _description_
+      Filename (str): _description_
+      Severity (str): _description_
 
   Returns:
-      _type_: _description_
+      pd.DataFrame: _description_
   """
 
   # * Tuple with different colors
@@ -1019,7 +1019,7 @@ def kmeans_function(Folder_csv, Folder_graph, Technique_name, X_data, Clusters, 
   plt.legend()
 
   # * Tuple with different colors
-  Folder_graph_name = 'Kmeans_Graph_' + str(Technique_name) + '_' + str(Severity) + '.png'
+  Folder_graph_name = 'Kmeans_Graph_{}_{}.png'.format(Technique_name, Severity)
   Folder_graph_folder = os.path.join(Folder_graph, Folder_graph_name)
   plt.savefig(Folder_graph_folder)
   #plt.show()
@@ -1029,8 +1029,8 @@ def kmeans_function(Folder_csv, Folder_graph, Technique_name, X_data, Clusters, 
   #print(DataFrame)
 
   #pd.set_option('display.max_rows', DataFrame.shape[0] + 1)
-  Dataframe_name = str(Technique_name) + '_Dataframe_' + str(Severity) + '.csv'
-  Dataframe_folder = os.path.join(Folder_csv, Dataframe_name)
+  Dataframe_name = '{}_Dataframe_{}'.format(Technique_name, Severity)
+  Dataframe_folder = os.path.join(Folder_CSV, Dataframe_name)
 
   DataFrame.to_csv(Dataframe_folder)
 
@@ -1039,8 +1039,28 @@ def kmeans_function(Folder_csv, Folder_graph, Technique_name, X_data, Clusters, 
   return DataFrame
 
   # ? Remove Data from K-means function
+  
 @timer_func
-def kmeans_remove_data(Folder, CSV_folder, Technique_name, Dataframe, Cluster_to_remove, Severity):
+def kmeans_remove_data(Folder_path: str, Folder_CSV: str, Technique_name: str, Dataframe: pd.DataFrame, Cluster_to_remove: int, Severity: str) -> pd.DataFrame:
+  """
+  _summary_
+
+  _extended_summary_
+
+  Args:
+      Folder_path (str): _description_
+      Folder_CSV (str): _description_
+      Technique_name (str): _description_
+      Dataframe (pd.DataFrame): _description_
+      Cluster_to_remove (int): _description_
+      Severity (str): _description_
+
+  Raises:
+      ValueError: _description_
+
+  Returns:
+      pd.DataFrame: _description_
+  """
 
   # * General lists
   #Images = [] # Png Images
@@ -1054,10 +1074,10 @@ def kmeans_remove_data(Folder, CSV_folder, Technique_name, Dataframe, Cluster_to
   count = 1
   Index = 1
 
-  os.chdir(Folder)
+  os.chdir(Folder_path)
 
   # * Using sort function
-  sorted_files, images = sort_images(Folder)
+  sorted_files, images = sort_images(Folder_path)
 
   # * Reading the files
   for File in sorted_files:
@@ -1075,7 +1095,7 @@ def kmeans_remove_data(Folder, CSV_folder, Technique_name, Dataframe, Cluster_to
           print(f"Working with {count} of {images} {Format} images, {Filename} ------- {Format} ✅")
           count += 1
 
-          Path_File = os.path.join(Folder, File)
+          Path_File = os.path.join(Folder_path, File)
           os.remove(Path_File)
           print(Dataframe.iloc[Index - 1, Refnum], ' removed ❌')
           DataRemove.append(count)
@@ -1113,7 +1133,7 @@ def kmeans_remove_data(Folder, CSV_folder, Technique_name, Dataframe, Cluster_to
   #pd.set_option('display.max_rows', df.shape[0] + 1)
 
   Dataframe_name = str(Technique_name) + '_Data_Removed_' + str(Severity) + '.csv'
-  Dataframe_folder = os.path.join(CSV_folder, Dataframe_name)
+  Dataframe_folder = os.path.join(Folder_CSV, Dataframe_name)
 
   Dataframe.to_csv(Dataframe_folder)
 
@@ -1813,7 +1833,17 @@ def CBIS_DDSM_split_several_data(**kwargs)-> pd.DataFrame:
 # ? Dataset splitting
 
 def Dataframe_split(Dataframe: pd.DataFrame) -> tuple[pd.DataFrame, set, set, set]:
+  """
+  _summary_
 
+  _extended_summary_
+
+  Args:
+      Dataframe (pd.DataFrame): _description_
+
+  Returns:
+      tuple[pd.DataFrame, set, set, set]: _description_
+  """
   X = Dataframe.drop('Labels', axis = 1)
   Y = Dataframe['Labels']
 
@@ -1824,7 +1854,17 @@ def Dataframe_split(Dataframe: pd.DataFrame) -> tuple[pd.DataFrame, set, set, se
 # ? Imbalance data majority
 
 def Imbalance_data_majority(Dataframe: pd.DataFrame) -> tuple[pd.DataFrame, set, set, set]:
+    """
+    _summary_
 
+    _extended_summary_
+
+    Args:
+        Dataframe (pd.DataFrame): _description_
+
+    Returns:
+        tuple[pd.DataFrame, set, set, set]: _description_
+    """
     X = Dataframe.drop('Labels', axis = 1)
     Y = Dataframe['Labels']
 
@@ -1835,10 +1875,10 @@ def Imbalance_data_majority(Dataframe: pd.DataFrame) -> tuple[pd.DataFrame, set,
     Dataframe_minority = Dataframe[Y == 1]
     
     # * Resample using majority
-    Dataframe_majority_downsampled = resample(      Dataframe_majority, 
-                                                    replace = False,        # sample with replacement
-                                                    n_samples = Minority,   # to match majority class
-                                                    random_state = 123)     # reproducible results
+    Dataframe_majority_downsampled = resample(  Dataframe_majority, 
+                                                replace = False,        # sample with replacement
+                                                n_samples = Minority,   # to match majority class
+                                                random_state = 123)     # reproducible results
     
     # * Concat minority and majority downsampled
     Dataframe_downsampled = pd.concat([Dataframe_minority, Dataframe_majority_downsampled])
@@ -1852,7 +1892,17 @@ def Imbalance_data_majority(Dataframe: pd.DataFrame) -> tuple[pd.DataFrame, set,
 # ? Imbalance data minority
 
 def Imbalance_data_minority(Dataframe: pd.DataFrame) -> tuple[pd.DataFrame, set, set, set]:
+    """
+    _summary_
 
+    _extended_summary_
+
+    Args:
+        Dataframe (pd.DataFrame): _description_
+
+    Returns:
+        tuple[pd.DataFrame, set, set, set]: _description_
+    """
     X = Dataframe.drop('Labels', axis = 1)
     Y = Dataframe['Labels']
     
@@ -1886,12 +1936,12 @@ def CBIS_DDSM_CSV_severity_labeled(Folder_CSV: str, Column: int, Severity: int)-
     _extended_summary_
 
     Args:
-        Folder_CSV (_type_): _description_
-        Column (_type_): _description_
-        Severity (_type_): _description_
+        Folder_CSV(str): _description_
+        Column(int): _description_
+        Severity(int): _description_
 
     Returns:
-        _type_: _description_
+        pd.DataFrame: _description_
     """
 
     # * Folder attribute (ValueError, TypeError)
@@ -2412,6 +2462,18 @@ class FigureAdjust():
     #self.Annot_kws = kwargs.get('annot_kws', None)
     #self.Font = kwargs.get('font', None)
   
+  def __repr__(self) -> str:
+
+        kwargs_info = ''
+
+        return kwargs_info
+
+  def __str__(self) -> str:
+
+        Descripcion_class = ''
+        
+        return Descripcion_class
+
   # * Folder_path attribute
   @property
   def Folder_path_property(self):
@@ -2492,7 +2554,6 @@ class FigureAdjust():
     
     else: 
       pass
-
 
   # ? Decorator
   @staticmethod
@@ -2902,7 +2963,6 @@ class FigurePlot(FigureAdjust):
     for i in range(len(self.Roc_curve_dataframes)):
       self.FPRs.append(self.Roc_curve_dataframes[i].FPR.to_list())
       self.TPRs.append(self.Roc_curve_dataframes[i].TPR.to_list())
-
 
   # * CSV_path attribute
   @property

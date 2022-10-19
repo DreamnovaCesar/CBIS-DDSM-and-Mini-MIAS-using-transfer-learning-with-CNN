@@ -1,7 +1,7 @@
 
 from Final_Code_1_General_Functions import DCM_format
 
-def preprocessing_ChangeFormat():
+def preprocessing_ChangeFormat() -> None:
 
     Calcification = 'Calficication'
     Mass = 'Mass'

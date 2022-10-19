@@ -419,6 +419,15 @@ def overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
 
 
 def configuration_models_folder(**kwargs):
+    """
+    _summary_
+
+    Args:
+        Folder_path (str): Folder's dataset for distribution
+
+    Returns:
+        None
+    """
 
     # * General attributes
     #Training_data = kwargs.get('trainingdata', None)
@@ -447,7 +456,6 @@ def configuration_models_folder(**kwargs):
     #Model_function = Models.keys()
     #Model_index = Models.values()
 
-
     # * Parameters
     #Labels_biclass = ['Abnormal', 'Normal']
     #Labels_triclass = ['Normal', 'Benign', 'Malignant']
@@ -458,23 +466,29 @@ def configuration_models_folder(**kwargs):
     #Name_dir = os.path.dirname(Folder)
     #Name_base = os.path.basename(Folder)
 
+    # *
     Batch_size = 32
 
+    # *
     Shape = (X_size, Y_size)
 
+    # *
     Name_folder_training = Folder + '/' + 'train'
     Name_folder_val = Folder + '/' + 'val'
     Name_folder_test = Folder + '/' + 'test'
 
+    # *
     train_datagen = ImageDataGenerator()
     val_datagen = ImageDataGenerator()
     test_datagen = ImageDataGenerator()
 
+    # *
     if(len(Class_labels) <= 2):
       Class_mode = "binary"
     else:
       Class_mode = "categorical"
 
+    # *
     train_generator = train_datagen.flow_from_directory(
         directory = Name_folder_training,
         target_size = Shape,
@@ -485,6 +499,7 @@ def configuration_models_folder(**kwargs):
         seed = 42
     )
 
+    # *
     valid_generator = val_datagen.flow_from_directory(
         directory = Name_folder_val,
         target_size = Shape,
@@ -495,6 +510,7 @@ def configuration_models_folder(**kwargs):
         seed = 42        
     )
 
+    # *
     test_generator = test_datagen.flow_from_directory(
         directory = Name_folder_test,
         target_size = Shape,
@@ -517,29 +533,28 @@ def configuration_models_folder(**kwargs):
 
 #Train_data, Valid_data, Test_data, Pretrained_model_function, Enhancement_technique, Class_labels, X_size, Y_size, Epochs, Folder_CSV, Folder_models, Folder_models_Esp
 def deep_learning_models_folder(**kwargs):
-
   """
-  General configuration for each model, extracting features and printing theirs values.
+  _summary_
 
-  Parameters:
-  argument1 (model): Model chosen.
-  argument2 (str): technique used.
-  argument3 (list): labels used for printing.
-  argument4 (int): Size of X.
-  argument5 (int): Size of Y.
-  argument6 (int): Number of classes.
-  argument7 (float): Validation split value.
-  argument8 (int): Number of epochs.
-  argument9 (int): X train split data.
-  argument9 (int): y train split data.
-  argument9 (int): X test split data.
-  argument9 (int): y test split data.
-  argument9 (int): Folder used to save data images.
-  argument9 (int): Folder used to save data images in spanish.
+  Args:
+      Train_data (_type_): __
+      Valid_data (_type_): __
+      Test_data (_type_): __
+
+      Folder_models (str): __
+      Folder_model_esp (str): __
+      Folder_CSV (str): __
+      Pretrained_model_index (int): __
+      Dataframe_save (str): __
+      Enhancement_technique (str): __
+      Class_labels (list[str]): __
+      X_size (int): __ 
+      Y_size (int): __
+      Epochs (int): __
+      Index (int): __
 
   Returns:
-  int:Returning all metadata from each model.
-  
+      None
   """
 
   # * General attributes
@@ -571,8 +586,6 @@ def deep_learning_models_folder(**kwargs):
 
   Height = 12
   Width = 12
-  Annot_kws = 12
-  font = 0.7
 
   # * Parameters dic classification report
 
