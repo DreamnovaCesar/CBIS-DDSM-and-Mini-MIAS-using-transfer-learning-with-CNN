@@ -2392,6 +2392,13 @@ class FigureAdjust():
     self.Folder_path = kwargs.get('folder', None)
     self.Title = kwargs.get('title', None)
 
+    # * 
+    self.Show_image = kwargs.get('SI', False)
+    self.Save_figure = kwargs.get('SF', False)
+
+    # *
+    self.Num_classes = kwargs.get('classes', None)
+
     # *
     self.X_figure_size = 12
     self.Y_figure_size = 12
@@ -2428,33 +2435,47 @@ class FigureAdjust():
       print("Deleting Title...")
       del self.Title
 
-  # * X_figure_size attribute
+  # * Show_image attribute
   @property
-  def X_figure_size_property(self):
-      return self.X_figure_size
+  def Show_image_property(self):
+      return self.Show_image
 
-  @X_figure_size_property.setter
-  def X_figure_size_property(self, New_value):
-      self.X_figure_size = New_value
+  @Show_image_property.setter
+  def Show_image_property(self, New_value):
+      self.Show_image = New_value
   
-  @X_figure_size_property.deleter
-  def X_figure_size_property(self):
-      print("Deleting X_figure_size...")
-      del self.X_figure_size
+  @Show_image_property.deleter
+  def Show_image_property(self):
+      print("Deleting Show_image...")
+      del self.Show_image
 
-  # * Y_figure_size attribute
+  # * Save_figure attribute
   @property
-  def Y_figure_size_property(self):
-      return self.Y_figure_size
+  def Save_figure_property(self):
+      return self.Save_figure
 
-  @Y_figure_size_property.setter
-  def Y_figure_size_property(self, New_value):
-      self.Y_figure_size = New_value
+  @Save_figure_property.setter
+  def Save_figure_property(self, New_value):
+      self.Save_figure = New_value
   
-  @Y_figure_size_property.deleter
-  def Y_figure_size_property(self):
-      print("Deleting Y_figure_size...")
-      del self.Y_figure_size
+  @Save_figure_property.deleter
+  def Save_figure_property(self):
+      print("Deleting Save_figure...")
+      del self.Save_figure
+
+  # * Num_classes attribute
+  @property
+  def Num_classes_property(self):
+      return self.Num_classes
+
+  @Num_classes_property.setter
+  def Num_classes_property(self, New_value):
+      self.Num_classes = New_value
+  
+  @Num_classes_property.deleter
+  def Num_classes_property(self):
+      print("Deleting Num_classes...")
+      del self.Num_classes
 
   # ? Decorator
 
@@ -2493,25 +2514,88 @@ class BarChart(FigureAdjust):
     super().__init__(**kwargs)
 
     # *
-    #self.Folder_path = kwargs.get('folder', None)
     self.CSV_path = kwargs.get('csv', None)
 
     # *
-    #self.Plot_title = kwargs.get('title', None)
     self.Plot_x_label = kwargs.get('label', None)
     self.Plot_column = kwargs.get('column', None)
     self.Plot_reverse = kwargs.get('reverse', None)
 
     # *
-    self.Num_classes = kwargs.get('classes', None)
-    self.Name = kwargs.get('name', None)
+    #self.Name = kwargs.get('name', None)
 
     # *
     self.Colors = ('gray', 'red', 'blue', 'green', 'cyan', 'magenta', 'indigo', 'azure', 'tan', 'purple')
 
-    # *
-    self.X_figure_size = 12
-    self.Y_figure_size = 12
+  # * CSV_path attribute
+  @property
+  def CSV_path_property(self):
+      return self.CSV_path
+
+  @CSV_path_property.setter
+  def CSV_path_property(self, New_value):
+      self.CSV_path = New_value
+  
+  @CSV_path_property.deleter
+  def CSV_path_property(self):
+      print("Deleting CSV_path...")
+      del self.CSV_path
+
+  # * Plot_x_label attribute
+  @property
+  def Plot_x_label_property(self):
+      return self.Plot_x_label
+
+  @Plot_x_label_property.setter
+  def Plot_x_label_property(self, New_value):
+      self.Plot_x_label = New_value
+  
+  @Plot_x_label_property.deleter
+  def Plot_x_label_property(self):
+      print("Deleting Plot_x_label...")
+      del self.Plot_x_label
+
+  # * Plot_column attribute
+  @property
+  def Plot_column_property(self):
+      return self.Plot_column
+
+  @Plot_column_property.setter
+  def Plot_column_property(self, New_value):
+      self.Plot_column = New_value
+  
+  @Plot_column_property.deleter
+  def Plot_column_property(self):
+      print("Deleting Plot_column...")
+      del self.Plot_column
+
+  # * Plot_reverse attribute
+  @property
+  def Plot_reverse_property(self):
+      return self.Plot_reverse
+
+  @Plot_reverse_property.setter
+  def Plot_reverse_property(self, New_value):
+      self.Plot_reverse = New_value
+  
+  @Plot_reverse_property.deleter
+  def Plot_reverse_property(self):
+      print("Deleting Plot_reverse...")
+      del self.Plot_reverse
+
+  # * Name attribute
+  @property
+  def Name_property(self):
+      return self.Name
+
+  @Name_property.setter
+  def Name_property(self, New_value):
+      self.Name = New_value
+  
+  @Name_property.deleter
+  def Name_property(self):
+      print("Deleting Name...")
+      del self.Name
 
   @timer_func
   def barchart_horizontal(self) -> None:
@@ -2530,12 +2614,6 @@ class BarChart(FigureAdjust):
     Returns:
 	  void
    	"""
-    # * General parameters
-    #X_figure_size = 12
-    #Y_figure_size = 10
-    Font_size_title = self.X_figure_size * 1.2
-    Font_size_general = self.X_figure_size * 0.8
-    Font_size_ticks = (self.X_figure_size * self.Y_figure_size) * 0.05
 
     # * General lists
 
@@ -2638,7 +2716,7 @@ class BarChart(FigureAdjust):
     plt.grid(color = self.Colors[0], linestyle = '-', linewidth = 0.2)
 
     # * Name graph and save it
-    Graph_name = '{}_Dataframe_{}_{}.png'.format(Label_class_name, self.Title, self.Name)
+    Graph_name = '{}_Dataframe_{}.png'.format(Label_class_name, self.Title)
     Graph_name_folder = os.path.join(self.Folder_path, Graph_name)
 
     # *
@@ -2820,16 +2898,6 @@ class FigurePlot(FigureAdjust):
     super().__init__(**kwargs)
 
     # * 
-    self.Folder_path = kwargs.get('folder', None)
-    self.Title = kwargs.get('title', False)
-    self.Show_image = kwargs.get('SI', False)
-    self.Save_figure = kwargs.get('SF', False)
-
-    # * 
-    #self.Height = kwargs.get('height', 12)
-    #self.Width = kwargs.get('width', 12)
-
-    # * 
     self.Annot_kws = kwargs.get('annot_kws', None)
     self.Font = kwargs.get('font', None)
     self.Labels = kwargs.get('labels', None)
@@ -2863,6 +2931,20 @@ class FigurePlot(FigureAdjust):
       self.FPRs.append(self.Roc_curve_dataframes[i].FPR.to_list())
       self.TPRs.append(self.Roc_curve_dataframes[i].TPR.to_list())
 
+
+  # * CSV_path attribute
+  @property
+  def CSV_path_property(self):
+      return self.CSV_path
+
+  @CSV_path_property.setter
+  def CSV_path_property(self, New_value):
+      self.CSV_path = New_value
+  
+  @CSV_path_property.deleter
+  def CSV_path_property(self):
+      print("Deleting CSV_path...")
+      del self.CSV_path
 
   # * Roc_curve_dataframe attribute
   @property
