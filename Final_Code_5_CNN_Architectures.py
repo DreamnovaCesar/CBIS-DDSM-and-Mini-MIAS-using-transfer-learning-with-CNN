@@ -847,15 +847,16 @@ def deep_learning_models_folder(**kwargs):
     FPR, TPR, _ = roc_curve(Test_data.classes, y_pred_class)
     Auc = auc(FPR, TPR)
     
+    # *
     for i in range(len(FPR)):
       ROC_curve_FPR.append(FPR[i])
 
     for i in range(len(TPR)):
       ROC_curve_TPR.append(TPR[i])
 
+    # *
     Accuracy = Pretrained_Model_History.history['accuracy']
     Validation_accuracy = Pretrained_Model_History.history['val_accuracy']
-
     Loss = Pretrained_Model_History.history['loss']
     Validation_loss = Pretrained_Model_History.history['val_loss']
 
@@ -864,10 +865,12 @@ def deep_learning_models_folder(**kwargs):
     Dataframe_ROC = pd.DataFrame(Dict_roc_curve)
     Dataframe_ROC.to_csv(Dataframe_ROC_folder)
 
+    # *
     Plot_model = FigurePlot(folder = Folder_path_images_in, title = Pretrained_model_name, 
-                              SI = False, SF = True, height = Height, width = Width, annot_kws = Annot_kws, 
-                                font = font, CMdf = Confusion_matrix_dataframe_folder, Hdf = CSV_logger_info_folder, ROCdf = [Dataframe_ROC_folder])
+                              SI = False, SF = True, height = Height, width = Width, CMdf = Confusion_matrix_dataframe_folder, 
+                              Hdf = CSV_logger_info_folder, ROCdf = [Dataframe_ROC_folder], labels = Class_labels)
 
+    # *
     Plot_model.figure_plot_four()
     Plot_model.figure_plot_CM()
     Plot_model.figure_plot_acc()
@@ -963,7 +966,7 @@ def deep_learning_models_folder(**kwargs):
       ROC_curve_TPR.append(TPR_row)
       print(ROC_curve_TPR)
 
-
+    # *
     for j in range(len(ROC_curve_TPR)):
 
       Dict_roc_curve = {'FPR': ROC_curve_FPR[j], 'TPR': ROC_curve_TPR[j]}
@@ -974,16 +977,18 @@ def deep_learning_models_folder(**kwargs):
       Dataframe_ROC.to_csv(Dataframe_ROC_folder)
       Dataframe_ROCs.append(Dataframe_ROC_folder)
 
+    # *
     Accuracy = Pretrained_Model_History.history['accuracy']
     Validation_accuracy = Pretrained_Model_History.history['val_accuracy']
-
     Loss = Pretrained_Model_History.history['loss']
     Validation_loss = Pretrained_Model_History.history['val_loss']
 
+    # *
     Plot_model = FigurePlot(folder = Folder_path_images_in, title = Pretrained_model_name, 
-                              SI = False, SF = True, height = Height, width = Width, annot_kws = Annot_kws, 
-                                font = font, CMdf = Confusion_matrix_dataframe_folder, Hdf = CSV_logger_info_folder, ROCdf = [i for i in Dataframe_ROCs], labels = Class_labels)
+                              SI = False, SF = True, height = Height, width = Width, CMdf = Confusion_matrix_dataframe_folder, 
+                              Hdf = CSV_logger_info_folder, ROCdf = [i for i in Dataframe_ROCs], labels = Class_labels)
 
+    # *
     Plot_model.figure_plot_four_multiclass()
     Plot_model.figure_plot_ROC_curve_multiclass()
     Plot_model.figure_plot_CM()
@@ -997,24 +1002,24 @@ def deep_learning_models_folder(**kwargs):
   Info.append(Accuracy_Test)
   Info.append(Loss[Epochs - 1])
   Info.append(Loss_Test)
+
   Info.append(len(Train_data.classes))
   Info.append(len(Valid_data.classes))
   Info.append(len(Test_data.classes))
-  Info.append(Precision)
-  Info.append(Recall)
-  Info.append(F1_score)
-
-  for i, value in enumerate(Classification_report_values):
-    Info.append(value)
 
   Info.append(Total_training_time)
   Info.append(Total_testing_time)
   Info.append(Enhancement_technique)
+
   Info.append(Confusion_matrix[0][0])
   Info.append(Confusion_matrix[0][1])
   Info.append(Confusion_matrix[1][0])
   Info.append(Confusion_matrix[1][1])
+
   Info.append(Epochs)
+  Info.append(Precision)
+  Info.append(Recall)
+  Info.append(F1_score)
 
   if Class_problem == 2:
     Info.append(Auc)
@@ -1022,13 +1027,13 @@ def deep_learning_models_folder(**kwargs):
     for i in range(Class_problem):
       Info.append(Roc_auc[i])
 
-  #df2 = {'Name': 'Amy', 'Maths': 89, 'Science': 93}
-  #df = df.append(df2, ignore_index = True)
+  for i, value in enumerate(Classification_report_values):
+    Info.append(value)
 
   print(Dataframe_save)
 
   #Dataframe_save = pd.read_csv(Dataframe_save_folder)
-  overwrite_row_CSV_folder(Dataframe_save, Dataframe_save_folder, Info, Column_names_, Index)
+  overwrite_dic_CSV_folder(Dataframe_save, Dataframe_save_folder, Column_names_, Info)
 
 # ? Folder Update CSV changing value
 
@@ -1058,7 +1063,7 @@ def overwrite_row_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Ro
 
 # ? Folder Update CSV changing value
 
-def overwrite_dic_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Row):
+def overwrite_dic_CSV_folder(Dataframe, Folder_path, Column_names, Column_values):
 
     """
 	  Updates final CSV dataframe to see all values
@@ -1075,11 +1080,8 @@ def overwrite_dic_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Ro
     
    	"""
 
-    df2 = {'Name': 'Amy', 'Maths': 89, 'Science': 93}
-    df = df.append(df2, ignore_index = True)
-
-    for i in range(len(Info_list)):
-        Dataframe.loc[Row, Column_names[i]] = Info_list[i]
+    Row = dict(zip(Column_names, Column_values))
+    Dataframe = Dataframe.append(Row, ignore_index = True)
   
     Dataframe.to_csv(Folder_path, index = False)
   

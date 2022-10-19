@@ -29,9 +29,9 @@ def timer_func(func):
     # This function shows the execution time of 
     # the function object passed
     def wrapper(*args, **kwargs):
-        t1 = time()
+        t1 = time.time()
         result = func(*args, **kwargs)
-        t2 = time()
+        t2 = time.time()
         #print(f'Function {func.__name__!r} executed in {(t2-t1):.4f}s')
         print("\n")
         print("*" * 60)
@@ -2403,6 +2403,11 @@ class FigureAdjust():
     self.X_figure_size = 12
     self.Y_figure_size = 12
 
+    # * General parameters
+    self.Font_size_title = self.X_figure_size * 1.2
+    self.Font_size_general = self.X_figure_size * 0.8
+    self.Font_size_ticks = (self.X_figure_size * self.Y_figure_size) * 0.05
+
     # * 
     #self.Annot_kws = kwargs.get('annot_kws', None)
     #self.Font = kwargs.get('font', None)
@@ -2526,11 +2531,6 @@ class BarChart(FigureAdjust):
 
     # *
     self.Colors = ('gray', 'red', 'blue', 'green', 'cyan', 'magenta', 'indigo', 'azure', 'tan', 'purple')
-
-    # * General parameters
-    self.Font_size_title = self.X_figure_size * 1.2
-    self.Font_size_general = self.X_figure_size * 0.8
-    self.Font_size_ticks = (self.X_figure_size * self.Y_figure_size) * 0.05
     
     # * General lists
     self.X_fast_list_values = []
@@ -2872,8 +2872,6 @@ class FigurePlot(FigureAdjust):
     super().__init__(**kwargs)
 
     # * 
-    self.Annot_kws = kwargs.get('annot_kws', None)
-    self.Font = kwargs.get('font', None)
     self.Labels = kwargs.get('labels', None)
 
     # * 
@@ -2942,14 +2940,14 @@ class FigurePlot(FigureAdjust):
 
     # * Figure's size
     plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
-    plt.suptitle(self.Title, fontsize = 20)
+    plt.suptitle(self.Title, fontsize = self.Font_size_title)
     plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 4)
 
     # * Confusion matrix heatmap
-    sns.set(font_scale = self.Font)
+    sns.set(font_scale = self.Font_size_general)
 
     # *
-    ax = sns.heatmap(self.Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Annot_kws})
+    ax = sns.heatmap(self.Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Font_size_general})
     #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values')
@@ -3000,14 +2998,14 @@ class FigurePlot(FigureAdjust):
 
     # * Figure's size
     plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
-    plt.suptitle(self.Title, fontsize = 20)
+    plt.suptitle(self.Title, fontsize = self.Font_size_title)
     plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 4)
 
     # * Confusion matrix heatmap
-    sns.set(font_scale = self.Font)
+    sns.set(font_scale = self.Font_size_general)
 
     # *
-    ax = sns.heatmap(self.Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Annot_kws})
+    ax = sns.heatmap(self.Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Font_size_general})
     #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values')
@@ -3062,10 +3060,10 @@ class FigurePlot(FigureAdjust):
     plt.title('Confusion Matrix with {}'.format(self.Title))
 
     # * Confusion matrix heatmap
-    sns.set(font_scale = self.Font)
+    sns.set(font_scale = self.Font_size_general)
 
     # *
-    ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Annot_kws})
+    ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Font_size_general})
     #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values')
@@ -3148,7 +3146,7 @@ class FigurePlot(FigureAdjust):
 
     # * Figure's size
     plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
-    plt.title(self.Title, fontsize = 20)
+    plt.title(self.Title, fontsize = self.Font_size_title)
 
     # * FPR and TPR values for the ROC curve
     for i in range(len(self.Roc_curve_dataframes)):

@@ -25,7 +25,7 @@ from skimage import io
 from itertools import cycle
 
 # *
-from time import time
+import time
 
 # *
 import cv2
