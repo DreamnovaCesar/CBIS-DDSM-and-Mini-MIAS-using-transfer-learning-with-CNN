@@ -150,138 +150,70 @@ def preprocessing_DataAugmentation_Multiclass_CNN(Folder_path_one, Folder_path_t
 
 # ? Data augmentation from folder, Splitting data required.
 
-def preprocessing_DataAugmentation_Biclass_Folder(Folder_path, First_label, Second_label, First_number_iter, Second_number_iter):
+# *
+def Data_augmentation_stage(Folder_path: str, Labels: list[str], Numbers_iter: list[int]) -> None:
 
-    # * List to add images and labels.
-    #Images = []
-    #Labels = []
+    Total_files = 0
+    Total_dir = 0
 
-    # * General parameters
-    #First_number_iter = 20 
-    #Second_number_iter = 40 
+    Total_images = 0
+    Total_labels = 0
 
-    #First_number_iter = 18 #*
-    #Second_number_iter = 34  #* 
+    Dir_total = []
+    Folder_path_classes = []
 
-    Total_files: int = 0
-    Total_dir: int = 0
+    Object_DA = []
 
-    #First_number_iter = 1 
-    #Second_number_iter = 1  
+    for Base, Dirs, Files in os.walk(Folder_path):
+        print('Searching in : ', Base)
+        for Dir in Dirs:
+            Dir_total.append(Dir)
+            Total_dir += 1
+        for Index, File in enumerate(Files):
+            Total_files += 1
 
-    First_images_class: int = 0 
-    Second_images_class: int = 1 
+    for Index, dir in enumerate(Dir_total):
+        Folder_path_classes.append('{}{}'.format(Folder_path, dir))
+        print(Folder_path_classes[Index])
 
-    Dir_total_training = []
-    Dir_total_val = []
-    Dir_total_test = []
+    for i in range(len(Folder_path_classes)):
+        Object_DA.append(DataAugmentation(Folder = Folder_path_classes[i], NewFolder = Folder_path_classes[i], 
+                                            Severity = Labels[i], Sampling = Numbers_iter[i], Label = i, SI = True))
 
-    Folder_path_train_classes = []
-    Folder_path_val_classes = []
-    Folder_path_test_classes = []
+    for i in range(len(Object_DA)):
 
+        Images_, Labels_ = Object_DA[i].data_augmentation_same_folder() 
+
+        Total_images += len(Images_)
+        Total_labels += len(Labels_)
+
+    print(len(Total_images))
+    print(len(Total_labels))
+
+
+def preprocessing_DataAugmentation_Folder(Folder_path: str, Labels: list[str], Numbers_iter: list[int], DA_T: bool = False, DA_V: bool = False) -> None:
+
+    # *
     Folder_path_train ='{}/train/'.format(Folder_path)
     Folder_path_val ='{}/val/'.format(Folder_path)
     Folder_path_test ='{}/test/'.format(Folder_path)
 
-    for Base, Dirs, Files in os.walk(Folder_path_train):
-        print('Searching in : ', Base)
-        for Dir in Dirs:
-            Dir_total_training.append(Dir)
-            Total_dir += 1
-        for Index, File in enumerate(Files):
-            Total_files += 1
-    """
+    # *
+    if((len(Labels) != len(Numbers_iter))):
+        raise ValueError("the length of one parameter is no equal") #! Alert
 
-    for base, dirs, files in os.walk(Folder_path_test):
-        print('Searching in : ', base)
-        for dir in dirs:
-            Dir_total_test.append(dir)
-            Total_dir += 1
-        for file in files:
-            Total_files += 1
+    # *
+    Data_augmentation_stage(Folder_path_train, Labels, Numbers_iter)
 
-    
-    for base, dirs, files in os.walk(Folder_path_val):
-        print('Searching in : ', base)
-        for dir in dirs:
-            Dir_total_val.append(dir)
-            Total_dir += 1
-        for file in files:
-            Total_files += 1
-    """
+    # *
+    if(DA_V is True):
 
-    #print(Dir_total[0])
-    #print(Dir_total[1])
-    #print(len(Dir_total))
-    #print(Total_dir)
-    #print(Total_files)
+        Data_augmentation_stage(Folder_path_val, Labels, Numbers_iter)
 
-    for Index, dir in enumerate(Dir_total_training):
-        print(Index)
-        Folder_path_train_classes.append('{}{}'.format(Folder_path_train, dir))
-        print(Folder_path_train_classes[Index])
-    """
-    for Index, dir in enumerate(Dir_total_test):
-        print(Index)
-        Folder_path_test_classes.append('{}{}'.format(Folder_path_test, dir))
-        print(Folder_path_test_classes[Index])
+    if(DA_T is True):
 
-    
-    for Index, dir in enumerate(Dir_total_val):
-        print(Index)
-        Folder_path_val_classes.append('{}{}'.format(Folder_path_val, dir))
-        print(Folder_path_val_classes[Index])
-    """
-    # * With this class we use the technique called data augmentation to create new images with their transformations
+        Data_augmentation_stage(Folder_path_test, Labels, Numbers_iter)
 
-    Data_augmentation_normal = DataAugmentation(Folder = Folder_path_train_classes[0], NewFolder = Folder_path_train_classes[0], Severity = First_label, Sampling = First_number_iter, Label = First_images_class, Saveimages = True)
-    Data_augmentation_tumor = DataAugmentation(Folder = Folder_path_train_classes[1], NewFolder = Folder_path_train_classes[1], Severity = Second_label, Sampling = Second_number_iter, Label = Second_images_class, Saveimages = True)
-
-    Images_Normal, Labels_Normal = Data_augmentation_normal.data_augmentation_same_folder()
-    Images_Tumor, Labels_Tumor = Data_augmentation_tumor.data_augmentation_same_folder()
-
-    # * Add the value in the lists already created
-
-    Images_total = Images_Normal + Images_Tumor
-    Labels_total = np.concatenate((Labels_Normal, Labels_Tumor), axis = None)
-
-    print(len(Images_Normal))
-    print(len(Images_Tumor))
-
-    #print(len(Images_total))
-    #print(len(Labels_total))
-
-    """
-    Data_augmentation_normal = DataAugmentation(Folder = Folder_path_test_classes[0], NewFolder = Folder_path_test_classes[0], Severity = Label_normal, Sampling = Iter_normal, Label = Normal_images_class, Saveimages = True)
-    Data_augmentation_tumor = DataAugmentation(Folder = Folder_path_test_classes[1], NewFolder = Folder_path_test_classes[1], Severity = Label_tumor, Sampling = Iter_tumor, Label = Tumor_images_class, Saveimages = True)
-
-    Images_Normal, Labels_Normal = Data_augmentation_normal.data_augmentation_same_folder()
-    Images_Tumor, Labels_Tumor = Data_augmentation_tumor.data_augmentation_same_folder()
-
-    # * Add the value in the lists already created
-
-    Images_total = Images_Normal + Images_Tumor
-    Labels_total = np.concatenate((Labels_Normal, Labels_Tumor), axis = None)
-
-    print(len(Images_Normal))
-    print(len(Images_Tumor))
-
-
-    Data_augmentation_normal = DataAugmentation(Folder = Folder_path_val_classes[0], NewFolder = Folder_path_val_classes[0], Severity = First_label, Sampling = First_number_iter, Label = First_images_class, Saveimages = True)
-    Data_augmentation_tumor = DataAugmentation(Folder = Folder_path_val_classes[1], NewFolder = Folder_path_val_classes[1], Severity = Second_label, Sampling = Second_number_iter, Label = Second_images_class, Saveimages = True)
-
-    Images_Normal, Labels_Normal = Data_augmentation_normal.data_augmentation_test_images()
-    Images_Tumor, Labels_Tumor = Data_augmentation_tumor.data_augmentation_test_images()
-
-    # * Add the value in the lists already created
-
-    Images_total = Images_Normal + Images_Tumor
-    Labels_total = np.concatenate((Labels_Normal, Labels_Tumor), axis = None)
-
-    print(len(Images_total))
-    print(len(Labels_total))
-    """
 
 def preprocessing_DataAugmentation_Multiclass_Folder(Folder_path, First_label, Second_label, Third_label, First_number_iter, Second_number_iter, Third_number_iter):
 

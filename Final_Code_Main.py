@@ -5,6 +5,8 @@ from Final_Code_1_General_Functions import split_folders_train_test_val
 
 from Final_Code_5_CNN_Architectures import *
 
+from Final_Code_CBIS_DDSM_4_Data_Augmentation import preprocessing_DataAugmentation_Folder
+
 #Model_CNN = (Model_pretrained, Model_pretrained)
 
 
@@ -105,6 +107,8 @@ def main():
     Multic = "D:\Mini-MIAS\CBIS_DDSM_NO_Images_Multiclass"
     
     MulticSplit = split_folders_train_test_val(Multic, False)
+
+    preprocessing_DataAugmentation_Folder(MulticSplit, ['A', 'B', 'C'], [1, 1, 22])
 
     configuration_models_folder(folder = MulticSplit, foldermodels = 'D:\Test',
                                     foldermodelesp = 'D:\Test', foldercsv = 'D:\Test', 

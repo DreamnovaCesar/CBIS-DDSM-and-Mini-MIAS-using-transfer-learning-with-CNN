@@ -12,7 +12,7 @@ class DataAugmentation:
     self.Severity: str = kwargs.get('Severity', None)
     self.Sampling: int = kwargs.get('Sampling', 3)
     self.Label: int = kwargs.get('Label', None)
-    self.Save_images: bool = kwargs.get('Saveimages', False)
+    self.Save_images: bool = kwargs.get('SI', False)
 
     # * Folder attribute (ValueError, TypeError)
     if (self.Folder == None):
@@ -582,7 +582,7 @@ class DataAugmentation:
 
     #Name_dir:str = os.path.dirname(self.Folder)
     Name_base:str = os.path.basename(self.Folder)
-    
+
     # * Lists to save the images and their respective labels
     Images:list = [] 
     Labels:list = [] 
