@@ -1,5 +1,7 @@
 from Final_Code_0_Libraries import *
 
+from functools import wraps
+
 ################################################## ? Decorators
 
 # ? Decorator
@@ -2545,7 +2547,6 @@ class FigureAdjust():
       del self.Num_classes
 
   # ? Decorator
-
   @staticmethod
   def show_figure(Show_image: bool = False) -> None:
 
@@ -2567,9 +2568,8 @@ class FigureAdjust():
 
       else:
         pass
-      
+    
 # ?
-
 class BarChart(FigureAdjust):
   """
   _summary_
@@ -2682,9 +2682,64 @@ class BarChart(FigureAdjust):
       print("Deleting Name...")
       del self.Name
 
-  @timer_func
-  def barchart(self) -> None:
-    pass
+  @staticmethod  # no default first argument in logger function
+  def barchart(func):  # accepts a function
+      @wraps(func)  # good practice https://docs.python.org/2/library/functools.html#functools.wraps
+      def wrapper(self, *args, **kwargs):  # explicit self, which means this decorator better be used inside classes only
+
+          # * Get X and Y values
+          X = list(self.Dataframe.iloc[:, 1])
+          Y = list(self.Dataframe.iloc[:, self.Plot_column])
+
+          plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
+
+          # * Reverse is a bool variable with the postion of the plot
+          if self.Plot_reverse == True:
+
+              for Index, (i, k) in enumerate(zip(X, Y)):
+                  if k < np.mean(Y):
+                      self.X_fast_list_values.append(i)
+                      self.Y_fast_list_values.append(k)
+                  elif k >= np.mean(Y):
+                      self.X_slow_list_values.append(i)
+                      self.Y_slow_list_values.append(k)
+
+              for Index, (i, k) in enumerate(zip(self.X_fast_list_values, self.Y_fast_list_values)):
+                  if k == np.min(self.Y_fast_list_values):
+                      self.X_fastest_list_value.append(i)
+                      self.Y_fastest_list_value.append(k)
+                      #print(X_fastest_list_value)
+                      #print(Y_fastest_list_value)
+
+              for Index, (i, k) in enumerate(zip(self.X_slow_list_values, self.Y_slow_list_values)):
+                  if k == np.max(self.Y_slow_list_values):
+                      self.X_slowest_list_value.append(i)
+                      self.Y_slowest_list_value.append(k)
+          else:
+              for Index, (i, k) in enumerate(zip(X, Y)):
+                  if k < np.mean(Y):
+                      self.X_slow_list_values.append(i)
+                      self.Y_slow_list_values.append(k)
+                  elif k >= np.mean(Y):
+                      self.X_fast_list_values.append(i)
+                      self.Y_fast_list_values.append(k)
+
+              for Index, (i, k) in enumerate(zip(self.X_fast_list_values, self.Y_fast_list_values)):
+                  if k == np.max(self.Y_fast_list_values):
+                      self.X_fastest_list_value.append(i)
+                      self.Y_fastest_list_value.append(k)
+                      #print(XFastest)
+                      #print(YFastest)
+
+              for Index, (i, k) in enumerate(zip(self.X_slow_list_values, self.Y_slow_list_values)):
+                  if k == np.min(self.Y_slow_list_values):
+                      self.X_slowest_list_value.append(i)
+                      self.Y_slowest_list_value.append(k)
+
+          result = func(self, *args, **kwargs)
+    
+          return result
+      return wrapper
   
   @timer_func
   def barchart_horizontal(self) -> None:
