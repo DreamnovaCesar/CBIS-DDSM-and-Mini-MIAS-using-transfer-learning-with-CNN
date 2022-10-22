@@ -1,3 +1,4 @@
+from ast import Return
 from Final_Code_0_Libraries import *
 
 from functools import wraps
@@ -14,17 +15,17 @@ class Utilities(object):
 
             # * Obtain the executed time of the function
 
-            Asterisk = 60
+            Asterisk = 60;
 
-            t1 = time.time()
-            result = func(self, *args, **kwargs)
-            t2 = time.time()
+            t1 = time.time();
+            result = func(self, *args, **kwargs);
+            t2 = time.time();
 
-            print("\n")
-            print("*" * Asterisk)
-            print('Function {} executed in {:.4f}'.format(func.__name__, t2 - t1))
-            print("*" * Asterisk)
-            print("\n")
+            print("\n");
+            print("*" * Asterisk);
+            print('Function {} executed in {:.4f}'.format(func.__name__, t2 - t1));
+            print("*" * Asterisk);
+            print("\n");
 
             return result
         return wrapper
@@ -36,23 +37,24 @@ class Utilities(object):
         def wrapper(self, *args, **kwargs):  
 
             # * Obtain the executed time of the function
-            GPU_name = tf.test.gpu_device_name()
-            GPU_available = tf.config.list_physical_devices()
-            print("\n")
-            print(GPU_available)
-            print("\n")
+            GPU_name = tf.test.gpu_device_name();
+            GPU_available = tf.config.list_physical_devices();
+            print("\n");
+            print(GPU_available);
+            print("\n");
             #if GPU_available == True:
                 #print("GPU device is available")
             if "GPU" not in GPU_name:
-                print("GPU device not found")
-                print("\n")
-            print('Found GPU at: {}'.format(GPU_name))
-            print("\n")
+                print("GPU device not found");
+                print("\n");
+            print('Found GPU at: {}'.format(GPU_name));
+            print("\n");
 
-            result = func(self, *args, **kwargs)
+            result = func(self, *args, **kwargs);
 
             return result
         return wrapper
+
 
 # ? Random remove all files in folder
 
@@ -67,9 +69,9 @@ class RemoveFiles(Utilities):
 
             # * 
             for File in os.listdir(self.Folder_path):
-                Filename, Format  = os.path.splitext(File)
-                print('Removing: {} . {} ✅'.format(Filename, Format))
-                os.remove(os.path.join(self.Folder_path, File))
+                Filename, Format  = os.path.splitext(File);
+                print('Removing: {} . {} ✅'.format(Filename, Format));
+                os.remove(os.path.join(self.Folder_path, File));
 
             result = func(self, *args, **kwargs)
 
@@ -79,9 +81,18 @@ class RemoveFiles(Utilities):
     def __init__(self, **kwargs) -> None:
 
         # * Instance attributes
-        self.Folder_path = kwargs.get('folder', None)
-        self.Number_Files_to_remove = kwargs.get('NFR', None)
+        self.Folder_path = kwargs.get('folder', None);
+        self.Number_Files_to_remove = kwargs.get('NFR', None);
 
+    def __repr__(self):
+
+        kwargs_info = "[{}, {}]".format(self.Folder_path, self.Number_Files_to_remove);
+
+        return kwargs_info
+
+    def __str__(self):
+        pass
+    
     # * Folder_path attribute
     @property
     def Folder_path_property(self):
@@ -91,11 +102,11 @@ class RemoveFiles(Utilities):
     def Folder_path_property(self, New_value):
         if not isinstance(New_value, str):
             raise TypeError("Folder_path must be a string") #! Alert
-        self.Folder_path = New_value
+        self.Folder_path = New_value;
     
     @Folder_path_property.deleter
     def Folder_path_property(self):
-        print("Deleting Folder_path...")
+        print("Deleting Folder_path...");
         del self.Folder_path
 
     # * Files_to_remove attribute
@@ -105,13 +116,13 @@ class RemoveFiles(Utilities):
 
     @Files_to_remove_property.setter
     def Files_to_remove_property(self, New_value):
-        if not isinstance(New_value, str):
-            raise TypeError("Files_to_remove must be a string") #! Alert
-        self.Files_to_remove = New_value
+        if not isinstance(New_value, int):
+            raise TypeError("Files_to_remove must be a integer") #! Alert
+        self.Files_to_remove = New_value;
     
     @Files_to_remove_property.deleter
     def Files_to_remove_property(self):
-        print("Deleting Files_to_remove...")
+        print("Deleting Files_to_remove...");
         del self.Files_to_remove
 
     # ? Remove all files inside a dir
@@ -134,11 +145,10 @@ class RemoveFiles(Utilities):
             raise TypeError("Folder must be a string") #! Alert
 
         # * This function will remove all the files inside a folder
-
         for File in os.listdir(self.Folder_path):
-            Filename, Format  = os.path.splitext(File)
-            print('Removing: {} . {} ✅'.format(Filename, Format))
-            os.remove(os.path.join(self.Folder_path, File))
+            Filename, Format  = os.path.splitext(File);
+            print('Removing: {} . {} ✅'.format(Filename, Format));
+            os.remove(os.path.join(self.Folder_path, File));
 
     # ? Remove all files inside a dir
     @Utilities.timer_func
@@ -154,97 +164,129 @@ class RemoveFiles(Utilities):
         """
 
         # * This function will remove all the files inside a folder
-        Files = os.listdir(self.Folder_path)
+        Files = os.listdir(self.Folder_path);
 
             #Filename, Format = os.path.splitext(File)
 
         for File_sample in sample(Files, self.Number_Files_to_remove):
-            print(File_sample)
-            #print('Removing: {}{} ✅'.format(Filename, Format))
-            os.remove(os.path.join(self.Folder_path, File_sample))
+            print(File_sample);
+            #print('Removing: {}{} ✅'.format(Filename, Format));
+            os.remove(os.path.join(self.Folder_path, File_sample));
 
 #################################################################################################### ? Class 
 
-class DataGenerator(object):
+class Generator(object):
+
+    def __init__(self, **kwargs) -> None:
+
+        # * Instance attributes
+        self.Folder_path = kwargs.get('folder', None);
+        self.Folders_name = kwargs.get('FN', None);
+        self.Iteration = kwargs.get('iter', None);
+        self.Save_dataframe = kwargs.get('SD', None);
 
     # ? Create folders
     @Utilities.timer_func
-    def create_folders(Folder_path: str, Folder_name: str, CSV_name: str) -> None: 
+    def create_folders(self) -> pd.DataFrame: 
+        """
+        _summary_
 
-        Path_names = []
-        Path_absolute_dir = []
+        _extended_summary_
 
-        if(len(Folder_name) >= 2):
+        Args:
+            Folder_path (str): _description_
+            Folder_name (list[str]): _description_
+            CSV_name (str): _description_
+        """
 
-            for i, Path_name in enumerate(Folder_name):
+        # *
+        Path_names = [];
+        Path_absolute_dir = [];
 
-                Folder_path_new = r'{}\{}'.format(Folder_path, Folder_name[i])
-                print(Folder_path_new)
+        # *
+        if(len(self.Folders_name) >= 2):
+            
+            # *
+            for i, Path_name in enumerate(self.Folders_name):
 
-                Path_names.append(Path_name)
-                Path_absolute_dir.append(Folder_path_new)
+                # *
+                Folder_path_new = r'{}\{}'.format(self.Folder_path, self.Folders_name[i]);
+                print(Folder_path_new);
 
-                Exist_dir = os.path.isdir(Folder_path_new) 
+                Path_names.append(Path_name);
+                Path_absolute_dir.append(Folder_path_new);
+
+                Exist_dir = os.path.isdir(Folder_path_new) ;
 
             if Exist_dir == False:
-                os.mkdir(Folder_path_new)
+                os.mkdir(Folder_path_new);
             else:
-                print('Path: {} exists, use another name for it'.format(Folder_name[i]))
+                print('Path: {} exists, use another name for it'.format(self.Folders_name[i]));
 
         else:
 
-            Folder_path_new = r'{}\{}'.format(Folder_path, Folder_name)
-            print(Folder_path_new)
+            # *
+            Folder_path_new = r'{}\{}'.format(self.Folder_path, self.Folders_name);
+            print(Folder_path_new);
 
-            Path_names.append(Folder_name)
-            Path_absolute_dir.append(Folder_path_new)
+            Path_names.append(self.Folders_name);
+            Path_absolute_dir.append(Folder_path_new);
 
-            Exist_dir = os.path.isdir(Folder_path_new) 
+            Exist_dir = os.path.isdir(Folder_path_new) ;
 
             if Exist_dir == False:
-                os.mkdir(Folder_path_new)
+                os.mkdir(Folder_path_new);
             else:
-                print('Path: {} exists, use another name for it'.format(Folder_name))
+                print('Path: {} exists, use another name for it'.format(self.Folders_name));
 
-        Dataframe_name = 'Dataframe_path_names_{}.csv'.format(CSV_name)
-        Dataframe_folder = os.path.join(Folder_path, Dataframe_name)
+        # *
+        if(self.Save_dataframe == True):
+            Dataframe = pd.DataFrame({'Names':Path_names, 'Path names':Path_absolute_dir});
+            Dataframe_name = 'Dataframe_path_names.csv'.format();
+            Dataframe_folder = os.path.join(self.Folder_path, Dataframe_name);
 
-        #Exist_dataframe = os.path.isfile(Dataframe_folder)
+            #Exist_dataframe = os.path.isfile(Dataframe_folder)
 
-        Dataframe = pd.DataFrame({'Names':Path_names, 'Path names':Path_absolute_dir})
-        Dataframe.to_csv(Dataframe_folder)
+            Dataframe.to_csv(Dataframe_folder);
+
+        return Dataframe
 
     # ? Create folders
     @Utilities.timer_func
-    def creating_data_students(Folder_path: str, Dataframe: pd.DataFrame, Iter: int, Save_dataframe: bool = False) -> pd.DataFrame: 
+    def creating_data_students(self) -> pd.DataFrame: 
         
         # * Tuples for random generation.
-        Random_Name = ('Tom', 'Nick', 'Chris', 'Jack', 'Thompson')
-        Random_Classroom = ('A', 'B', 'C', 'D', 'E')
-
-        for i in range(Iter):
-
-            # *
-            New_row = {'Name':random.choice(Random_Name),
-                    'Age':randint(16, 21),
-                    'Classroom':random.choice(Random_Classroom),
-                    'Height':randint(160, 190),
-                    'Math':randint(70, 100),
-                    'Chemistry':randint(70, 100),
-                    'Physics':randint(70, 100),
-                    'Literature':randint(70, 100)}
-
-            Dataframe = Dataframe.append(New_row, ignore_index = True)
-
-            # *
-            print('Iteration complete: {}'.format(i))
+        Random_Name = ('Tom', 'Nick', 'Chris', 'Jack', 'Thompson');
+        Random_Classroom = ('A', 'B', 'C', 'D', 'E');
+        
+        # * Column names to create the DataFrame
+        Columns_names = ['Name', 'Age', 'Classroom', 'Height', 'Math', 'Chemistry', 'Physics', 'Literature'];
 
         # *
-        if(Save_dataframe == True):
-            Dataframe_Key_name = 'Dataframe_filekeys.csv'.format()
-            Dataframe_Key_folder = os.path.join(Folder_path, Dataframe_Key_name)
+        Dataframe = pd.DataFrame(Columns_names)
 
-            Dataframe.to_csv(Dataframe_Key_folder)
+        for i in range(self.Iteration):
+
+            # *
+            New_row = { 'Name':random.choice(Random_Name),
+                        'Age':randint(16, 26),
+                        'Classroom':random.choice(Random_Classroom),
+                        'Height':randint(160, 195),
+                        'Math':randint(70, 100),
+                        'Chemistry':randint(70, 100),
+                        'Physics':randint(70, 100),
+                        'Literature':randint(70, 100)};
+
+            Dataframe = Dataframe.append(New_row, ignore_index = True);
+
+            # *
+            print('Iteration complete: {}'.format(i));
+
+        # *
+        if(self.Save_dataframe == True):
+            Dataframe_name = 'Dataframe_students_data.csv'.format();
+            Dataframe_folder = os.path.join(self.Folder_path, Dataframe_name);
+            Dataframe.to_csv(Dataframe_folder);
 
         return Dataframe
 
@@ -254,8 +296,8 @@ class SecurityFiles(object):
 
     def generate_key(Folder_path: str, Number_keys: int = 2) -> None: 
 
-        Names = []
-        Keys = []
+        Names = [];
+        Keys = [];
         
         # * Folder attribute (ValueError, TypeError)
         if Folder_path == None:
