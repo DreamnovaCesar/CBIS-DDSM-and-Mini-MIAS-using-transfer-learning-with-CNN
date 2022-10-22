@@ -4,364 +4,427 @@ from functools import wraps
 
 ################################################## ? Class decorators
 
-class GeneralUtilities(object):
+class Utilities(object):
 
+    # ? Get the execution time of each function
     @staticmethod  
     def time_func(func):  
         @wraps(func)  
         def wrapper(self, *args, **kwargs):  
 
             # * Obtain the executed time of the function
+
+            Asterisk = 60
+
             t1 = time.time()
             result = func(self, *args, **kwargs)
             t2 = time.time()
 
             print("\n")
-            print("*" * 60)
+            print("*" * Asterisk)
             print('Function {} executed in {:.4f}'.format(func.__name__, t2 - t1))
-            print("*" * 60)
+            print("*" * Asterisk)
             print("\n")
 
             return result
         return wrapper
-
-# ? Decorator
-def asterisk_row_print(func):
-     
-    # added arguments inside the inner1,
-    # if function takes any arguments,
-    # can be added like this.
-    def wrapper(*args, **kwargs):
- 
-        # storing time before function execution
-        print("\n")
-        print("*" * 30)
-         
-        func(*args, **kwargs)
- 
-        # storing time after function execution
-        print("*" * 30)
-        print("\n")
- 
-    return wrapper
-
-# ? Decorator
-
-def timer_func(func):
-    # This function shows the execution time of 
-    # the function object passed
-    def wrapper(*args, **kwargs):
-        t1 = time.time()
-        result = func(*args, **kwargs)
-        t2 = time.time()
-        #print(f'Function {func.__name__!r} executed in {(t2-t1):.4f}s')
-        print("\n")
-        print("*" * 60)
-
-        print('Function {} executed in {:.4f}'.format(func.__name__, t2 - t1))
-
-        print("*" * 60)
-        print("\n")
-
-        return result
-    return wrapper
-
-# ? Detect fi GPU exist in your PC for CNN Decorator
-
-def detect_GPU(func) -> None:
-    """
-    This function shows if a gpu device is available and its name. This function is good if the training is using a GPU  
-
-    Args:
-        None
-
-    Returns:
-        None
-    """
-
-    def wrapper(*args, **kwargs):
-
-      func(*args, **kwargs)
-
-      GPU_name: string = tf.test.gpu_device_name()
-      GPU_available: list = tf.config.list_physical_devices()
-      print("\n")
-      print(GPU_available)
-      print("\n")
-      #if GPU_available == True:
-          #print("GPU device is available")
-
-      if "GPU" not in GPU_name:
-          print("GPU device not found")
-          print("\n")
-      print('Found GPU at: {}'.format(GPU_name))
-      print("\n")
-
-    return wrapper
-
-################################################## ? Decorators
-
-# ? Create folders
-
-@timer_func
-def create_folders(Folder_path: str, Folder_name: str, CSV_name: str) -> None: 
-
-  Path_names = []
-  Path_absolute_dir = []
-
-  if(len(Folder_name) >= 2):
-
-    for i, Path_name in enumerate(Folder_name):
-
-      Folder_path_new = r'{}\{}'.format(Folder_path, Folder_name[i])
-      print(Folder_path_new)
-
-      Path_names.append(Path_name)
-      Path_absolute_dir.append(Folder_path_new)
-
-      Exist_dir = os.path.isdir(Folder_path_new) 
-
-      if Exist_dir == False:
-        os.mkdir(Folder_path_new)
-      else:
-        print('Path: {} exists, use another name for it'.format(Folder_name[i]))
-
-  else:
-
-    Folder_path_new = r'{}\{}'.format(Folder_path, Folder_name)
-    print(Folder_path_new)
-
-    Path_names.append(Folder_name)
-    Path_absolute_dir.append(Folder_path_new)
-
-    Exist_dir = os.path.isdir(Folder_path_new) 
-
-    if Exist_dir == False:
-      os.mkdir(Folder_path_new)
-    else:
-      print('Path: {} exists, use another name for it'.format(Folder_name))
-
-  Dataframe_name = 'Dataframe_path_names_{}.csv'.format(CSV_name)
-  Dataframe_folder = os.path.join(Folder_path, Dataframe_name)
-
-  #Exist_dataframe = os.path.isfile(Dataframe_folder)
-
-  Dataframe = pd.DataFrame({'Names':Path_names, 'Path names':Path_absolute_dir})
-  Dataframe.to_csv(Dataframe_folder)
-
-# ? Create folders
-
-@timer_func
-def creating_data_students(Dataframe: pd.DataFrame, Iter: int, Folder_path: str, Save_dataframe: bool = False) -> pd.DataFrame: 
     
-    # * Tuples for random generation.
-    Random_Name = ('Tom', 'Nick', 'Chris', 'Jack', 'Thompson')
-    Random_Classroom = ('A', 'B', 'C', 'D', 'E')
+    # ? Detect fi GPU exist in your PC for CNN Decorator
+    @staticmethod  
+    def detect_GPU(func):  
+        @wraps(func)  
+        def wrapper(self, *args, **kwargs):  
 
-    for i in range(Iter):
+            # * Obtain the executed time of the function
+            GPU_name = tf.test.gpu_device_name()
+            GPU_available = tf.config.list_physical_devices()
+            print("\n")
+            print(GPU_available)
+            print("\n")
+            #if GPU_available == True:
+                #print("GPU device is available")
+            if "GPU" not in GPU_name:
+                print("GPU device not found")
+                print("\n")
+            print('Found GPU at: {}'.format(GPU_name))
+            print("\n")
+
+            result = func(self, *args, **kwargs)
+
+            return result
+        return wrapper
+
+# ? Random remove all files in folder
+
+class RemoveFiles(Utilities):
+
+    # ? Remove all files inside a dir
+    @staticmethod
+    @Utilities.timer_func 
+    def remove_all_files(func):  
+        @wraps(func)  
+        def wrapper(self, *args, **kwargs):  
+
+            # * 
+            for File in os.listdir(self.Folder_path):
+                Filename, Format  = os.path.splitext(File)
+                print('Removing: {} . {} ✅'.format(Filename, Format))
+                os.remove(os.path.join(self.Folder_path, File))
+
+            result = func(self, *args, **kwargs)
+
+            return result
+        return wrapper
+
+    def __init__(self, **kwargs) -> None:
+
+        # * Instance attributes
+        self.Folder_path = kwargs.get('folder', None)
+        self.Number_Files_to_remove = kwargs.get('NFR', None)
+
+    # * Folder_path attribute
+    @property
+    def Folder_path_property(self):
+        return self.Folder_path
+
+    @Folder_path_property.setter
+    def Folder_path_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Folder_path must be a string") #! Alert
+        self.Folder_path = New_value
+    
+    @Folder_path_property.deleter
+    def Folder_path_property(self):
+        print("Deleting Folder_path...")
+        del self.Folder_path
+
+    # * Files_to_remove attribute
+    @property
+    def Files_to_remove_property(self):
+        return self.Files_to_remove
+
+    @Files_to_remove_property.setter
+    def Files_to_remove_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Files_to_remove must be a string") #! Alert
+        self.Files_to_remove = New_value
+    
+    @Files_to_remove_property.deleter
+    def Files_to_remove_property(self):
+        print("Deleting Files_to_remove...")
+        del self.Files_to_remove
+
+    # ? Remove all files inside a dir
+    @Utilities.timer_func
+    def remove_all_files(self) -> None:
+        """
+        Remove all files inside the folder path obtained.
+
+        Args:
+            Folder_path (str): Folder path obtained.
+
+        Returns:
+            None
+        """
+        
+        # * Folder attribute (ValueError, TypeError)
+        if self.Folder_path == None:
+            raise ValueError("Folder does not exist") #! Alert
+        if not isinstance(self.Folder_path, str):
+            raise TypeError("Folder must be a string") #! Alert
+
+        # * This function will remove all the files inside a folder
+
+        for File in os.listdir(self.Folder_path):
+            Filename, Format  = os.path.splitext(File)
+            print('Removing: {} . {} ✅'.format(Filename, Format))
+            os.remove(os.path.join(self.Folder_path, File))
+
+    # ? Remove all files inside a dir
+    @Utilities.timer_func
+    def remove_random_files(self) -> None:
+        """
+        Remove all files inside the folder path obtained.
+
+        Args:
+            Folder_path (str): Folder path obtained.
+
+        Returns:
+            None
+        """
+
+        # * This function will remove all the files inside a folder
+        Files = os.listdir(self.Folder_path)
+
+            #Filename, Format = os.path.splitext(File)
+
+        for File_sample in sample(Files, self.Number_Files_to_remove):
+            print(File_sample)
+            #print('Removing: {}{} ✅'.format(Filename, Format))
+            os.remove(os.path.join(self.Folder_path, File_sample))
+
+#################################################################################################### ? Class 
+
+class DataGenerator(object):
+
+    # ? Create folders
+    @Utilities.timer_func
+    def create_folders(Folder_path: str, Folder_name: str, CSV_name: str) -> None: 
+
+        Path_names = []
+        Path_absolute_dir = []
+
+        if(len(Folder_name) >= 2):
+
+            for i, Path_name in enumerate(Folder_name):
+
+                Folder_path_new = r'{}\{}'.format(Folder_path, Folder_name[i])
+                print(Folder_path_new)
+
+                Path_names.append(Path_name)
+                Path_absolute_dir.append(Folder_path_new)
+
+                Exist_dir = os.path.isdir(Folder_path_new) 
+
+            if Exist_dir == False:
+                os.mkdir(Folder_path_new)
+            else:
+                print('Path: {} exists, use another name for it'.format(Folder_name[i]))
+
+        else:
+
+            Folder_path_new = r'{}\{}'.format(Folder_path, Folder_name)
+            print(Folder_path_new)
+
+            Path_names.append(Folder_name)
+            Path_absolute_dir.append(Folder_path_new)
+
+            Exist_dir = os.path.isdir(Folder_path_new) 
+
+            if Exist_dir == False:
+                os.mkdir(Folder_path_new)
+            else:
+                print('Path: {} exists, use another name for it'.format(Folder_name))
+
+        Dataframe_name = 'Dataframe_path_names_{}.csv'.format(CSV_name)
+        Dataframe_folder = os.path.join(Folder_path, Dataframe_name)
+
+        #Exist_dataframe = os.path.isfile(Dataframe_folder)
+
+        Dataframe = pd.DataFrame({'Names':Path_names, 'Path names':Path_absolute_dir})
+        Dataframe.to_csv(Dataframe_folder)
+
+    # ? Create folders
+    @Utilities.timer_func
+    def creating_data_students(Folder_path: str, Dataframe: pd.DataFrame, Iter: int, Save_dataframe: bool = False) -> pd.DataFrame: 
+        
+        # * Tuples for random generation.
+        Random_Name = ('Tom', 'Nick', 'Chris', 'Jack', 'Thompson')
+        Random_Classroom = ('A', 'B', 'C', 'D', 'E')
+
+        for i in range(Iter):
+
+            # *
+            New_row = {'Name':random.choice(Random_Name),
+                    'Age':randint(16, 21),
+                    'Classroom':random.choice(Random_Classroom),
+                    'Height':randint(160, 190),
+                    'Math':randint(70, 100),
+                    'Chemistry':randint(70, 100),
+                    'Physics':randint(70, 100),
+                    'Literature':randint(70, 100)}
+
+            Dataframe = Dataframe.append(New_row, ignore_index = True)
+
+            # *
+            print('Iteration complete: {}'.format(i))
 
         # *
-        New_row = {'Name':random.choice(Random_Name),
-                   'Age':randint(16, 21),
-                   'Classroom':random.choice(Random_Classroom),
-                   'Height':randint(160, 190),
-                   'Math':randint(70, 100),
-                   'Chemistry':randint(70, 100),
-                   'Physics':randint(70, 100),
-                   'Literature':randint(70, 100)}
+        if(Save_dataframe == True):
+            Dataframe_Key_name = 'Dataframe_filekeys.csv'.format()
+            Dataframe_Key_folder = os.path.join(Folder_path, Dataframe_Key_name)
 
-        Dataframe = Dataframe.append(New_row, ignore_index = True)
+            Dataframe.to_csv(Dataframe_Key_folder)
 
-        # *
-        print('Iteration complete: {}'.format(i))
-
-    # *
-    if(Save_dataframe == True):
-      Dataframe_Key_name = 'Dataframe_filekeys.csv'.format()
-      Dataframe_Key_folder = os.path.join(Folder_path, Dataframe_Key_name)
-
-      Dataframe.to_csv(Dataframe_Key_folder)
-
-    return Dataframe
+        return Dataframe
 
 # ? Generate keys
 
-@timer_func
-def generate_key(Folder_path: str, Number_keys: int = 2) -> None: 
+class SecurityFiles(object):
 
-    Names = []
-    Keys = []
-    
-    # * Folder attribute (ValueError, TypeError)
-    if Folder_path == None:
-        raise ValueError("Folder does not exist") #! Alert
-    if not isinstance(Folder_path, str):
-        raise TypeError("Folder must be a string") #! Alert
+    def generate_key(Folder_path: str, Number_keys: int = 2) -> None: 
 
-    # key generation
-    for i in range(Number_keys):
-
-        Key = Fernet.generate_key()
+        Names = []
+        Keys = []
         
-        print('Key created: {}'.format(Key))
+        # * Folder attribute (ValueError, TypeError)
+        if Folder_path == None:
+            raise ValueError("Folder does not exist") #! Alert
+        if not isinstance(Folder_path, str):
+            raise TypeError("Folder must be a string") #! Alert
 
-        Key_name = 'filekey_{}'.format(i)
-        Key_path_name = '{}/filekey_{}.key'.format(Folder_path, i)
+        # key generation
+        for i in range(Number_keys):
 
-        Keys.append(Key)
-        Names.append(Key_name)
+            Key = Fernet.generate_key()
+            
+            print('Key created: {}'.format(Key))
 
-        with open(Key_path_name, 'wb') as Filekey:
-            Filekey.write(Key)
+            Key_name = 'filekey_{}'.format(i)
+            Key_path_name = '{}/filekey_{}.key'.format(Folder_path, i)
 
-        Dataframe_keys = pd.DataFrame({'Name':Names, 'Keys':Keys})
+            Keys.append(Key)
+            Names.append(Key_name)
 
-        Dataframe_Key_name = 'Dataframe_filekeys.csv'.format()
-        Dataframe_Key_folder = os.path.join(Folder_path, Dataframe_Key_name)
+            with open(Key_path_name, 'wb') as Filekey:
+                Filekey.write(Key)
 
-        Dataframe_keys.to_csv(Dataframe_Key_folder)
+            Dataframe_keys = pd.DataFrame({'Name':Names, 'Keys':Keys})
 
-# ? Encrypt files
+            Dataframe_Key_name = 'Dataframe_filekeys.csv'.format()
+            Dataframe_Key_folder = os.path.join(Folder_path, Dataframe_Key_name)
 
-@timer_func
-def encrypt_files(**kwargs) -> None:
+            Dataframe_keys.to_csv(Dataframe_Key_folder)
 
-    # * General parameters
-    Folder_path = kwargs.get('folderpath', None)
-    Key_path = kwargs.get('keypath', None)
-    Keys_path = kwargs.get('keyspath', None)
-    Key_path_chosen = kwargs.get('newkeypath', None)
-    Random_key = kwargs.get('randomkey', False)
+    # ? Encrypt files
 
-    # * Folder attribute (ValueError, TypeError)
-    if Folder_path == None:
-        raise ValueError("Folder does not exist") #! Alert
-    if not isinstance(Folder_path, str):
-        raise TypeError("Folder must be a string") #! Alert
+    def encrypt_files(**kwargs) -> None:
 
-    Filenames = []
+        # * General parameters
+        Folder_path = kwargs.get('folderpath', None)
+        Key_path = kwargs.get('keypath', None)
+        Keys_path = kwargs.get('keyspath', None)
+        Key_path_chosen = kwargs.get('newkeypath', None)
+        Random_key = kwargs.get('randomkey', False)
 
-    if Random_key == True:
+        # * Folder attribute (ValueError, TypeError)
+        if Folder_path == None:
+            raise ValueError("Folder does not exist") #! Alert
+        if not isinstance(Folder_path, str):
+            raise TypeError("Folder must be a string") #! Alert
 
-        File = random.choice(os.listdir(Keys_path))
-        FilenameKey, Format = os.path.splitext(File)
+        Filenames = []
 
-        if File.endswith('.key'):
+        if Random_key == True:
+
+            File = random.choice(os.listdir(Keys_path))
+            FilenameKey, Format = os.path.splitext(File)
+
+            if File.endswith('.key'):
+
+                try:
+                    with open(Keys_path + '/' + File, 'rb') as filekey:
+                        Key = filekey.read()
+
+                    Fernet_ = Fernet(Key)
+
+                    #Key_name = 'MainKey.key'.format()
+                    shutil.copy2(os.path.join(Keys_path, File), Key_path_chosen)
+
+                    # * This function sort the files and show them
+
+                    for Filename in os.listdir(Folder_path):
+
+                        Filenames.append(Filename)
+
+                        with open(Folder_path + '/' + Filename, 'rb') as File_: # open in readonly mode
+                            Original_file = File_.read()
+                        
+                        Encrypted_File = Fernet_.encrypt(Original_file)
+
+                        with open(Folder_path + '/' + Filename, 'wb') as Encrypted_file:
+                            Encrypted_file.write(Encrypted_File) 
+
+                    with open(Key_path_chosen + '/' + FilenameKey + '.txt', "w") as text_file:
+                        text_file.write('The key {} open the next documents {}'.format(FilenameKey, Filenames))   
+
+                except OSError:
+                    print('Is not a key {} ❌'.format(str(File))) #! Alert
+
+        elif Random_key == False:
+
+            Name_key = os.path.basename(Key_path)
+            Key_dir = os.path.dirname(Key_path)
+
+            if Key_path.endswith('.key'):
+                
+                try: 
+                    with open(Key_path, 'rb') as filekey:
+                        Key = filekey.read()
+
+                    Fernet_ = Fernet(Key)
+
+                    #Key_name = 'MainKey.key'.format()
+                    shutil.copy2(os.path.join(Key_dir, Name_key), Key_path_chosen)
+
+                    # * This function sort the files and show them
+
+                    for Filename in os.listdir(Folder_path):
+
+                        Filenames.append(Filename)
+
+                        with open(Folder_path + '/' + Filename, 'rb') as File: # open in readonly mode
+                            Original_file = File.read()
+                        
+                        Encrypted_File = Fernet_.encrypt(Original_file)
+
+                        with open(Folder_path + '/' + Filename, 'wb') as Encrypted_file:
+                            Encrypted_file.write(Encrypted_File)
+
+                    with open(Key_path_chosen + '/' + Name_key + '.txt', "w") as text_file:
+                        text_file.write('The key {} open the next documents {}'.format(Name_key, Filenames))  
+
+                except OSError:
+                    print('Is not a key {} ❌'.format(str(Key_path))) #! Alert
+
+    # ? Decrypt files
+
+    def decrypt_files(**kwargs) -> None: 
+
+        # * General parameters
+        Folder_path = kwargs.get('folderpath', None)
+        Key_path = kwargs.get('keypath', None)
+
+        # * Folder attribute (ValueError, TypeError)
+        if Folder_path == None:
+            raise ValueError("Folder does not exist") #! Alert
+        if not isinstance(Folder_path, str):
+            raise TypeError("Folder must be a string") #! Alert
+
+        Key_dir = os.path.dirname(Key_path)
+        Key_file = os.path.basename(Key_path)
+
+        Filename_key, Format = os.path.splitext(Key_file)
+
+        Datetime = datetime.datetime.now()
+
+        with open(Key_path, 'rb') as Filekey:
+            Key = Filekey.read()
+
+        Fernet_ = Fernet(Key)
+
+        # * This function sort the files and show them
+
+        if Filename_key.endswith('.key'):
 
             try:
-                with open(Keys_path + '/' + File, 'rb') as filekey:
-                    Key = filekey.read()
-
-                Fernet_ = Fernet(Key)
-
-                #Key_name = 'MainKey.key'.format()
-                shutil.copy2(os.path.join(Keys_path, File), Key_path_chosen)
-
-                # * This function sort the files and show them
-
                 for Filename in os.listdir(Folder_path):
 
-                    Filenames.append(Filename)
+                    print(Filename)
 
-                    with open(Folder_path + '/' + Filename, 'rb') as File_: # open in readonly mode
-                        Original_file = File_.read()
+                    with open(Folder_path + '/' + Filename, 'rb') as Encrypted_file: # open in readonly mode
+                        Encrypted = Encrypted_file.read()
                     
-                    Encrypted_File = Fernet_.encrypt(Original_file)
+                    Decrypted = Fernet_.decrypt(Encrypted)
 
-                    with open(Folder_path + '/' + Filename, 'wb') as Encrypted_file:
-                        Encrypted_file.write(Encrypted_File) 
+                    with open(Folder_path + '/' + Filename, 'wb') as Decrypted_file:
+                        Decrypted_file.write(Decrypted)
 
-                with open(Key_path_chosen + '/' + FilenameKey + '.txt', "w") as text_file:
-                    text_file.write('The key {} open the next documents {}'.format(FilenameKey, Filenames))   
+                with open(Key_dir + '/' + Key_file + '.txt', "w") as text_file:
+                        text_file.write('Key used. Datetime: {} '.format(Datetime))  
 
             except OSError:
-                print('Is not a key {} ❌'.format(str(File))) #! Alert
-
-    elif Random_key == False:
-
-        Name_key = os.path.basename(Key_path)
-        Key_dir = os.path.dirname(Key_path)
-
-        if Key_path.endswith('.key'):
-            
-            try: 
-                with open(Key_path, 'rb') as filekey:
-                    Key = filekey.read()
-
-                Fernet_ = Fernet(Key)
-
-                #Key_name = 'MainKey.key'.format()
-                shutil.copy2(os.path.join(Key_dir, Name_key), Key_path_chosen)
-
-                # * This function sort the files and show them
-
-                for Filename in os.listdir(Folder_path):
-
-                    Filenames.append(Filename)
-
-                    with open(Folder_path + '/' + Filename, 'rb') as File: # open in readonly mode
-                        Original_file = File.read()
-                    
-                    Encrypted_File = Fernet_.encrypt(Original_file)
-
-                    with open(Folder_path + '/' + Filename, 'wb') as Encrypted_file:
-                        Encrypted_file.write(Encrypted_File)
-
-                with open(Key_path_chosen + '/' + Name_key + '.txt', "w") as text_file:
-                    text_file.write('The key {} open the next documents {}'.format(Name_key, Filenames))  
-
-            except OSError:
-                print('Is not a key {} ❌'.format(str(Key_path))) #! Alert
-
-# ? Decrypt files
-
-@timer_func
-def decrypt_files(**kwargs) -> None: 
-
-    # * General parameters
-    Folder_path = kwargs.get('folderpath', None)
-    Key_path = kwargs.get('keypath', None)
-
-    # * Folder attribute (ValueError, TypeError)
-    if Folder_path == None:
-        raise ValueError("Folder does not exist") #! Alert
-    if not isinstance(Folder_path, str):
-        raise TypeError("Folder must be a string") #! Alert
-
-    Key_dir = os.path.dirname(Key_path)
-    Key_file = os.path.basename(Key_path)
-
-    Filename_key, Format = os.path.splitext(Key_file)
-
-    Datetime = datetime.datetime.now()
-
-    with open(Key_path, 'rb') as Filekey:
-        Key = Filekey.read()
-
-    Fernet_ = Fernet(Key)
-
-    # * This function sort the files and show them
-
-    if Filename_key.endswith('.key'):
-
-        try:
-            for Filename in os.listdir(Folder_path):
-
-                print(Filename)
-
-                with open(Folder_path + '/' + Filename, 'rb') as Encrypted_file: # open in readonly mode
-                    Encrypted = Encrypted_file.read()
-                
-                Decrypted = Fernet_.decrypt(Encrypted)
-
-                with open(Folder_path + '/' + Filename, 'wb') as Decrypted_file:
-                    Decrypted_file.write(Decrypted)
-
-            with open(Key_dir + '/' + Key_file + '.txt', "w") as text_file:
-                    text_file.write('Key used. Datetime: {} '.format(Datetime))  
-
-        except OSError:
-                print('Is not a key {} ❌'.format(str(Key_path))) #! Alert
+                    print('Is not a key {} ❌'.format(str(Key_path))) #! Alert
 
 # ? Sort Files
 
@@ -402,62 +465,6 @@ def sort_images(Folder_path: str) -> tuple[list[str], int]:
     print("\n")
 
     return Sorted_files, Number_images
-
-# ? Remove all files in folder
-
-@timer_func
-def remove_all_files(Folder_path: str) -> None:
-    """
-    Remove all files inside the folder path obtained.
-
-    Args:
-        Folder_path (str): Folder path obtained.
-
-    Returns:
-        None
-    """
-    
-    # * Folder attribute (ValueError, TypeError)
-    if Folder_path == None:
-        raise ValueError("Folder does not exist") #! Alert
-    if not isinstance(Folder_path, str):
-        raise TypeError("Folder must be a string") #! Alert
-
-    # * This function will remove all the files inside a folder
-
-    for File in os.listdir(Folder_path):
-        Filename, Format  = os.path.splitext(File)
-        print('Removing: {} . {} ✅'.format(Filename, Format))
-        os.remove(os.path.join(Folder_path, File))
-
-# ? Random remove all files in folder
-
-@timer_func
-def random_remove_files(Folder_path: str, Value: int) -> None:
-    """
-    Remove all files inside the folder path obtained.
-
-    Args:
-        Folder_path (str): Folder path obtained.
-
-    Returns:
-        None
-    """
-    # * Folder attribute (ValueError, TypeError)
-    if Folder_path == None:
-        raise ValueError("Folder does not exist") #! Alert
-    if not isinstance(Folder_path, str):
-        raise TypeError("Folder must be a string") #! Alert
-
-    # * This function will remove all the files inside a folder
-    Files = os.listdir(Folder_path)
-
-        #Filename, Format = os.path.splitext(File)
-
-    for File_sample in sample(Files, Value):
-        print(File_sample)
-        #print('Removing: {}{} ✅'.format(Filename, Format))
-        os.remove(os.path.join(Folder_path, File_sample))
 
 # ? ####################################################### Mini-MIAS #######################################################
 
