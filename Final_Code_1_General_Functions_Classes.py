@@ -5,11 +5,54 @@ from functools import wraps
 
 ################################################## ? Class decorators
 
+# ? Sort Files
+def sort_images(Folder_path: str) -> tuple[list[str], int]: 
+    """
+    Sort the filenames of the obtained folder path.
+
+    Args:
+        Folder_path (str): Folder path obtained.
+
+    Returns:
+        list[str]: Return all files sorted.
+        int: Return the number of images inside the folder.
+    """
+    
+    # * Folder attribute (ValueError, TypeError)
+    if Folder_path == None:
+        raise ValueError("Folder does not exist") #! Alert
+    if not isinstance(Folder_path, str):
+        raise TypeError("Folder must be a string") #! Alert
+
+    Asterisks:int = 60
+    # * This function sort the files and show them
+
+    Number_images: int = len(os.listdir(Folder_path))
+    print("\n")
+    print("*" * Asterisks)
+    print('Images: {}'.format(Number_images))
+    print("*" * Asterisks)
+    Files: list[str] = os.listdir(Folder_path)
+    print("\n")
+
+    Sorted_files: list[str] = sorted(Files)
+
+    for Index, Sort_file in enumerate(Sorted_files):
+        print('Index: {} ---------- {} ✅'.format(Index, Sort_file))
+
+    print("\n")
+
+    return Sorted_files, Number_images
+
+#################################################################################################### ? Class 
+
+# ?
+
 class Utilities(object):
 
     # ? Get the execution time of each function
     @staticmethod  
-    def time_func(func):  
+    def timer_func(func):  
         @wraps(func)  
         def wrapper(self, *args, **kwargs):  
 
@@ -55,7 +98,6 @@ class Utilities(object):
             return result
         return wrapper
 
-
 # ? Random remove all files in folder
 
 class RemoveFiles(Utilities):
@@ -68,10 +110,10 @@ class RemoveFiles(Utilities):
         def wrapper(self, *args, **kwargs):  
 
             # * 
-            for File in os.listdir(self.Folder_path):
+            for File in os.listdir(self._Folder_path):
                 Filename, Format  = os.path.splitext(File);
                 print('Removing: {} . {} ✅'.format(Filename, Format));
-                os.remove(os.path.join(self.Folder_path, File));
+                os.remove(os.path.join(self._Folder_path, File));
 
             result = func(self, *args, **kwargs)
 
@@ -80,13 +122,13 @@ class RemoveFiles(Utilities):
 
     def __init__(self, **kwargs) -> None:
 
-        # * Instance attributes
-        self.Folder_path = kwargs.get('folder', None);
-        self.Number_Files_to_remove = kwargs.get('NFR', None);
+        # * Instance attributes (Protected)
+        self._Folder_path = kwargs.get('folder', None);
+        self._Number_Files_to_remove = kwargs.get('NFR', None);
 
     def __repr__(self):
 
-        kwargs_info = "[{}, {}]".format(self.Folder_path, self.Number_Files_to_remove);
+        kwargs_info = "[{}, {}]".format(self._Folder_path, self._Number_Files_to_remove);
 
         return kwargs_info
 
@@ -96,34 +138,34 @@ class RemoveFiles(Utilities):
     # * Folder_path attribute
     @property
     def Folder_path_property(self):
-        return self.Folder_path
+        return self._Folder_path
 
     @Folder_path_property.setter
     def Folder_path_property(self, New_value):
         if not isinstance(New_value, str):
             raise TypeError("Folder_path must be a string") #! Alert
-        self.Folder_path = New_value;
+        self._Folder_path = New_value;
     
     @Folder_path_property.deleter
     def Folder_path_property(self):
         print("Deleting Folder_path...");
-        del self.Folder_path
+        del self._Folder_path
 
     # * Files_to_remove attribute
     @property
     def Files_to_remove_property(self):
-        return self.Files_to_remove
+        return self._Files_to_remove
 
     @Files_to_remove_property.setter
     def Files_to_remove_property(self, New_value):
         if not isinstance(New_value, int):
             raise TypeError("Files_to_remove must be a integer") #! Alert
-        self.Files_to_remove = New_value;
+        self._Files_to_remove = New_value;
     
     @Files_to_remove_property.deleter
     def Files_to_remove_property(self):
         print("Deleting Files_to_remove...");
-        del self.Files_to_remove
+        del self._Files_to_remove
 
     # ? Remove all files inside a dir
     @Utilities.timer_func
@@ -139,16 +181,16 @@ class RemoveFiles(Utilities):
         """
         
         # * Folder attribute (ValueError, TypeError)
-        if self.Folder_path == None:
+        if self._Folder_path == None:
             raise ValueError("Folder does not exist") #! Alert
-        if not isinstance(self.Folder_path, str):
+        if not isinstance(self._Folder_path, str):
             raise TypeError("Folder must be a string") #! Alert
 
         # * This function will remove all the files inside a folder
-        for File in os.listdir(self.Folder_path):
+        for File in os.listdir(self._Folder_path):
             Filename, Format  = os.path.splitext(File);
             print('Removing: {} . {} ✅'.format(Filename, Format));
-            os.remove(os.path.join(self.Folder_path, File));
+            os.remove(os.path.join(self._Folder_path, File));
 
     # ? Remove all files inside a dir
     @Utilities.timer_func
@@ -164,26 +206,26 @@ class RemoveFiles(Utilities):
         """
 
         # * This function will remove all the files inside a folder
-        Files = os.listdir(self.Folder_path);
+        Files = os.listdir(self._Folder_path);
 
             #Filename, Format = os.path.splitext(File)
 
-        for File_sample in sample(Files, self.Number_Files_to_remove):
+        for File_sample in sample(Files, self._Number_Files_to_remove):
             print(File_sample);
             #print('Removing: {}{} ✅'.format(Filename, Format));
-            os.remove(os.path.join(self.Folder_path, File_sample));
+            os.remove(os.path.join(self._Folder_path, File_sample));
 
-#################################################################################################### ? Class 
+# ?
 
 class Generator(object):
 
     def __init__(self, **kwargs) -> None:
 
-        # * Instance attributes
-        self.Folder_path = kwargs.get('folder', None);
-        self.Folders_name = kwargs.get('FN', None);
-        self.Iteration = kwargs.get('iter', None);
-        self.Save_dataframe = kwargs.get('SD', None);
+        # * Instance attributes (Private)
+        self.__Folder_path = kwargs.get('folder', None);
+        self.__Folders_name = kwargs.get('FN', None);
+        self.__Iteration = kwargs.get('iter', None);
+        self.__Save_dataframe = kwargs.get('SD', None);
 
     # ? Create folders
     @Utilities.timer_func
@@ -204,13 +246,13 @@ class Generator(object):
         Path_absolute_dir = [];
 
         # *
-        if(len(self.Folders_name) >= 2):
+        if(len(self.__Folders_name) >= 2):
             
             # *
-            for i, Path_name in enumerate(self.Folders_name):
+            for i, Path_name in enumerate(self.__Folders_name):
 
                 # *
-                Folder_path_new = r'{}\{}'.format(self.Folder_path, self.Folders_name[i]);
+                Folder_path_new = r'{}\{}'.format(self.__Folder_path, self.__Folders_name[i]);
                 print(Folder_path_new);
 
                 Path_names.append(Path_name);
@@ -221,15 +263,15 @@ class Generator(object):
             if Exist_dir == False:
                 os.mkdir(Folder_path_new);
             else:
-                print('Path: {} exists, use another name for it'.format(self.Folders_name[i]));
+                print('Path: {} exists, use another name for it'.format(self.__Folders_name[i]));
 
         else:
 
             # *
-            Folder_path_new = r'{}\{}'.format(self.Folder_path, self.Folders_name);
+            Folder_path_new = r'{}\{}'.format(self.__Folder_path, self.__Folders_name);
             print(Folder_path_new);
 
-            Path_names.append(self.Folders_name);
+            Path_names.append(self.__Folders_name);
             Path_absolute_dir.append(Folder_path_new);
 
             Exist_dir = os.path.isdir(Folder_path_new) ;
@@ -237,13 +279,13 @@ class Generator(object):
             if Exist_dir == False:
                 os.mkdir(Folder_path_new);
             else:
-                print('Path: {} exists, use another name for it'.format(self.Folders_name));
+                print('Path: {} exists, use another name for it'.format(self.__Folders_name));
 
         # *
-        if(self.Save_dataframe == True):
+        if(self.__Save_dataframe == True):
             Dataframe = pd.DataFrame({'Names':Path_names, 'Path names':Path_absolute_dir});
             Dataframe_name = 'Dataframe_path_names.csv'.format();
-            Dataframe_folder = os.path.join(self.Folder_path, Dataframe_name);
+            Dataframe_folder = os.path.join(self.__Folder_path, Dataframe_name);
 
             #Exist_dataframe = os.path.isfile(Dataframe_folder)
 
@@ -265,7 +307,7 @@ class Generator(object):
         # *
         Dataframe = pd.DataFrame(Columns_names)
 
-        for i in range(self.Iteration):
+        for i in range(self.__Iteration):
 
             # *
             New_row = { 'Name':random.choice(Random_Name),
@@ -283,9 +325,9 @@ class Generator(object):
             print('Iteration complete: {}'.format(i));
 
         # *
-        if(self.Save_dataframe == True):
+        if(self.__Save_dataframe == True):
             Dataframe_name = 'Dataframe_students_data.csv'.format();
-            Dataframe_folder = os.path.join(self.Folder_path, Dataframe_name);
+            Dataframe_folder = os.path.join(self.__Folder_path, Dataframe_name);
             Dataframe.to_csv(Dataframe_folder);
 
         return Dataframe
@@ -294,18 +336,21 @@ class Generator(object):
 
 class SecurityFiles(object):
 
-    def generate_key(Folder_path: str, Number_keys: int = 2) -> None: 
+    def __init__(self, **kwargs) -> None:
+        
+        # * Instance attributes (Private)
+        self.__Folder_path = kwargs.get('folder', None);
+        self.__Folders_name = kwargs.get('FN', None);
+        self.__Iteration = kwargs.get('iter', None);
+        self.__Save_dataframe = kwargs.get('SD', None);
 
+    def generate_key(Folder_path: str, Number_keys: int = 2) -> None: 
+        
+        # *
         Names = [];
         Keys = [];
         
-        # * Folder attribute (ValueError, TypeError)
-        if Folder_path == None:
-            raise ValueError("Folder does not exist") #! Alert
-        if not isinstance(Folder_path, str):
-            raise TypeError("Folder must be a string") #! Alert
-
-        # key generation
+        # * key generation
         for i in range(Number_keys):
 
             Key = Fernet.generate_key()
@@ -468,50 +513,12 @@ class SecurityFiles(object):
             except OSError:
                     print('Is not a key {} ❌'.format(str(Key_path))) #! Alert
 
-# ? Sort Files
-
-def sort_images(Folder_path: str) -> tuple[list[str], int]: 
-    """
-    Sort the filenames of the obtained folder path.
-
-    Args:
-        Folder_path (str): Folder path obtained.
-
-    Returns:
-        list[str]: Return all files sorted.
-        int: Return the number of images inside the folder.
-    """
-    
-    # * Folder attribute (ValueError, TypeError)
-    if Folder_path == None:
-        raise ValueError("Folder does not exist") #! Alert
-    if not isinstance(Folder_path, str):
-        raise TypeError("Folder must be a string") #! Alert
-
-    Asterisks:int = 60
-    # * This function sort the files and show them
-
-    Number_images: int = len(os.listdir(Folder_path))
-    print("\n")
-    print("*" * Asterisks)
-    print('Images: {}'.format(Number_images))
-    print("*" * Asterisks)
-    Files: list[str] = os.listdir(Folder_path)
-    print("\n")
-
-    Sorted_files: list[str] = sorted(Files)
-
-    for Index, Sort_file in enumerate(Sorted_files):
-        print('Index: {} ---------- {} ✅'.format(Index, Sort_file))
-
-    print("\n")
-
-    return Sorted_files, Number_images
 
 # ? ####################################################### Mini-MIAS #######################################################
 
 # ? Extract the mean of each column
 
+@Utilities.timer_func
 def extract_mean_from_images(Dataframe:pd.DataFrame, Column:int) -> int:
   """
   Extract the mean from the values of the whole dataset using its dataframe.
@@ -525,7 +532,7 @@ def extract_mean_from_images(Dataframe:pd.DataFrame, Column:int) -> int:
 
   # * This function will obtain the main of each column
 
-  List_data_mean:list = []
+  List_data_mean = []
 
   for i in range(Dataframe.shape[0]):
       if Dataframe.iloc[i - 1, Column] > 0:
@@ -536,6 +543,7 @@ def extract_mean_from_images(Dataframe:pd.DataFrame, Column:int) -> int:
  
 # ? Clean Mini-MIAS CSV
 
+@Utilities.timer_func
 def mini_mias_csv_clean(Dataframe:pd.DataFrame) -> pd.DataFrame:
   """
   Clean the data from the Mini-MIAS dataframe.
@@ -547,10 +555,10 @@ def mini_mias_csv_clean(Dataframe:pd.DataFrame) -> pd.DataFrame:
       pd.DataFrame: Return the clean dataframe to use.
   """
 
-  Value_fillna:int = 0
+  Value_fillna = 0
   # * This function will clean the data from the CSV archive
 
-  Columns_list:list[str] = ["REFNUM", "BG", "CLASS", "SEVERITY", "X", "Y", "RADIUS"]
+  Columns_list = ["REFNUM", "BG", "CLASS", "SEVERITY", "X", "Y", "RADIUS"]
   Dataframe_Mini_MIAS = pd.read_csv(Dataframe, usecols = Columns_list)
 
   # * Severity's column
@@ -581,26 +589,8 @@ def mini_mias_csv_clean(Dataframe:pd.DataFrame) -> pd.DataFrame:
   return Dataframe_Mini_MIAS
 
 # ?
-@timer_func
-class ChangeFormat:
-  """
-  _summary_
 
-  _extended_summary_
-
-  Raises:
-      ValueError: _description_
-      TypeError: _description_
-      ValueError: _description_
-      TypeError: _description_
-      ValueError: _description_
-      TypeError: _description_
-      ValueError: _description_
-      TypeError: _description_
-  """
-  # * Change the format of one image to another 
-
-  def __init__(self, **kwargs):
+class ChangeFormat(Utilities):
     """
     _summary_
 
@@ -616,428 +606,448 @@ class ChangeFormat:
         ValueError: _description_
         TypeError: _description_
     """
-    # * General parameters
-    self.Folder = kwargs.get('Folder', None)
-    self.New_folder = kwargs.get('Newfolder', None)
-    self.Format = kwargs.get('Format', None)
-    self.New_format = kwargs.get('Newformat', None)
+    # * Change the format of one image to another 
 
-    # * Values, type errors.
-    if self.Folder == None:
-      raise ValueError("Folder does not exist") #! Alert
-    if not isinstance(self.Folder, str):
-      raise TypeError("Folder attribute must be a string") #! Alert
+    def __init__(self, **kwargs):
+        """
+        _summary_
 
-    if self.New_folder == None:
-      raise ValueError("Folder destination does not exist") #! Alert
-    if not isinstance(self.New_folder, str):
-      raise TypeError("Folder destination attribute must be a string") #! Alert
+        _extended_summary_
 
-    if self.Format == None:
-      raise ValueError("Current format does not exist") #! Alert
-    if not isinstance(self.Format, str):
-      raise TypeError("Current format must be a string") #! Alert
+        Raises:
+            ValueError: _description_
+            TypeError: _description_
+            ValueError: _description_
+            TypeError: _description_
+            ValueError: _description_
+            TypeError: _description_
+            ValueError: _description_
+            TypeError: _description_
+        """
+        # * General parameters
+        self.__Folder = kwargs.get('Folder', None)
+        self.__New_folder = kwargs.get('Newfolder', None)
+        self.__Format = kwargs.get('Format', None)
+        self.__New_format = kwargs.get('Newformat', None)
 
-    if self.New_format == None:
-      raise ValueError("New format does not exist") #! Alert
-    if not isinstance(self.New_format, str):
-      raise TypeError("Current format must be a string") #! Alert
+        # * Values, type errors.
+        if self.__Folder == None:
+            raise ValueError("Folder does not exist") #! Alert
+        if not isinstance(self.__Folder, str):
+            raise TypeError("Folder attribute must be a string") #! Alert
 
-  # * Folder attribute
-  @property
-  def Folder_property(self):
-      return self.Folder
+        if self.__New_folder == None:
+            raise ValueError("Folder destination does not exist") #! Alert
+        if not isinstance(self.__New_folder, str):
+            raise TypeError("Folder destination attribute must be a string") #! Alert
 
-  @Folder_property.setter
-  def Folder_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Folder must be a string") #! Alert
-      self.Folder = New_value
-  
-  @Folder_property.deleter
-  def Folder_property(self):
-      print("Deleting folder...")
-      del self.Folder
+        if self.__Format == None:
+            raise ValueError("Current format does not exist") #! Alert
+        if not isinstance(self.__Format, str):
+            raise TypeError("Current format must be a string") #! Alert
 
-  # * New folder attribute
-  @property
-  def New_folder_property(self):
-      return self.New_folder
+        if self.__New_format == None:
+            raise ValueError("New format does not exist") #! Alert
+        if not isinstance(self.__New_format, str):
+            raise TypeError("Current format must be a string") #! Alert
 
-  @New_folder_property.setter
-  def New_folder_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Folder must be a string") #! Alert
-      self.New_folder = New_value
-  
-  @New_folder_property.deleter
-  def New_folder_property(self):
-      print("Deleting folder...")
-      del self.New_folder
+    # * Folder attribute
+    @property
+    def Folder_property(self):
+        return self.__Folder
 
-  # * Format attribute
-  @property
-  def Format_property(self):
-      return self.New_folder
+    @Folder_property.setter
+    def Folder_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Folder must be a string") #! Alert
+        self.__Folder = New_value
+    
+    @Folder_property.deleter
+    def Folder_property(self):
+        print("Deleting folder...")
+        del self.__Folder
 
-  @Format_property.setter
-  def Format_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Folder must be a string") #! Alert
-      self.Format = New_value
-  
-  @Format_property.deleter
-  def New_folder_property(self):
-      print("Deleting folder...")
-      del self.Format
+    # * New folder attribute
+    @property
+    def New_folder_property(self):
+        return self.__New_folder
 
-  # * New Format attribute
-  @property
-  def New_format_property(self):
-      return self.New_format
+    @New_folder_property.setter
+    def New_folder_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Folder must be a string") #! Alert
+        self.__New_folder = New_value
+    
+    @New_folder_property.deleter
+    def New_folder_property(self):
+        print("Deleting folder...")
+        del self.__New_folder
 
-  @New_format_property.setter
-  def New_format_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Folder must be a string") #! Alert
-      self.New_format = New_value
-  
-  @New_format_property.deleter
-  def New_format_property(self):
-      print("Deleting folder...")
-      del self.New_format
+    # * Format attribute
+    @property
+    def Format_property(self):
+        return self.__Format
 
-  def ChangeExtension(self):
-    """
-    _summary_
+    @Format_property.setter
+    def Format_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Format must be a string") #! Alert
+        self.__Format = New_value
+    
+    @Format_property.deleter
+    def New_folder_property(self):
+        print("Deleting folder...")
+        del self.__Format
 
-    _extended_summary_
-    """
-    # * Changes the current working directory to the given path
-    os.chdir(self.Folder)
-    print(os.getcwd())
-    print("\n")
+    # * New Format attribute
+    @property
+    def New_format_property(self):
+        return self.__New_format
 
-    # * Using the sort function
-    Sorted_files, Total_images = sort_images(self.Folder)
-    Count:int = 0
+    @New_format_property.setter
+    def New_format_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("New format must be a string") #! Alert
+        self.__New_format = New_value
+    
+    @New_format_property.deleter
+    def New_format_property(self):
+        print("Deleting new format...")
+        del self.__New_format
 
-    # * Reading the files
-    for File in Sorted_files:
-      if File.endswith(self.Format):
+    @Utilities.timer_func
+    def ChangeFormat(self):
+        """
+        _summary_
 
-        try:
-            Filename, Format  = os.path.splitext(File)
-            print('Working with {} of {} {} images, {} ------- {} ✅'.format(Count, Total_images, self.Format, Filename, self.New_format))
-            #print(f"Working with {Count} of {Total_images} {self.Format} images, {Filename} ------- {self.New_format} ✅")
-            
-            # * Reading each image using cv2
-            Path_file = os.path.join(self.Folder, File)
-            Image = cv2.imread(Path_file)         
-            #Imagen = cv2.cvtColor(Imagen, cv2.COLOR_BGR2GRAY)
-            
-            # * Changing its format to a new one
-            New_name_filename = Filename + self.New_format
-            New_folder = os.path.join(self.New_folder, New_name_filename)
+        _extended_summary_
+        """
+        # * Changes the current working directory to the given path
+        os.chdir(self.Folder)
+        print(os.getcwd())
+        print("\n")
 
-            cv2.imwrite(New_folder, Image)
-            #FilenamesREFNUM.append(Filename)
-            Count += 1
+        # * Using the sort function
+        Sorted_files, Total_images = sort_images(self.__Folder)
+        Count:int = 0
 
-        except OSError:
-            print('Cannot convert {} ❌'.format(str(File))) #! Alert
-            #print('Cannot convert %s ❌' % File) #! Alert
+        # * Reading the files
+        for File in Sorted_files:
+            if File.endswith(self.__Format):
 
-    print("\n")
-    #print(f"COMPLETE {Count} of {Total_images} TRANSFORMED ✅")
-    print('{} of {} tranformed ✅'.format(str(Count), str(Total_images))) #! Alert
+                try:
+                    Filename, Format  = os.path.splitext(File)
+                    print('Working with {} of {} {} images, {} ------- {} ✅'.format(Count, Total_images, self.__Format, Filename, self.__New_format))
+                    #print(f"Working with {Count} of {Total_images} {self.Format} images, {Filename} ------- {self.New_format} ✅")
+                    
+                    # * Reading each image using cv2
+                    Path_file = os.path.join(self.__Folder, File)
+                    Image = cv2.imread(Path_file)         
+                    #Imagen = cv2.cvtColor(Imagen, cv2.COLOR_BGR2GRAY)
+                    
+                    # * Changing its format to a new one
+                    New_name_filename = Filename + self.__New_format
+                    New_folder = os.path.join(self.__New_folder, New_name_filename)
+
+                    cv2.imwrite(New_folder, Image)
+                    #FilenamesREFNUM.append(Filename)
+                    Count += 1
+
+                except OSError:
+                    print('Cannot convert {} ❌'.format(str(File))) #! Alert
+                    #print('Cannot convert %s ❌' % File) #! Alert
+
+        print("\n")
+        #print(f"COMPLETE {Count} of {Total_images} TRANSFORMED ✅")
+        print('{} of {} tranformed ✅'.format(str(Count), str(Total_images))) #! Alert
 
 # ? Class for images cropping.
-@timer_func
-class CropImages():
+
+class CropImages(Utilities):
   """
   _summary_
 
   _extended_summary_
   """
-  def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
     
-    """
-    _summary_
+        """
+        _summary_
 
-    _extended_summary_
+        _extended_summary_
 
-    Raises:
-        ValueError: _description_
-        ValueError: _description_
-        ValueError: _description_
-        ValueError: _description_
-        ValueError: _description_
-        ValueError: _description_
-        ValueError: _description_
-        ValueError: _description_
-    """
-    # * This algorithm outputs crop values for images based on the coordinates of the CSV file.
-    # * General parameters
-    self.Folder: str = kwargs.get('Folder', None)
-    self.Normalfolder: str = kwargs.get('Normalfolder', None)
-    self.Tumorfolder: str = kwargs.get('Tumorfolder', None)
-    self.Benignfolder: str = kwargs.get('Benignfolder', None)
-    self.Malignantfolder: str = kwargs.get('Malignantfolder', None)
+        Raises:
+            ValueError: _description_
+            ValueError: _description_
+            ValueError: _description_
+            ValueError: _description_
+            ValueError: _description_
+            ValueError: _description_
+            ValueError: _description_
+            ValueError: _description_
+        """
+        # * This algorithm outputs crop values for images based on the coordinates of the CSV file.
+        # * General parameters
+        self.__Folder: str = kwargs.get('Folder', None)
+        self.__Normalfolder: str = kwargs.get('Normalfolder', None)
+        self.__Tumorfolder: str = kwargs.get('Tumorfolder', None)
+        self.__Benignfolder: str = kwargs.get('Benignfolder', None)
+        self.__Malignantfolder: str = kwargs.get('Malignantfolder', None)
 
-    # * CSV to extract data
-    self.Dataframe: pd.DataFrame = kwargs.get('Dataframe', None)
-    self.Shapes = kwargs.get('Shapes', None)
-    
-    # * X and Y mean to extract normal cropped images
-    self.Xmean:int = kwargs.get('Xmean', None)
-    self.Ymean:int = kwargs.get('Ymean', None)
+        # * CSV to extract data
+        self.__Dataframe: pd.DataFrame = kwargs.get('Dataframe', None)
+        self.__Shapes = kwargs.get('Shapes', None)
+        
+        # * X and Y mean to extract normal cropped images
+        self.__X_mean:int = kwargs.get('Xmean', None)
+        self.__Y_mean:int = kwargs.get('Ymean', None)
 
-    if self.Folder == None:
-      raise ValueError("Folder does not exist") #! Alert
-    if not isinstance(self.Severity, str):
-      raise TypeError("Folder must be a string") #! Alert
+        if self.__Folder == None:
+            raise ValueError("Folder does not exist") #! Alert
+        if not isinstance(self.__Folder, str):
+            raise TypeError("Folder must be a string") #! Alert
 
-    if self.Normalfolder == None:
-      raise ValueError("Folder for normal images does not exist") #! Alert
-    if not isinstance(self.Severity, str):
-      raise TypeError("Folder must be a string") #! Alert
+        if self.__Normalfolder == None:
+            raise ValueError("Folder for normal images does not exist") #! Alert
+        if not isinstance(self.__Normalfolder , str):
+            raise TypeError("Folder must be a string") #! Alert
 
-    if self.Tumorfolder == None:
-      raise ValueError("Folder for tumor images does not exist") #! Alert
-    if not isinstance(self.Severity, str):
-      raise TypeError("Folder must be a string") #! Alert
+        if self.__Tumorfolder == None:
+            raise ValueError("Folder for tumor images does not exist") #! Alert
+        if not isinstance(self.__Tumorfolder, str):
+            raise TypeError("Folder must be a string") #! Alert
 
-    if self.Benignfolder == None:
-      raise ValueError("Folder for benign images does not exist") #! Alert
-    if not isinstance(self.Severity, str):
-      raise TypeError("Folder must be a string") #! Alert
+        if self.__Benignfolder == None:
+            raise ValueError("Folder for benign images does not exist") #! Alert
+        if not isinstance(self.__Benignfolder, str):
+            raise TypeError("Folder must be a string") #! Alert
 
-    if self.Malignantfolder == None:
-      raise ValueError("Folder for malignant images does not exist") #! Alert
-    if not isinstance(self.Severity, str):
-      raise TypeError("Folder must be a string") #! Alert
-      
-    #elif self.Dataframe == None:
-      #raise ValueError("The dataframe is required") #! Alert
+        if self.__Malignantfolder == None:
+            raise ValueError("Folder for malignant images does not exist") #! Alert
+        if not isinstance(self.__Malignantfolder, str):
+            raise TypeError("Folder must be a string") #! Alert
+        
+        #elif self.Dataframe == None:
+        #raise ValueError("The dataframe is required") #! Alert
 
-    elif self.Shapes == None:
-      raise ValueError("The shape is required") #! Alert
+        elif self.__Shapes == None:
+            raise ValueError("The shape is required") #! Alert
 
-    elif self.Xmean == None:
-      raise ValueError("Xmean is required") #! Alert
+        elif self.__X_mean == None:
+            raise ValueError("Xmean is required") #! Alert
 
-    elif self.Ymean == None:
-      raise ValueError("Ymean is required") #! Alert
+        elif self.__Y_mean == None:
+            raise ValueError("Ymean is required") #! Alert
 
-  def CropMIAS(self):
-    
-    #Images = []
+    @Utilities.timer_func
+    def CropMIAS(self):
+        
+        #Images = []
 
-    os.chdir(self.Folder)
+        os.chdir(self.__Folder)
 
-    # * Columns
-    Name_column = 0
-    Severity = 3
-    X_column = 4
-    Y_column = 5
-    Radius = 6
+        # * Columns
+        Name_column = 0
+        Severity = 3
+        X_column = 4
+        Y_column = 5
+        Radius = 6
 
-    # * Labels
-    Benign = 0
-    Malignant = 1
-    Normal = 2
+        # * Labels
+        Benign = 0
+        Malignant = 1
+        Normal = 2
 
-    # * Initial index
-    Index = 1
-    
-    # * Using sort function
-    Sorted_files, Total_images = sort_images(self.Folder)
-    Count = 1
+        # * Initial index
+        Index = 1
+        
+        # * Using sort function
+        Sorted_files, Total_images = sort_images(self.__Folder)
+        Count = 1
 
-    # * Reading the files
-    for File in Sorted_files:
-      
-        Filename, Format = os.path.splitext(File)
+        # * Reading the files
+        for File in Sorted_files:
+        
+            Filename, Format = os.path.splitext(File)
 
-        print("******************************************")
-        print(self.Dataframe.iloc[Index - 1, Name_column])
-        print(Filename)
-        print("******************************************")
+            print("******************************************")
+            print(self.__Dataframe.iloc[Index - 1, Name_column])
+            print(Filename)
+            print("******************************************")
 
-        if self.Dataframe.iloc[Index - 1, Severity] == Benign:
-            if self.Dataframe.iloc[Index - 1, X_column] > 0  or self.Dataframe.iloc[Index - 1, Y_column] > 0:
-              
-                try:
+            if self.__Dataframe.iloc[Index - 1, Severity] == Benign:
+                if self.__Dataframe.iloc[Index - 1, X_column] > 0  or self.__Dataframe.iloc[Index - 1, Y_column] > 0:
                 
-                  print(f"Working with {Count} of {Total_images} {Format} Benign images, {Filename} X: {self.Dataframe.iloc[Index - 1, X_column]} Y: {self.Dataframe.iloc[Index - 1, Y_column]}")
-                  print(self.Dataframe.iloc[Index - 1, Name_column], " ------ ", Filename, " ✅")
-                  Count += 1
+                    try:
+                    
+                        print(f"Working with {Count} of {Total_images} {Format} Benign images, {Filename} X: {self.__Dataframe.iloc[Index - 1, X_column]} Y: {self.__Dataframe.iloc[Index - 1, Y_column]}")
+                        print(self.__Dataframe.iloc[Index - 1, Name_column], " ------ ", Filename, " ✅")
+                        Count += 1
 
-                  # * Reading the image
-                  Path_file = os.path.join(self.Folder, File)
-                  Image = cv2.imread(Path_file)
+                        # * Reading the image
+                        Path_file = os.path.join(self.__Folder, File)
+                        Image = cv2.imread(Path_file)
+                        
+                        #Distance = self.Shape # X and Y.
+                        #Distance = self.Shape # Perimetro de X y Y de la imagen.
+                        #Image_center = Distance / 2 
+                            
+                        # * Obtaining the center using the radius
+                        Image_center = self.__Dataframe.iloc[Index - 1, Radius] / 2 
+                        # * Obtaining dimension
+                        Height_Y = Image.shape[0] 
+                        print(Image.shape[0])
+                        print(self.__Dataframe.iloc[Index - 1, Radius])
+
+                        # * Extract the value of X and Y of each image
+                        X_size = self.__Dataframe.iloc[Index - 1, X_column]
+                        print(X_size)
+                        Y_size = self.__Dataframe.iloc[Index - 1, Y_column]
+                        print(Y_size)
+                            
+                        # * Extract the value of X and Y of each image
+                        XDL = X_size - Image_center
+                        XDM = X_size + Image_center
+                            
+                        # * Extract the value of X and Y of each image
+                        YDL = Height_Y - Y_size - Image_center
+                        YDM = Height_Y - Y_size + Image_center
+
+                        # * Cropped image
+                        Cropped_Image_Benig = Image[int(YDL):int(YDM), int(XDL):int(XDM)]
+
+                        print(Image.shape, " ----------> ", Cropped_Image_Benig.shape)
+
+                        # print(Cropped_Image_Benig.shape)
+                        # Display cropped image
+                        # cv2_imshow(cropped_image)
+
+                        New_name_filename = Filename + '_Benign_cropped' + Format
+
+                        New_folder = os.path.join(self.__Benignfolder, New_name_filename)
+                        cv2.imwrite(New_folder, Cropped_Image_Benig)
+
+                        New_folder = os.path.join(self.__Tumorfolder, New_name_filename)
+                        cv2.imwrite(New_folder, Cropped_Image_Benig)
+
+                        #Images.append(Cropped_Image_Benig)
+
+                    except OSError:
+                            print('Cannot convert %s' % File)
+
+            elif self.__Dataframe.iloc[Index - 1, Severity] == Malignant:
+                if self.__Dataframe.iloc[Index - 1, X_column] > 0  or self.__Dataframe.iloc[Index - 1, Y_column] > 0:
+
+                    try:
+
+                        print(f"Working with {Count} of {Total_images} {Format} Malignant images, {Filename} X {self.__Dataframe.iloc[Index - 1, X_column]} Y {self.__Dataframe.iloc[Index - 1, Y_column]}")
+                        print(self.__Dataframe.iloc[Index - 1, Name_column], " ------ ", Filename, " ✅")
+                        Count += 1
+
+                        # * Reading the image
+                        Path_file = os.path.join(self.__Folder, File)
+                        Image = cv2.imread(Path_file)
+                        
+                        #Distance = self.Shape # X and Y.
+                        #Distance = self.Shape # Perimetro de X y Y de la imagen.
+                        #Image_center = Distance / 2 
+                            
+                        # * Obtaining the center using the radius
+                        Image_center = self.__Dataframe.iloc[Index - 1, Radius] / 2 # Center
+                        # * Obtaining dimension
+                        Height_Y = Image.shape[0] 
+                        print(Image.shape[0])
+
+                        # * Extract the value of X and Y of each image
+                        X_size = self.__Dataframe.iloc[Index - 1, X_column]
+                        Y_size = self.__Dataframe.iloc[Index - 1, Y_column]
+                            
+                        # * Extract the value of X and Y of each image
+                        XDL = X_size - Image_center
+                        XDM = X_size + Image_center
+                            
+                        # * Extract the value of X and Y of each image
+                        YDL = Height_Y - Y_size - Image_center
+                        YDM = Height_Y - Y_size + Image_center
+
+                        # * Cropped image
+                        Cropped_Image_Malig = Image[int(YDL):int(YDM), int(XDL):int(XDM)]
+
+                        print(Image.shape, " ----------> ", Cropped_Image_Malig.shape)
                 
-                  #Distance = self.Shape # X and Y.
-                  #Distance = self.Shape # Perimetro de X y Y de la imagen.
-                  #Image_center = Distance / 2 
+                        # print(Cropped_Image_Malig.shape)
+                        # Display cropped image
+                        # cv2_imshow(cropped_image)
+
+                        New_name_filename = Filename + '_Malignant_cropped' + Format
+
+                        New_folder = os.path.join(self.__Malignantfolder, New_name_filename)
+                        cv2.imwrite(New_folder, Cropped_Image_Malig)
+
+                        New_folder = os.path.join(self.__Tumorfolder, New_name_filename)
+                        cv2.imwrite(New_folder, Cropped_Image_Malig)
+
+                        #Images.append(Cropped_Image_Malig)
+
+
+                    except OSError:
+                        print('Cannot convert %s' % File)
+            
+            elif self.__Dataframe.iloc[Index - 1, Severity] == Normal:
+                if self.__Dataframe.iloc[Index - 1, X_column] == 0  or self.__Dataframe.iloc[Index - 1, Y_column] == 0:
+
+                    try:
+
+                        print(f"Working with {Count} of {Total_images} {Format} Normal images, {Filename}")
+                        print(self.__Dataframe.iloc[Index - 1, Name_column], " ------ ", Filename, " ✅")
+                        Count += 1
+
+                        Path_file = os.path.join(self.__Folder, File)
+                        Image = cv2.imread(Path_file)
+
+                        Distance = self.__Shapes # Perimetro de X y Y de la imagen.
+                        Image_center = Distance / 2 # Centro de la imagen.
+                        #CD = self.df.iloc[Index - 1, Radius] / 2
+                        # * Obtaining dimension
+                        Height_Y = Image.shape[0] 
+                        print(Image.shape[0])
+
+                        # * Extract the value of X and Y of each image
+                        X_size = self.__X_mean
+                        Y_size = self.__Y_mean
+                            
+                        # * Extract the value of X and Y of each image
+                        XDL = X_size - Image_center
+                        XDM = X_size + Image_center
+                            
+                        # * Extract the value of X and Y of each image
+                        YDL = Height_Y - Y_size - Image_center
+                        YDM = Height_Y - Y_size + Image_center
+
+                        # * Cropped image
+                        Cropped_Image_Normal = Image[int(YDL):int(YDM), int(XDL):int(XDM)]
+
+                        # * Comparison two images
+                        print(Image.shape, " ----------> ", Cropped_Image_Normal.shape)
+
+                        # print(Cropped_Image_Normal.shape)
+                        # Display cropped image
+                        # cv2_imshow(cropped_image)
                     
-                  # * Obtaining the center using the radius
-                  Image_center = self.Dataframe.iloc[Index - 1, Radius] / 2 
-                  # * Obtaining dimension
-                  Height_Y = Image.shape[0] 
-                  print(Image.shape[0])
-                  print(self.Dataframe.iloc[Index - 1, Radius])
+                        New_name_filename = Filename + '_Normal_cropped' + Format
 
-                  # * Extract the value of X and Y of each image
-                  X_size = self.Dataframe.iloc[Index - 1, X_column]
-                  print(X_size)
-                  Y_size = self.Dataframe.iloc[Index - 1, Y_column]
-                  print(Y_size)
-                    
-                  # * Extract the value of X and Y of each image
-                  XDL = X_size - Image_center
-                  XDM = X_size + Image_center
-                    
-                  # * Extract the value of X and Y of each image
-                  YDL = Height_Y - Y_size - Image_center
-                  YDM = Height_Y - Y_size + Image_center
+                        New_folder = os.path.join(self.__Normalfolder, New_name_filename)
+                        cv2.imwrite(New_folder, Cropped_Image_Normal)
 
-                  # * Cropped image
-                  Cropped_Image_Benig = Image[int(YDL):int(YDM), int(XDL):int(XDM)]
+                        #Images.append(Cropped_Image_Normal)
 
-                  print(Image.shape, " ----------> ", Cropped_Image_Benig.shape)
-
-                  # print(Cropped_Image_Benig.shape)
-                  # Display cropped image
-                  # cv2_imshow(cropped_image)
-
-                  New_name_filename = Filename + '_Benign_cropped' + Format
-
-                  New_folder = os.path.join(self.Benignfolder, New_name_filename)
-                  cv2.imwrite(New_folder, Cropped_Image_Benig)
-
-                  New_folder = os.path.join(self.Tumorfolder, New_name_filename)
-                  cv2.imwrite(New_folder, Cropped_Image_Benig)
-
-                  #Images.append(Cropped_Image_Benig)
-
-                except OSError:
+                    except OSError:
                         print('Cannot convert %s' % File)
 
-        elif self.Dataframe.iloc[Index - 1, Severity] == Malignant:
-            if self.Dataframe.iloc[Index - 1, X_column] > 0  or self.Dataframe.iloc[Index - 1, Y_column] > 0:
-
-                try:
-
-                  print(f"Working with {Count} of {Total_images} {Format} Malignant images, {Filename} X {self.Dataframe.iloc[Index - 1, X_column]} Y {self.Dataframe.iloc[Index - 1, Y_column]}")
-                  print(self.Dataframe.iloc[Index - 1, Name_column], " ------ ", Filename, " ✅")
-                  Count += 1
-
-                  # * Reading the image
-                  Path_file = os.path.join(self.Folder, File)
-                  Image = cv2.imread(Path_file)
-                
-                  #Distance = self.Shape # X and Y.
-                  #Distance = self.Shape # Perimetro de X y Y de la imagen.
-                  #Image_center = Distance / 2 
-                    
-                  # * Obtaining the center using the radius
-                  Image_center = self.Dataframe.iloc[Index - 1, Radius] / 2 # Center
-                  # * Obtaining dimension
-                  Height_Y = Image.shape[0] 
-                  print(Image.shape[0])
-
-                  # * Extract the value of X and Y of each image
-                  X_size = self.Dataframe.iloc[Index - 1, X_column]
-                  Y_size = self.Dataframe.iloc[Index - 1, Y_column]
-                    
-                  # * Extract the value of X and Y of each image
-                  XDL = X_size - Image_center
-                  XDM = X_size + Image_center
-                    
-                  # * Extract the value of X and Y of each image
-                  YDL = Height_Y - Y_size - Image_center
-                  YDM = Height_Y - Y_size + Image_center
-
-                  # * Cropped image
-                  Cropped_Image_Malig = Image[int(YDL):int(YDM), int(XDL):int(XDM)]
-
-                  print(Image.shape, " ----------> ", Cropped_Image_Malig.shape)
-        
-                  # print(Cropped_Image_Malig.shape)
-                  # Display cropped image
-                  # cv2_imshow(cropped_image)
-
-                  New_name_filename = Filename + '_Malignant_cropped' + Format
-
-                  New_folder = os.path.join(self.Malignantfolder, New_name_filename)
-                  cv2.imwrite(New_folder, Cropped_Image_Malig)
-
-                  New_folder = os.path.join(self.Tumorfolder, New_name_filename)
-                  cv2.imwrite(New_folder, Cropped_Image_Malig)
-
-                  #Images.append(Cropped_Image_Malig)
-
-
-                except OSError:
-                    print('Cannot convert %s' % File)
-        
-        elif self.Dataframe.iloc[Index - 1, Severity] == Normal:
-          if self.Dataframe.iloc[Index - 1, X_column] == 0  or self.Dataframe.iloc[Index - 1, Y_column] == 0:
-
-                try:
-
-                  print(f"Working with {Count} of {Total_images} {Format} Normal images, {Filename}")
-                  print(self.Dataframe.iloc[Index - 1, Name_column], " ------ ", Filename, " ✅")
-                  Count += 1
-
-                  Path_file = os.path.join(self.Folder, File)
-                  Image = cv2.imread(Path_file)
-
-                  Distance = self.Shapes # Perimetro de X y Y de la imagen.
-                  Image_center = Distance / 2 # Centro de la imagen.
-                  #CD = self.df.iloc[Index - 1, Radius] / 2
-                  # * Obtaining dimension
-                  Height_Y = Image.shape[0] 
-                  print(Image.shape[0])
-
-                  # * Extract the value of X and Y of each image
-                  X_size = self.Xmean
-                  Y_size = self.Ymean
-                    
-                  # * Extract the value of X and Y of each image
-                  XDL = X_size - Image_center
-                  XDM = X_size + Image_center
-                    
-                  # * Extract the value of X and Y of each image
-                  YDL = Height_Y - Y_size - Image_center
-                  YDM = Height_Y - Y_size + Image_center
-
-                  # * Cropped image
-                  Cropped_Image_Normal = Image[int(YDL):int(YDM), int(XDL):int(XDM)]
-
-                  # * Comparison two images
-                  print(Image.shape, " ----------> ", Cropped_Image_Normal.shape)
-
-                  # print(Cropped_Image_Normal.shape)
-                  # Display cropped image
-                  # cv2_imshow(cropped_image)
-              
-                  New_name_filename = Filename + '_Normal_cropped' + Format
-
-                  New_folder = os.path.join(self.Normalfolder, New_name_filename)
-                  cv2.imwrite(New_folder, Cropped_Image_Normal)
-
-                  #Images.append(Cropped_Image_Normal)
-
-                except OSError:
-                    print('Cannot convert %s' % File)
-
-        Index += 1   
+            Index += 1   
 
 # ? Kmeans algorithm
-@timer_func
+@Utilities.timer_func
 def kmeans_function(Folder_CSV: str, Folder_graph: str, Technique_name: str, X_data, Clusters: int, Filename: str, Severity: str) -> pd.DataFrame:
   """
   _summary_
@@ -1111,7 +1121,7 @@ def kmeans_function(Folder_CSV: str, Folder_graph: str, Technique_name: str, X_d
 
   # ? Remove Data from K-means function
   
-@timer_func
+@Utilities.timer_func
 def kmeans_remove_data(Folder_path: str, Folder_CSV: str, Technique_name: str, Dataframe: pd.DataFrame, Cluster_to_remove: int, Severity: str) -> pd.DataFrame:
   """
   _summary_
@@ -1214,6 +1224,7 @@ def kmeans_remove_data(Folder_path: str, Folder_CSV: str, Technique_name: str, D
 
 # ? CBIS-DDSM split data
 
+@Utilities.timer_func
 def CBIS_DDSM_split_data(**kwargs) -> pd.DataFrame:
     """
     _summary_
@@ -1485,6 +1496,7 @@ def CBIS_DDSM_split_data(**kwargs) -> pd.DataFrame:
 
 # ? CBIS-DDSM split all data
 
+@Utilities.timer_func
 def CBIS_DDSM_split_several_data(**kwargs)-> pd.DataFrame:
     """
     _summary_
@@ -1527,11 +1539,11 @@ def CBIS_DDSM_split_several_data(**kwargs)-> pd.DataFrame:
 
     Save_file = kwargs.get('savefile', False)
 
-    remove_all_files(Folder_total_benign)
-    remove_all_files(Folder_benign)
-    remove_all_files(Folder_benign_wc)
-    remove_all_files(Folder_malignant)
-    remove_all_files(Folder_abnormal)
+    #remove_all_files(Folder_total_benign)
+    #remove_all_files(Folder_benign)
+    #remove_all_files(Folder_benign_wc)
+    #remove_all_files(Folder_malignant)
+    #remove_all_files(Folder_abnormal)
 
     # * Folder test (ValueError, TypeError)
     if Folder_test == None:
@@ -2000,6 +2012,7 @@ def Imbalance_data_minority(Dataframe: pd.DataFrame) -> tuple[pd.DataFrame, set,
 
 # ? Convertion severity to int value
 
+@Utilities.timer_func
 def CBIS_DDSM_CSV_severity_labeled(Folder_CSV: str, Column: int, Severity: int)-> pd.DataFrame:
     """
     _summary_
@@ -2073,7 +2086,7 @@ def CBIS_DDSM_CSV_severity_labeled(Folder_CSV: str, Column: int, Severity: int)-
     return Dataset_severity_labeled
 
 # ? Concat multiple dataframes
-@timer_func
+@Utilities.timer_func
 def concat_dataframe(*dfs: pd.DataFrame, **kwargs: str) -> pd.DataFrame:
   """
   Concat multiple dataframes and name it using technique and the class problem
@@ -2139,7 +2152,8 @@ def concat_dataframe(*dfs: pd.DataFrame, **kwargs: str) -> pd.DataFrame:
   return Final_dataframe
 
 # ? Split folders into train/test/validation
-@timer_func
+
+@Utilities.timer_func
 def split_folders_train_test_val(Folder_path:str, Only_train_test: bool) -> str:
   """
   Create a new folder with the folders of the class problem and its distribution of training, test and validation.
@@ -2187,347 +2201,347 @@ def split_folders_train_test_val(Folder_path:str, Only_train_test: bool) -> str:
   return New_Folder_name
 
 # ? .
-@timer_func
-class DCM_format():
+class DCM_format(Utilities):
 
-  def __init__(self, **kwargs:string) -> None:
-    
-    # * This algorithm outputs crop values for images based on the coordinates of the CSV file.
-
-    # * Instance attributes folders
-    self.Folder = kwargs.get('folder', None)
-    self.Folder_all = kwargs.get('allfolder', None)
-    self.Folder_patches = kwargs.get('patchesfolder', None)
-    self.Folder_resize = kwargs.get('resizefolder', None)
-    self.Folder_resize_normalize = kwargs.get('normalizefolder', None)
-
-    # * Instance attributes labels
-    self.Severity = kwargs.get('Severity', None)
-    self.Stage = kwargs.get('Phase', None)
-
-    # * Folder attribute (ValueError, TypeError)
-    if self.Folder == None:
-      raise ValueError("Folder does not exist") #! Alert
-    if not isinstance(self.Folder, str):
-      raise TypeError("Folder must be a string") #! Alert
-
-    # * Folder destination where all the new images will be stored (ValueError, TypeError)
-    if self.Folder_all == None:
-      raise ValueError("Destination folder does not exist") #! Alert
-    if not isinstance(self.Folder_all, str):
-      raise TypeError("Destination folder must be a string") #! Alert
-
-    # * Folder normal to stored images without preprocessing from CBIS-DDSM (ValueError, TypeError)
-    if self.Folder_patches == None:
-      raise ValueError("Normal folder does not exist") #! Alert
-    if not isinstance(self.Folder_patches, str):
-      raise TypeError("Normal folder must be a string") #! Alert
-
-    # * Folder normal to stored resize images from CBIS-DDSM (ValueError, TypeError)
-    if self.Folder_resize == None:
-      raise ValueError("Resize folder does not exist") #! Alert
-    if not isinstance(self.Folder_resize, str):
-      raise TypeError("Resize folder must be a string") #! Alert
-
-    # * Folder normal to stored resize normalize images from CBIS-DDSM (ValueError, TypeError)
-    if self.Folder_resize_normalize == None:
-      raise ValueError("Normalize resize folder images does not exist") #! Alert
-    if not isinstance(self.Folder_resize_normalize, str):
-      raise TypeError("Normalize resize folder must be a string") #! Alert
-
-    # * Severity label (ValueError, TypeError)
-    if self.Severity == None:
-      raise ValueError("Severity does not exist") #! Alert
-    if not isinstance(self.Severity, str):
-      raise TypeError("Severity must be a string") #! Alert
-
-    # * Phase label (ValueError, TypeError)
-    if self.Stage == None:
-      raise ValueError("Phase images does not exist") #! Alert
-    if not isinstance(self.Stage, str):
-      raise TypeError("Phase must be a string") #! Alert
-
-  def __repr__(self) -> str:
-
-        kwargs_info = "Folder: {} , Folder_all: {}, Folder_normal: {}, Folder_resize: {}, Folder_resize_normalize: {}, Severity: {}, Phase: {}".format( self.Folder, 
-                                                                                                                                                        self.Folder_all, self.Folder_patches,
-                                                                                                                                                        self.Folder_resize, self.Folder_resize_normalize, 
-                                                                                                                                                        self.Severity, self.Stage )
-        return kwargs_info
-
-  def __str__(self) -> str:
-
-        Descripcion_class = ""
+    def __init__(self, **kwargs:string) -> None:
         
-        return Descripcion_class
+        # * This algorithm outputs crop values for images based on the coordinates of the CSV file.
 
-  # * Folder attribute
-  @property
-  def Folder_property(self):
-      return self.Folder
+        # * Instance attributes folders
+        self.__Folder = kwargs.get('folder', None)
+        self.__Folder_all = kwargs.get('allfolder', None)
+        self.__Folder_patches = kwargs.get('patchesfolder', None)
+        self.__Folder_resize = kwargs.get('resizefolder', None)
+        self.__Folder_resize_normalize = kwargs.get('normalizefolder', None)
 
-  @Folder_property.setter
-  def Folder_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Folder must be a string") #! Alert
-      self.Folder = New_value
-  
-  @Folder_property.deleter
-  def Folder_property(self):
-      print("Deleting folder...")
-      del self.Folder
+        # * Instance attributes labels
+        self.__Severity = kwargs.get('Severity', None)
+        self.__Stage = kwargs.get('Phase', None)
 
-  # * Folder all images attribute
-  @property
-  def Folder_all_property(self):
-      return self.Folder_all
+        # * Folder attribute (ValueError, TypeError)
+        if self.__Folder == None:
+            raise ValueError("Folder does not exist") #! Alert
+        if not isinstance(self.Folder, str):
+            raise TypeError("Folder must be a string") #! Alert
 
-  @Folder_all_property.setter
-  def Folder_all_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Folder all must be a string") #! Alert
-      self.Folder_all = New_value
-  
-  @Folder_all_property.deleter
-  def Folder_all_property(self):
-      print("Deleting all folder...")
-      del self.Folder_all
+        # * Folder destination where all the new images will be stored (ValueError, TypeError)
+        if self.__Folder_all == None:
+            raise ValueError("Destination folder does not exist") #! Alert
+        if not isinstance(self.__Folder_all, str):
+            raise TypeError("Destination folder must be a string") #! Alert
 
-  # * Folder patches images attribute
-  @property
-  def Folder_patches_property(self):
-      return self.Folder_patches
+        # * Folder normal to stored images without preprocessing from CBIS-DDSM (ValueError, TypeError)
+        if self.__Folder_patches == None:
+            raise ValueError("Normal folder does not exist") #! Alert
+        if not isinstance(self.__Folder_patches, str):
+            raise TypeError("Normal folder must be a string") #! Alert
 
-  @Folder_patches_property.setter
-  def Folder_patches_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Folder patches must be a string") #! Alert
-      self.Folder_patches = New_value
-  
-  @Folder_patches_property.deleter
-  def Folder_patches_property(self):
-      print("Deleting patches folder...")
-      del self.Folder_patches
+        # * Folder normal to stored resize images from CBIS-DDSM (ValueError, TypeError)
+        if self.__Folder_resize == None:
+            raise ValueError("Resize folder does not exist") #! Alert
+        if not isinstance(self.__Folder_resize, str):
+            raise TypeError("Resize folder must be a string") #! Alert
 
-  # * Folder resize images attribute
-  @property
-  def Folder_resize_property(self):
-      return self.Folder_resize
+        # * Folder normal to stored resize normalize images from CBIS-DDSM (ValueError, TypeError)
+        if self.__Folder_resize_normalize == None:
+            raise ValueError("Normalize resize folder images does not exist") #! Alert
+        if not isinstance(self.__Folder_resize_normalize, str):
+            raise TypeError("Normalize resize folder must be a string") #! Alert
 
-  @Folder_resize_property.setter
-  def Folder_resize_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Folder resize must be a string") #! Alert
-      self.Folder_resize = New_value
-  
-  @Folder_resize_property.deleter
-  def Folder_resize_property(self):
-      print("Deleting resize folder...")
-      del self.Folder_resize
+        # * Severity label (ValueError, TypeError)
+        if self.__Severity == None:
+            raise ValueError("Severity does not exist") #! Alert
+        if not isinstance(self.__Severity, str):
+            raise TypeError("Severity must be a string") #! Alert
 
-  # * Folder resize normalize images attribute
-  @property
-  def Folder_resize_normalize_property(self):
-      return self.Folder_resize_normalize
+        # * Phase label (ValueError, TypeError)
+        if self.__Stage == None:
+            raise ValueError("Phase images does not exist") #! Alert
+        if not isinstance(self.__Stage, str):
+            raise TypeError("Phase must be a string") #! Alert
 
-  @Folder_resize_normalize_property.setter
-  def Folder_resize_normalize_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Folder resize normalize must be a string") #! Alert
-      self.Folder_resize_normalize = New_value
-  
-  @Folder_resize_normalize_property.deleter
-  def Folder_resize_normalize_property(self):
-      print("Deleting resize normalize folder...")
-      del self.Folder_resize_normalize
+    def __repr__(self) -> str:
 
-  # * Severity attribute
-  @property
-  def Severity_property(self):
-      return self.Severity
+            kwargs_info = "Folder: {} , Folder_all: {}, Folder_normal: {}, Folder_resize: {}, Folder_resize_normalize: {}, Severity: {}, Phase: {}".format( self.__Folder, 
+                                                                                                                                                            self.__Folder_all, self.__Folder_patches,
+                                                                                                                                                            self.__Folder_resize, self.__Folder_resize_normalize, 
+                                                                                                                                                            self.__Severity, self.__Stage )
+            return kwargs_info
 
-  @Severity_property.setter
-  def Severity_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Severity must be a string") #! Alert
-      self.Severity = New_value
-  
-  @Severity_property.deleter
-  def Severity_property(self):
-      print("Deleting severity...")
-      del self.Severity
-  
-  # * Stage
-  @property
-  def Stage_property(self):
-      return self.Stage
+    def __str__(self) -> str:
 
-  @Stage_property.setter
-  def Stage_property(self, New_value):
-      if not isinstance(New_value, str):
-        raise TypeError("Stage must be a string") #! Alert
-      self.Stage = New_value
-  
-  @Stage_property.deleter
-  def Stage_property(self):
-      print("Deleting stage...")
-      del self.Stage
+            Descripcion_class = ""
+            
+            return Descripcion_class
 
-  def DCM_change_format(self) -> None:
-    """
-    Printing amount of images with data augmentation
+    # * Folder attribute
+    @property
+    def Folder_property(self):
+        return self.__Folder
 
-    Args:
-        Folder_path (str): Folder's dataset for distribution
-
-    Returns:
-        None
-    """
-
-    # * Format DCM and PNG variables
-    DCM = ".dcm"
-    PNG = ".png"
-
-    # * Initial file
-    File = 0
-
-    # * Standard parameters for resize
-    X_size_resize = 224
-    Y_size_resize = 224
-
-    # * General lists and string DCM
-    DCM_files = []
-    DCM_files_sizes = []
-    DCM_Filenames = []
-
-    # * Interpolation that is used
-    Interpolation = cv2.INTER_CUBIC
-
-    # * Shape for the resize
-    Shape_resize = (X_size_resize, Y_size_resize)
-
-    # * Read images from folder
-    Files_total = os.listdir(self.Folder)
-
-    # * Sorted files and multiply them
-    Files_total_ = Files_total * 2
-    Files_total_ = sorted(Files_total_)
-
-    # * Search for each dir and file inside the folder given
-    for Root, Dirs, Files in os.walk(self.Folder, True):
-        print("root:%s"% Root)
-        print("dirs:%s"% Dirs)
-        print("files:%s"% Files)
-        print("-------------------------------")
-
-    for Root, Dirs, Files in os.walk(self.Folder):
-        for x in Files:
-            if x.endswith(DCM):
-                DCM_files.append(os.path.join(Root, x))
-
-    # * Sorted DCM files
-    DCM_files = sorted(DCM_files)
+    @Folder_property.setter
+    def Folder_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Folder must be a string") #! Alert
+        self.__Folder = New_value
     
-    # * Get the size of each dcm file
-    for i in range(len(DCM_files)):
-        DCM_files_sizes.append(os.path.getsize(DCM_files[i]))
+    @Folder_property.deleter
+    def Folder_property(self):
+        print("Deleting folder...")
+        del self.__Folder
 
-    # * put it together in a dataframe
-    DCM_dataframe_files = pd.DataFrame({'Path':DCM_files, 'Size':DCM_files_sizes, 'Filename':Files_total_}) 
-    print(DCM_dataframe_files)
+    # * Folder all images attribute
+    @property
+    def Folder_all_property(self):
+        return self.__Folder_all
 
-    Total_DCM_files = len(DCM_files_sizes)
+    @Folder_all_property.setter
+    def Folder_all_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Folder all must be a string") #! Alert
+        self.__Folder_all = New_value
+    
+    @Folder_all_property.deleter
+    def Folder_all_property(self):
+        print("Deleting all folder...")
+        del self.__Folder_all
 
-    # * Search inside each folder to get the archive which has the less size.
-    for i in range(0, Total_DCM_files, 2):
+    # * Folder patches images attribute
+    @property
+    def Folder_patches_property(self):
+        return self.__Folder_patches
 
-        print(DCM_files_sizes[i], '----', DCM_files_sizes[i + 1])
+    @Folder_patches_property.setter
+    def Folder_patches_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Folder patches must be a string") #! Alert
+        self.__Folder_patches = New_value
+    
+    @Folder_patches_property.deleter
+    def Folder_patches_property(self):
+        print("Deleting patches folder...")
+        del self.__Folder_patches
 
-        if DCM_files_sizes[i] > DCM_files_sizes[i + 1]:
-            DCM_dataframe_files.drop([i], axis = 0, inplace = True)
-        else:
-            DCM_dataframe_files.drop([i + 1], axis = 0, inplace = True)
+    # * Folder resize images attribute
+    @property
+    def Folder_resize_property(self):
+        return self.__Folder_resize
 
-    # * Several prints
-    print(len(DCM_files))
-    print(len(DCM_files_sizes))
-    print(len(Files_total_))
-    print(DCM_dataframe_files)
+    @Folder_resize_property.setter
+    def Folder_resize_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Folder resize must be a string") #! Alert
+        self.__Folder_resize = New_value
+    
+    @Folder_resize_property.deleter
+    def Folder_resize_property(self):
+        print("Deleting resize folder...")
+        del self.__Folder_resize
 
-    # * Get the columns of DCM filenames
-    DCM_filenames = DCM_dataframe_files.iloc[:, 0].values
-    Total_DCM_filenames = DCM_dataframe_files.iloc[:, 2].values
+    # * Folder resize normalize images attribute
+    @property
+    def Folder_resize_normalize_property(self):
+        return self.__Folder_resize_normalize
 
-    # * Write the dataframe in a folder
-    #DCM_dataframe_name = 'DCM_' + 'Format_' + str(self.Severity) + '_' + str(self.Phase) + '.csv'
-    DCM_dataframe_name = 'DCM_Format_{}_{}.csv'.format(str(self.Severity), str(self.Stage))
-    DCM_dataframe_folder = os.path.join(self.Folder_all, DCM_dataframe_name)
-    DCM_dataframe_files.to_csv(DCM_dataframe_folder)
+    @Folder_resize_normalize_property.setter
+    def Folder_resize_normalize_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Folder resize normalize must be a string") #! Alert
+        self.__Folder_resize_normalize = New_value
+    
+    @Folder_resize_normalize_property.deleter
+    def Folder_resize_normalize_property(self):
+        print("Deleting resize normalize folder...")
+        del self.__Folder_resize_normalize
 
-    # * Convert each image from DCM format to PNG format
-    for File in range(len(DCM_dataframe_files)):
+    # * Severity attribute
+    @property
+    def Severity_property(self):
+        return self.__Severity
 
-        # * Read DCM format using pydicom
-        DCM_read_pydicom_file = pydicom.dcmread(DCM_Filenames[File])
+    @Severity_property.setter
+    def Severity_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Severity must be a string") #! Alert
+        self.__Severity = New_value
+    
+    @Severity_property.deleter
+    def Severity_property(self):
+        print("Deleting severity...")
+        del self.__Severity
+    
+    # * Stage
+    @property
+    def Stage_property(self):
+        return self.__Stage
+
+    @Stage_property.setter
+    def Stage_property(self, New_value):
+        if not isinstance(New_value, str):
+            raise TypeError("Stage must be a string") #! Alert
+        self.__Stage = New_value
+    
+    @Stage_property.deleter
+    def Stage_property(self):
+        print("Deleting stage...")
+        del self.__Stage
+
+    @Utilities.timer_func
+    def DCM_change_format(self) -> None:
+        """
+        Printing amount of images with data augmentation
+
+        Args:
+            Folder_path (str): Folder's dataset for distribution
+
+        Returns:
+            None
+        """
+
+        # * Format DCM and PNG variables
+        DCM = ".dcm"
+        PNG = ".png"
+
+        # * Initial file
+        File = 0
+
+        # * Standard parameters for resize
+        X_size_resize = 224
+        Y_size_resize = 224
+
+        # * General lists and string DCM
+        DCM_files = []
+        DCM_files_sizes = []
+        DCM_Filenames = []
+
+        # * Interpolation that is used
+        Interpolation = cv2.INTER_CUBIC
+
+        # * Shape for the resize
+        Shape_resize = (X_size_resize, Y_size_resize)
+
+        # * Read images from folder
+        Files_total = os.listdir(self.__Folder)
+
+        # * Sorted files and multiply them
+        Files_total_ = Files_total * 2
+        Files_total_ = sorted(Files_total_)
+
+        # * Search for each dir and file inside the folder given
+        for Root, Dirs, Files in os.walk(self.__Folder, True):
+            print("root:%s"% Root)
+            print("dirs:%s"% Dirs)
+            print("files:%s"% Files)
+            print("-------------------------------")
+
+        for Root, Dirs, Files in os.walk(self.__Folder):
+            for x in Files:
+                if x.endswith(DCM):
+                    DCM_files.append(os.path.join(Root, x))
+
+        # * Sorted DCM files
+        DCM_files = sorted(DCM_files)
         
-        # * Convert to float type
-        DCM_image = DCM_read_pydicom_file.pixel_array.astype(float)
+        # * Get the size of each dcm file
+        for i in range(len(DCM_files)):
+            DCM_files_sizes.append(os.path.getsize(DCM_files[i]))
 
-        # * Rescaled and covert to float64
-        DCM_image_rescaled = (np.maximum(DCM_image, 0) / DCM_image.max()) * 255.0
-        DCM_image_rescaled_float64 = np.float64(DCM_image_rescaled)
+        # * put it together in a dataframe
+        DCM_dataframe_files = pd.DataFrame({'Path':DCM_files, 'Size':DCM_files_sizes, 'Filename':Files_total_}) 
+        print(DCM_dataframe_files)
 
-        # * Get a new images to the normalize(zeros)
-        DCM_black_image = np.zeros((X_size_resize, Y_size_resize))
+        Total_DCM_files = len(DCM_files_sizes)
 
-        # * Use the resize function
-        DCM_image_resize = cv2.resize(DCM_image_rescaled_float64, Shape_resize, interpolation = Interpolation)
+        # * Search inside each folder to get the archive which has the less size.
+        for i in range(0, Total_DCM_files, 2):
 
-        # * Use the normalize function with the resize images
-        DCM_image_normalize = cv2.normalize(DCM_image_resize, DCM_black_image, 0, 255, cv2.NORM_MINMAX)
+            print(DCM_files_sizes[i], '----', DCM_files_sizes[i + 1])
 
-        # * Get each image and convert them
-        DCM_file = Total_DCM_filenames[File]
-        DCM_name_file = '{}{}'.format(str(DCM_file), str(PNG))
-        #DCM_name_file = str(DCM_file) + '.png'
+            if DCM_files_sizes[i] > DCM_files_sizes[i + 1]:
+                DCM_dataframe_files.drop([i], axis = 0, inplace = True)
+            else:
+                DCM_dataframe_files.drop([i + 1], axis = 0, inplace = True)
 
-        # * Save each transformation in different folders
-        DCM_folder = os.path.join(self.Folder_patches, DCM_name_file)
-        DCM_folder_resize = os.path.join(self.Folder_resize, DCM_name_file)
-        DCM_folder_normalize = os.path.join(self.Folder_resize_normalize, DCM_name_file)
+        # * Several prints
+        print(len(DCM_files))
+        print(len(DCM_files_sizes))
+        print(len(Files_total_))
+        print(DCM_dataframe_files)
 
-        cv2.imwrite(DCM_folder, DCM_image_rescaled_float64)
-        cv2.imwrite(DCM_folder_resize, DCM_image_resize)
-        cv2.imwrite(DCM_folder_normalize, DCM_image_normalize)
+        # * Get the columns of DCM filenames
+        DCM_filenames = DCM_dataframe_files.iloc[:, 0].values
+        Total_DCM_filenames = DCM_dataframe_files.iloc[:, 2].values
 
-        # * Print for comparison
-        print('Images: ', DCM_Filenames[File], '------', Total_DCM_filenames[File])    
+        # * Write the dataframe in a folder
+        #DCM_dataframe_name = 'DCM_' + 'Format_' + str(self.Severity) + '_' + str(self.Phase) + '.csv'
+        DCM_dataframe_name = 'DCM_Format_{}_{}.csv'.format(str(self.__Severity), str(self.__Stage))
+        DCM_dataframe_folder = os.path.join(self.__Folder_all, DCM_dataframe_name)
+        DCM_dataframe_files.to_csv(DCM_dataframe_folder)
+
+        # * Convert each image from DCM format to PNG format
+        for File in range(len(DCM_dataframe_files)):
+
+            # * Read DCM format using pydicom
+            DCM_read_pydicom_file = pydicom.dcmread(DCM_Filenames[File])
+            
+            # * Convert to float type
+            DCM_image = DCM_read_pydicom_file.pixel_array.astype(float)
+
+            # * Rescaled and covert to float64
+            DCM_image_rescaled = (np.maximum(DCM_image, 0) / DCM_image.max()) * 255.0
+            DCM_image_rescaled_float64 = np.float64(DCM_image_rescaled)
+
+            # * Get a new images to the normalize(zeros)
+            DCM_black_image = np.zeros((X_size_resize, Y_size_resize))
+
+            # * Use the resize function
+            DCM_image_resize = cv2.resize(DCM_image_rescaled_float64, Shape_resize, interpolation = Interpolation)
+
+            # * Use the normalize function with the resize images
+            DCM_image_normalize = cv2.normalize(DCM_image_resize, DCM_black_image, 0, 255, cv2.NORM_MINMAX)
+
+            # * Get each image and convert them
+            DCM_file = Total_DCM_filenames[File]
+            DCM_name_file = '{}{}'.format(str(DCM_file), str(PNG))
+            #DCM_name_file = str(DCM_file) + '.png'
+
+            # * Save each transformation in different folders
+            DCM_folder = os.path.join(self.__Folder_patches, DCM_name_file)
+            DCM_folder_resize = os.path.join(self.__Folder_resize, DCM_name_file)
+            DCM_folder_normalize = os.path.join(self.__Folder_resize_normalize, DCM_name_file)
+
+            cv2.imwrite(DCM_folder, DCM_image_rescaled_float64)
+            cv2.imwrite(DCM_folder_resize, DCM_image_resize)
+            cv2.imwrite(DCM_folder_normalize, DCM_image_normalize)
+
+            # * Print for comparison
+            print('Images: ', DCM_Filenames[File], '------', Total_DCM_filenames[File])    
 
 # ?
 
-class FigureAdjust():
+class FigureAdjust(Utilities):
   
   def __init__(self, **kwargs) -> None:
 
     # *
-    self.Folder_path = kwargs.get('folder', None)
-    self.Title = kwargs.get('title', None)
+    self._Folder_path = kwargs.get('folder', None)
+    self._Title = kwargs.get('title', None)
 
     # * 
-    self.Show_image = kwargs.get('SI', False)
-    self.Save_figure = kwargs.get('SF', False)
+    self._Show_image = kwargs.get('SI', False)
+    self._Save_figure = kwargs.get('SF', False)
 
     # *
-    self.Num_classes = kwargs.get('classes', None)
+    self._Num_classes = kwargs.get('classes', None)
 
     # *
-    self.X_figure_size = 12
-    self.Y_figure_size = 12
+    self._X_figure_size = 12
+    self._Y_figure_size = 12
 
     # * General parameters
-    self.Font_size_title = self.X_figure_size * 1.2
-    self.Font_size_general = self.X_figure_size * 0.8
-    self.Font_size_ticks = (self.X_figure_size * self.Y_figure_size) * 0.05
+    self._Font_size_title = self.X_figure_size * 1.2
+    self._Font_size_general = self.X_figure_size * 0.8
+    self._Font_size_ticks = (self.X_figure_size * self.Y_figure_size) * 0.05
 
     # * 
     #self.Annot_kws = kwargs.get('annot_kws', None)
@@ -2548,72 +2562,72 @@ class FigureAdjust():
   # * Folder_path attribute
   @property
   def Folder_path_property(self):
-      return self.Folder_path
+      return self._Folder_path
 
   @Folder_path_property.setter
   def Folder_path_property(self, New_value):
-      self.Folder_path = New_value
+      self._Folder_path = New_value
   
   @Folder_path_property.deleter
   def Folder_path_property(self):
       print("Deleting Folder_path...")
-      del self.Folder_path
+      del self._Folder_path
 
   # * Title attribute
   @property
   def Title_property(self):
-      return self.Title
+      return self._Title
 
   @Title_property.setter
   def Title_property(self, New_value):
-      self.Title = New_value
+      self._Title = New_value
   
   @Title_property.deleter
   def Title_property(self):
       print("Deleting Title...")
-      del self.Title
+      del self._Title
 
   # * Show_image attribute
   @property
   def Show_image_property(self):
-      return self.Show_image
+      return self._Show_image
 
   @Show_image_property.setter
   def Show_image_property(self, New_value):
-      self.Show_image = New_value
+      self._Show_image = New_value
   
   @Show_image_property.deleter
   def Show_image_property(self):
       print("Deleting Show_image...")
-      del self.Show_image
+      del self._Show_image
 
   # * Save_figure attribute
   @property
   def Save_figure_property(self):
-      return self.Save_figure
+      return self._Save_figure
 
   @Save_figure_property.setter
   def Save_figure_property(self, New_value):
-      self.Save_figure = New_value
+      self._Save_figure = New_value
   
   @Save_figure_property.deleter
   def Save_figure_property(self):
       print("Deleting Save_figure...")
-      del self.Save_figure
+      del self._Save_figure
 
   # * Num_classes attribute
   @property
   def Num_classes_property(self):
-      return self.Num_classes
+      return self._Num_classes
 
   @Num_classes_property.setter
   def Num_classes_property(self, New_value):
-      self.Num_classes = New_value
+      self._Num_classes = New_value
   
   @Num_classes_property.deleter
   def Num_classes_property(self):
       print("Deleting Num_classes...")
-      del self.Num_classes
+      del self._Num_classes
 
   # ? Decorator
   @staticmethod
@@ -2649,168 +2663,110 @@ class BarChart(FigureAdjust):
     super().__init__(**kwargs)
 
     # *
-    self.CSV_path = kwargs.get('csv', None)
+    self._CSV_path = kwargs.get('csv', None)
 
     # *
-    self.Plot_x_label = kwargs.get('label', None)
-    self.Plot_column = kwargs.get('column', None)
-    self.Plot_reverse = kwargs.get('reverse', None)
+    self._Plot_x_label = kwargs.get('label', None)
+    self._Plot_column = kwargs.get('column', None)
+    self._Plot_reverse = kwargs.get('reverse', None)
 
     # * Read dataframe csv
-    self.Dataframe = pd.read_csv(self.CSV_path)
+    self._Dataframe = pd.read_csv(self.CSV_path)
 
     # *
-    self.Colors = ('gray', 'red', 'blue', 'green', 'cyan', 'magenta', 'indigo', 'azure', 'tan', 'purple')
+    self._Colors = ('gray', 'red', 'blue', 'green', 'cyan', 'magenta', 'indigo', 'azure', 'tan', 'purple')
     
     # * General lists
-    self.X_fast_list_values = []
-    self.X_slow_list_values = []
+    self._X_fast_list_values = []
+    self._X_slow_list_values = []
 
-    self.Y_fast_list_values = []
-    self.Y_slow_list_values = []
+    self._Y_fast_list_values = []
+    self._Y_slow_list_values = []
 
-    self.X_fastest_list_value = []
-    self.Y_fastest_list_value = []
+    self._X_fastest_list_value = []
+    self._Y_fastest_list_value = []
 
-    self.X_slowest_list_value = []
-    self.Y_slowest_list_value = []
+    self._X_slowest_list_value = []
+    self._Y_slowest_list_value = []
 
     # * Chosing label
-    if self.Num_classes == 2:
-      self.Label_class_name = 'Biclass'
-    elif self.Num_classes > 2:
-      self.Label_class_name = 'Multiclass'
+    if self._Num_classes == 2:
+      self._Label_class_name = 'Biclass'
+    elif self._Num_classes > 2:
+      self._Label_class_name = 'Multiclass'
 
   # * CSV_path attribute
   @property
   def CSV_path_property(self):
-      return self.CSV_path
+      return self._CSV_path
 
   @CSV_path_property.setter
   def CSV_path_property(self, New_value):
-      self.CSV_path = New_value
+      self._CSV_path = New_value
   
   @CSV_path_property.deleter
   def CSV_path_property(self):
       print("Deleting CSV_path...")
-      del self.CSV_path
+      del self._CSV_path
 
   # * Plot_x_label attribute
   @property
   def Plot_x_label_property(self):
-      return self.Plot_x_label
+      return self._Plot_x_label
 
   @Plot_x_label_property.setter
   def Plot_x_label_property(self, New_value):
-      self.Plot_x_label = New_value
+      self._Plot_x_label = New_value
   
   @Plot_x_label_property.deleter
   def Plot_x_label_property(self):
       print("Deleting Plot_x_label...")
-      del self.Plot_x_label
+      del self._Plot_x_label
 
   # * Plot_column attribute
   @property
   def Plot_column_property(self):
-      return self.Plot_column
+      return self._Plot_column
 
   @Plot_column_property.setter
   def Plot_column_property(self, New_value):
-      self.Plot_column = New_value
+      self._Plot_column = New_value
   
   @Plot_column_property.deleter
   def Plot_column_property(self):
       print("Deleting Plot_column...")
-      del self.Plot_column
+      del self._Plot_column
 
   # * Plot_reverse attribute
   @property
   def Plot_reverse_property(self):
-      return self.Plot_reverse
+      return self._Plot_reverse
 
   @Plot_reverse_property.setter
   def Plot_reverse_property(self, New_value):
-      self.Plot_reverse = New_value
+      self._Plot_reverse = New_value
   
   @Plot_reverse_property.deleter
   def Plot_reverse_property(self):
       print("Deleting Plot_reverse...")
-      del self.Plot_reverse
+      del self._Plot_reverse
 
   # * Name attribute
   @property
   def Name_property(self):
-      return self.Name
+      return self._Name
 
   @Name_property.setter
   def Name_property(self, New_value):
-      self.Name = New_value
+      self._Name = New_value
   
   @Name_property.deleter
   def Name_property(self):
       print("Deleting Name...")
-      del self.Name
+      del self._Name
 
-  @staticmethod  # no default first argument in logger function
-  def barchart(func):  # accepts a function
-      @wraps(func)  # good practice https://docs.python.org/2/library/functools.html#functools.wraps
-      def wrapper(self, *args, **kwargs):  # explicit self, which means this decorator better be used inside classes only
-
-          # * Get X and Y values
-          X = list(self.Dataframe.iloc[:, 1])
-          Y = list(self.Dataframe.iloc[:, self.Plot_column])
-
-          plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
-
-          # * Reverse is a bool variable with the postion of the plot
-          if self.Plot_reverse == True:
-
-              for Index, (i, k) in enumerate(zip(X, Y)):
-                  if k < np.mean(Y):
-                      self.X_fast_list_values.append(i)
-                      self.Y_fast_list_values.append(k)
-                  elif k >= np.mean(Y):
-                      self.X_slow_list_values.append(i)
-                      self.Y_slow_list_values.append(k)
-
-              for Index, (i, k) in enumerate(zip(self.X_fast_list_values, self.Y_fast_list_values)):
-                  if k == np.min(self.Y_fast_list_values):
-                      self.X_fastest_list_value.append(i)
-                      self.Y_fastest_list_value.append(k)
-                      #print(X_fastest_list_value)
-                      #print(Y_fastest_list_value)
-
-              for Index, (i, k) in enumerate(zip(self.X_slow_list_values, self.Y_slow_list_values)):
-                  if k == np.max(self.Y_slow_list_values):
-                      self.X_slowest_list_value.append(i)
-                      self.Y_slowest_list_value.append(k)
-          else:
-              for Index, (i, k) in enumerate(zip(X, Y)):
-                  if k < np.mean(Y):
-                      self.X_slow_list_values.append(i)
-                      self.Y_slow_list_values.append(k)
-                  elif k >= np.mean(Y):
-                      self.X_fast_list_values.append(i)
-                      self.Y_fast_list_values.append(k)
-
-              for Index, (i, k) in enumerate(zip(self.X_fast_list_values, self.Y_fast_list_values)):
-                  if k == np.max(self.Y_fast_list_values):
-                      self.X_fastest_list_value.append(i)
-                      self.Y_fastest_list_value.append(k)
-                      #print(XFastest)
-                      #print(YFastest)
-
-              for Index, (i, k) in enumerate(zip(self.X_slow_list_values, self.Y_slow_list_values)):
-                  if k == np.min(self.Y_slow_list_values):
-                      self.X_slowest_list_value.append(i)
-                      self.Y_slowest_list_value.append(k)
-
-          result = func(self, *args, **kwargs)
-    
-          return result
-      return wrapper
   
-  @timer_func
+  @Utilities.timer_func
   def barchart_horizontal(self) -> None:
     """
 	  Show CSV's barchar of all models
@@ -2835,78 +2791,78 @@ class BarChart(FigureAdjust):
     #data = pd.read_csv("D:\MIAS\MIAS VS\DataCSV\DataFrame_Binary_MIAS_Data.csv")
 
     # * Get X and Y values
-    X = list(self.Dataframe.iloc[:, 1])
-    Y = list(self.Dataframe.iloc[:, self.Plot_column])
+    X = list(self._Dataframe.iloc[:, 1])
+    Y = list(self._Dataframe.iloc[:, self._Plot_column])
 
-    plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
+    plt.figure(figsize = (self._X_figure_size, self._Y_figure_size))
 
     # * Reverse is a bool variable with the postion of the plot
-    if self.Plot_reverse == True:
+    if self._Plot_reverse == True:
 
         for Index, (i, k) in enumerate(zip(X, Y)):
             if k < np.mean(Y):
-                self.X_fast_list_values.append(i)
-                self.Y_fast_list_values.append(k)
+                self._X_fast_list_values.append(i)
+                self._Y_fast_list_values.append(k)
             elif k >= np.mean(Y):
-                self.X_slow_list_values.append(i)
-                self.Y_slow_list_values.append(k)
+                self._X_slow_list_values.append(i)
+                self._Y_slow_list_values.append(k)
 
-        for Index, (i, k) in enumerate(zip(self.X_fast_list_values, self.Y_fast_list_values)):
-            if k == np.min(self.Y_fast_list_values):
-                self.X_fastest_list_value.append(i)
-                self.Y_fastest_list_value.append(k)
+        for Index, (i, k) in enumerate(zip(self._X_fast_list_values, self._Y_fast_list_values)):
+            if k == np.min(self._Y_fast_list_values):
+                self._X_fastest_list_value.append(i)
+                self._Y_fastest_list_value.append(k)
                 #print(X_fastest_list_value)
                 #print(Y_fastest_list_value)
 
-        for Index, (i, k) in enumerate(zip(self.X_slow_list_values, self.Y_slow_list_values)):
-            if k == np.max(self.Y_slow_list_values):
-                self.X_slowest_list_value.append(i)
-                self.Y_slowest_list_value.append(k)
+        for Index, (i, k) in enumerate(zip(self._X_slow_list_values, self._Y_slow_list_values)):
+            if k == np.max(self._Y_slow_list_values):
+                self._X_slowest_list_value.append(i)
+                self._Y_slowest_list_value.append(k)
 
     else:
 
         for Index, (i, k) in enumerate(zip(X, Y)):
             if k < np.mean(Y):
-                self.X_slow_list_values.append(i)
-                self.Y_slow_list_values.append(k)
+                self._X_slow_list_values.append(i)
+                self._Y_slow_list_values.append(k)
             elif k >= np.mean(Y):
-                self.X_fast_list_values.append(i)
-                self.Y_fast_list_values.append(k)
+                self._X_fast_list_values.append(i)
+                self._Y_fast_list_values.append(k)
 
-        for Index, (i, k) in enumerate(zip(self.X_fast_list_values, self.Y_fast_list_values)):
-            if k == np.max(self.Y_fast_list_values):
-                self.X_fastest_list_value.append(i)
-                self.Y_fastest_list_value.append(k)
+        for Index, (i, k) in enumerate(zip(self._X_fast_list_values, self._Y_fast_list_values)):
+            if k == np.max(self._Y_fast_list_values):
+                self._X_fastest_list_value.append(i)
+                self._Y_fastest_list_value.append(k)
                 #print(XFastest)
                 #print(YFastest)
 
-        for Index, (i, k) in enumerate(zip(self.X_slow_list_values, self.Y_slow_list_values)):
-            if k == np.min(self.Y_slow_list_values):
-                self.X_slowest_list_value.append(i)
-                self.Y_slowest_list_value.append(k)
+        for Index, (i, k) in enumerate(zip(self._X_slow_list_values, self._Y_slow_list_values)):
+            if k == np.min(self._Y_slow_list_values):
+                self._X_slowest_list_value.append(i)
+                self._Y_slowest_list_value.append(k)
 
     # * Plot the data using bar() method
-    plt.bar(self.X_slow_list_values, self.Y_slow_list_values, label = "Bad", color = 'gray')
-    plt.bar(self.X_slowest_list_value, self.Y_slowest_list_value, label = "Worse", color = 'black')
-    plt.bar(self.X_fast_list_values, self.Y_fast_list_values, label = "Better", color = 'lightcoral')
-    plt.bar(self.X_fastest_list_value, self.Y_fastest_list_value, label = "Best", color = 'red')
+    plt.bar(self._X_slow_list_values, self._Y_slow_list_values, label = "Bad", color = 'gray')
+    plt.bar(self._X_slowest_list_value, self._Y_slowest_list_value, label = "Worse", color = 'black')
+    plt.bar(self._X_fast_list_values, self._Y_fast_list_values, label = "Better", color = 'lightcoral')
+    plt.bar(self._X_fastest_list_value, self._Y_fastest_list_value, label = "Best", color = 'red')
 
     # *
-    for Index, value in enumerate(self.Y_slowest_list_value):
-        plt.text(0, len(Y) + 3, 'Worse value: {} -------> {}'.format(str(value), str(self.X_slowest_list_value[0])), fontweight = 'bold', fontsize = self.Font_size_general + 1)
+    for Index, value in enumerate(self._Y_slowest_list_value):
+        plt.text(0, len(Y) + 3, 'Worse value: {} -------> {}'.format(str(value), str(self._X_slowest_list_value[0])), fontweight = 'bold', fontsize = self._Font_size_general + 1)
 
     # *
-    for Index, value in enumerate(self.Y_fastest_list_value):
-        plt.text(0, len(Y) + 4, 'Best value: {} -------> {}'.format(str(value), str(self.X_fastest_list_value[0])), fontweight = 'bold', fontsize = self.Font_size_general + 1)
+    for Index, value in enumerate(self._Y_fastest_list_value):
+        plt.text(0, len(Y) + 4, 'Best value: {} -------> {}'.format(str(value), str(self._X_fastest_list_value[0])), fontweight = 'bold', fontsize = self._Font_size_general + 1)
 
-    plt.legend(fontsize = self.Font_size_general)
+    plt.legend(fontsize = self._Font_size_general)
 
-    plt.title(self.Title, fontsize = self.Font_size_title)
-    plt.xlabel(self.Plot_x_label, fontsize = self.Font_size_general)
-    plt.xticks(fontsize = self.Font_size_ticks)
-    plt.ylabel("Models", fontsize = self.Font_size_general)
-    plt.yticks(fontsize = self.Font_size_ticks)
-    plt.grid(color = self.Colors[0], linestyle = '-', linewidth = 0.2)
+    plt.title(self._Title, fontsize = self._Font_size_title)
+    plt.xlabel(self._Plot_x_label, fontsize = self._Font_size_general)
+    plt.xticks(fontsize = self._Font_size_ticks)
+    plt.ylabel("Models", fontsize = self._Font_size_general)
+    plt.yticks(fontsize = self._Font_size_ticks)
+    plt.grid(color = self._Colors[0], linestyle = '-', linewidth = 0.2)
 
     # *
     axes = plt.gca()
@@ -2914,22 +2870,22 @@ class BarChart(FigureAdjust):
     xmin, xmax = axes.get_xlim()
 
     # *
-    for i, value in enumerate(self.Y_slow_list_values):
-        plt.text(xmax + (0.05 * xmax), i, "{:.8f}".format(value), ha = 'center', fontsize = self.Font_size_ticks, color = 'black')
+    for i, value in enumerate(self._Y_slow_list_values):
+        plt.text(xmax + (0.05 * xmax), i, "{:.8f}".format(value), ha = 'center', fontsize = self._Font_size_ticks, color = 'black')
 
         Next_value = i
 
     Next_value = Next_value + 1
 
-    for i, value in enumerate(self.Y_fast_list_values):
-        plt.text(xmax + (0.05 * xmax), Next_value + i, "{:.8f}".format(value), ha = 'center', fontsize = self.Font_size_ticks, color = 'black')
+    for i, value in enumerate(self._Y_fast_list_values):
+        plt.text(xmax + (0.05 * xmax), Next_value + i, "{:.8f}".format(value), ha = 'center', fontsize = self._Font_size_ticks, color = 'black')
 
     #plt.savefig(Graph_name_folder)
 
-    self.save_figure(self.Save_figure, self.Title, Horizontal, self.Folder_path)
-    self.show_figure(self.Show_image)
+    self.save_figure(self._Save_figure, self._Title, Horizontal, self._Folder_path)
+    self.show_figure(self._Show_image)
 
-  @timer_func
+  @Utilities.timer_func
   def barchart_vertical(self) -> None:  
 
     """
@@ -2955,78 +2911,78 @@ class BarChart(FigureAdjust):
     #data = pd.read_csv("D:\MIAS\MIAS VS\DataCSV\DataFrame_Binary_MIAS_Data.csv")
 
     # * Get X and Y values
-    X = list(self.Dataframe.iloc[:, 1])
-    Y = list(self.Dataframe.iloc[:, self.Plot_column])
+    X = list(self._Dataframe.iloc[:, 1])
+    Y = list(self._Dataframe.iloc[:, self._Plot_column])
 
-    plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
+    plt.figure(figsize = (self._X_figure_size, self._Y_figure_size))
 
     # * Reverse is a bool variable with the postion of the plot
-    if self.Plot_reverse == True:
+    if self._Plot_reverse == True:
 
         for Index, (i, k) in enumerate(zip(X, Y)):
             if k < np.mean(Y):
-                self.X_fast_list_values.append(i)
-                self.Y_fast_list_values.append(k)
+                self._X_fast_list_values.append(i)
+                self._Y_fast_list_values.append(k)
             elif k >= np.mean(Y):
-                self.X_slow_list_values.append(i)
-                self.Y_slow_list_values.append(k)
+                self._X_slow_list_values.append(i)
+                self._Y_slow_list_values.append(k)
 
-        for Index, (i, k) in enumerate(zip(self.X_fast_list_values, self.Y_fast_list_values)):
+        for Index, (i, k) in enumerate(zip(self._X_fast_list_values, self._Y_fast_list_values)):
             if k == np.min(self.Y_fast_list_values):
-                self.X_fastest_list_value.append(i)
-                self.Y_fastest_list_value.append(k)
+                self._X_fastest_list_value.append(i)
+                self._Y_fastest_list_value.append(k)
                 #print(X_fastest_list_value)
                 #print(Y_fastest_list_value)
 
-        for Index, (i, k) in enumerate(zip(self.X_slow_list_values, self.Y_slow_list_values)):
-            if k == np.max(self.Y_slow_list_values):
-                self.X_slowest_list_value.append(i)
-                self.Y_slowest_list_value.append(k)
+        for Index, (i, k) in enumerate(zip(self._X_slow_list_values, self._Y_slow_list_values)):
+            if k == np.max(self._Y_slow_list_values):
+                self._X_slowest_list_value.append(i)
+                self._Y_slowest_list_value.append(k)
 
     else:
 
         for Index, (i, k) in enumerate(zip(X, Y)):
             if k < np.mean(Y):
-                self.X_slow_list_values.append(i)
-                self.Y_slow_list_values.append(k)
+                self._X_slow_list_values.append(i)
+                self._Y_slow_list_values.append(k)
             elif k >= np.mean(Y):
-                self.X_fast_list_values.append(i)
-                self.Y_fast_list_values.append(k)
+                self._X_fast_list_values.append(i)
+                self._Y_fast_list_values.append(k)
 
-        for Index, (i, k) in enumerate(zip(self.X_fast_list_values, self.Y_fast_list_values)):
-            if k == np.max(self.Y_fast_list_values):
-                self.X_fastest_list_value.append(i)
-                self.Y_fastest_list_value.append(k)
+        for Index, (i, k) in enumerate(zip(self._X_fast_list_values, self._Y_fast_list_values)):
+            if k == np.max(self._Y_fast_list_values):
+                self._X_fastest_list_value.append(i)
+                self._Y_fastest_list_value.append(k)
                 #print(XFastest)
                 #print(YFastest)
 
-        for Index, (i, k) in enumerate(zip(self.X_slow_list_values, self.Y_slow_list_values)):
-            if k == np.min(self.Y_slow_list_values):
-                self.X_slowest_list_value.append(i)
-                self.Y_slowest_list_value.append(k)
+        for Index, (i, k) in enumerate(zip(self._X_slow_list_values, self._Y_slow_list_values)):
+            if k == np.min(self._Y_slow_list_values):
+                self._X_slowest_list_value.append(i)
+                self._Y_slowest_list_value.append(k)
 
     # * Plot the data using bar() method
-    plt.bar(self.X_slow_list_values, self.Y_slow_list_values, label = "Bad", color = 'gray')
-    plt.bar(self.X_slowest_list_value, self.Y_slowest_list_value, label = "Worse", color = 'black')
-    plt.bar(self.X_fast_list_values, self.Y_fast_list_values, label = "Better", color = 'lightcoral')
-    plt.bar(self.X_fastest_list_value, self.Y_fastest_list_value, label = "Best", color = 'red')
+    plt.bar(self._X_slow_list_values, self._Y_slow_list_values, label = "Bad", color = 'gray')
+    plt.bar(self._X_slowest_list_value, self._Y_slowest_list_value, label = "Worse", color = 'black')
+    plt.bar(self._X_fast_list_values, self._Y_fast_list_values, label = "Better", color = 'lightcoral')
+    plt.bar(self._X_fastest_list_value, self._Y_fastest_list_value, label = "Best", color = 'red')
 
     # *
-    for Index, value in enumerate(self.Y_slowest_list_value):
-        plt.text(0, len(Y) + 3, 'Worse value: {} -------> {}'.format(str(value), str(self.X_slowest_list_value[0])), fontweight = 'bold', fontsize = self.Font_size_general + 1)
+    for Index, value in enumerate(self._Y_slowest_list_value):
+        plt.text(0, len(Y) + 3, 'Worse value: {} -------> {}'.format(str(value), str(self._X_slowest_list_value[0])), fontweight = 'bold', fontsize = self._Font_size_general + 1)
 
     # *
-    for Index, value in enumerate(self.Y_fastest_list_value):
-        plt.text(0, len(Y) + 4, 'Best value: {} -------> {}'.format(str(value), str(self.X_fastest_list_value[0])), fontweight = 'bold', fontsize = self.Font_size_general + 1)
+    for Index, value in enumerate(self._Y_fastest_list_value):
+        plt.text(0, len(Y) + 4, 'Best value: {} -------> {}'.format(str(value), str(self._X_fastest_list_value[0])), fontweight = 'bold', fontsize = self._Font_size_general + 1)
 
-    plt.legend(fontsize = self.Font_size_general)
+    plt.legend(fontsize = self._Font_size_general)
 
-    plt.title(self.Title, fontsize = self.Font_size_title)
-    plt.xlabel(self.Plot_x_label, fontsize = self.Font_size_general)
-    plt.xticks(fontsize = self.Font_size_ticks)
-    plt.ylabel("Models", fontsize = self.Font_size_general)
-    plt.yticks(fontsize = self.Font_size_ticks)
-    plt.grid(color = self.Colors[0], linestyle = '-', linewidth = 0.2)
+    plt.title(self._Title, fontsize = self._Font_size_title)
+    plt.xlabel(self._Plot_x_label, fontsize = self._Font_size_general)
+    plt.xticks(fontsize = self._Font_size_ticks)
+    plt.ylabel("Models", fontsize = self._Font_size_general)
+    plt.yticks(fontsize = self._Font_size_ticks)
+    plt.grid(color = self._Colors[0], linestyle = '-', linewidth = 0.2)
 
     # *
     axes = plt.gca()
@@ -3034,20 +2990,20 @@ class BarChart(FigureAdjust):
     xmin, xmax = axes.get_xlim()
 
     # *
-    for i, value in enumerate(self.Y_slow_list_values):
-        plt.text(xmax + (0.05 * xmax), i, "{:.8f}".format(value), ha = 'center', fontsize = self.Font_size_ticks, color = 'black')
+    for i, value in enumerate(self._Y_slow_list_values):
+        plt.text(xmax + (0.05 * xmax), i, "{:.8f}".format(value), ha = 'center', fontsize = self._Font_size_ticks, color = 'black')
 
         Next_value = i
 
     Next_value = Next_value + 1
 
-    for i, value in enumerate(self.Y_fast_list_values):
-        plt.text(xmax + (0.05 * xmax), Next_value + i, "{:.8f}".format(value), ha = 'center', fontsize = self.Font_size_ticks, color = 'black')
+    for i, value in enumerate(self._Y_fast_list_values):
+        plt.text(xmax + (0.05 * xmax), Next_value + i, "{:.8f}".format(value), ha = 'center', fontsize = self._Font_size_ticks, color = 'black')
 
     #plt.savefig(Graph_name_folder)
 
-    self.save_figure(self.Save_figure, self.Title, Vertical, self.Folder_path)
-    self.show_figure(self.Show_image)
+    self.save_figure(self._Save_figure, self._Title, Vertical, self._Folder_path)
+    self.show_figure(self._Show_image)
 
 # ? Create class folders
 
@@ -3057,119 +3013,119 @@ class FigurePlot(FigureAdjust):
     super().__init__(**kwargs)
 
     # * 
-    self.Labels = kwargs.get('labels', None)
+    self._Labels = kwargs.get('labels', None)
 
     # * 
-    self.CM_dataframe = kwargs.get('CMdf', None)
-    self.History_dataframe = kwargs.get('Hdf', None)
-    self.ROC_dataframe = kwargs.get('ROCdf', None)
+    self._CM_dataframe = kwargs.get('CMdf', None)
+    self._History_dataframe = kwargs.get('Hdf', None)
+    self._ROC_dataframe = kwargs.get('ROCdf', None)
 
     # *
-    self.X_size_figure_subplot = 2
-    self.Y_size_figure_subplot = 2
+    self._X_size_figure_subplot = 2
+    self._Y_size_figure_subplot = 2
 
     # *
-    self.Confusion_matrix_dataframe = pd.read_csv(self.CM_dataframe)
-    self.History_data_dataframe = pd.read_csv(self.History_dataframe)
+    self._Confusion_matrix_dataframe = pd.read_csv(self.CM_dataframe)
+    self._History_data_dataframe = pd.read_csv(self.History_dataframe)
     
     self.Roc_curve_dataframes = []
     for Dataframe in self.ROC_dataframe:
       self.Roc_curve_dataframes.append(pd.read_csv(Dataframe))
 
     # *
-    self.Accuracy = self.History_data_dataframe.accuracy.to_list()
-    self.Loss = self.History_data_dataframe.loss.to_list()
-    self.Val_accuracy = self.History_data_dataframe.val_accuracy.to_list()
-    self.Val_loss = self.History_data_dataframe.val_loss.to_list()
+    self._Accuracy = self.History_data_dataframe.accuracy.to_list()
+    self._Loss = self.History_data_dataframe.loss.to_list()
+    self._Val_accuracy = self.History_data_dataframe.val_accuracy.to_list()
+    self._Val_loss = self.History_data_dataframe.val_loss.to_list()
 
-    self.FPRs = []
-    self.TPRs = []
-    for i in range(len(self.Roc_curve_dataframes)):
-      self.FPRs.append(self.Roc_curve_dataframes[i].FPR.to_list())
-      self.TPRs.append(self.Roc_curve_dataframes[i].TPR.to_list())
+    self._FPRs = []
+    self._TPRs = []
+    for i in range(len(self._Roc_curve_dataframes)):
+      self._FPRs.append(self._Roc_curve_dataframes[i].FPR.to_list())
+      self._TPRs.append(self._Roc_curve_dataframes[i].TPR.to_list())
 
   # * CSV_path attribute
   @property
   def CSV_path_property(self):
-      return self.CSV_path
+      return self._CSV_path
 
   @CSV_path_property.setter
   def CSV_path_property(self, New_value):
-      self.CSV_path = New_value
+      self._CSV_path = New_value
   
   @CSV_path_property.deleter
   def CSV_path_property(self):
       print("Deleting CSV_path...")
-      del self.CSV_path
+      del self._CSV_path
 
   # * Roc_curve_dataframe attribute
   @property
   def Roc_curve_dataframe_property(self):
-      return self.Roc_curve_dataframe
+      return self._Roc_curve_dataframe
 
   @Roc_curve_dataframe_property.setter
   def Roc_curve_dataframe_property(self, New_value):
-      self.Roc_curve_dataframe = New_value
+      self._Roc_curve_dataframe = New_value
   
   @Roc_curve_dataframe_property.deleter
   def Roc_curve_dataframe_property(self):
       print("Deleting Roc_curve_dataframe...")
-      del self.Roc_curve_dataframe
+      del self._Roc_curve_dataframe
 
-  @timer_func
+  @Utilities.timer_func
   def figure_plot_four(self) -> None: 
 
     # *
     Four_plot = 'Four_plot'
 
     # * Figure's size
-    plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
-    plt.suptitle(self.Title, fontsize = self.Font_size_title)
-    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 4)
+    plt.figure(figsize = (self._X_figure_size, self._Y_figure_size))
+    plt.suptitle(self._Title, fontsize = self._Font_size_title)
+    plt.subplot(self._X_size_figure_subplot, self._Y_size_figure_subplot, 4)
 
     # * Confusion matrix heatmap
-    sns.set(font_scale = self.Font_size_general)
+    sns.set(font_scale = self._Font_size_general)
 
     # *
-    ax = sns.heatmap(self.Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Font_size_general})
+    ax = sns.heatmap(self._Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self._Font_size_general})
     #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values')
 
     # * Subplot training accuracy
-    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 1)
-    plt.plot(self.Accuracy, label = 'Training Accuracy')
-    plt.plot(self.Val_accuracy, label = 'Validation Accuracy')
+    plt.subplot(self._X_size_figure_subplot, self._Y_size_figure_subplot, 1)
+    plt.plot(self._Accuracy, label = 'Training Accuracy')
+    plt.plot(self._Val_accuracy, label = 'Validation Accuracy')
     plt.ylim([0, 1])
     plt.legend(loc = 'lower right')
     plt.title('Training and Validation Accuracy')
     plt.xlabel('Epoch')
 
     # * Subplot training loss
-    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 2)
-    plt.plot(self.Loss, label = 'Training Loss')
-    plt.plot(self.Val_loss, label = 'Validation Loss')
+    plt.subplot(self._X_size_figure_subplot, self._Y_size_figure_subplot, 2)
+    plt.plot(self._Loss, label = 'Training Loss')
+    plt.plot(self._Val_loss, label = 'Validation Loss')
     plt.ylim([0, 2.0])
     plt.legend(loc = 'upper right')
     plt.title('Training and Validation Loss')
     plt.xlabel('Epoch')
 
     # * FPR and TPR values for the ROC curve
-    Auc = auc(self.FPRs[0], self.TPRs[0])
+    Auc = auc(self._FPRs[0], self._TPRs[0])
 
     # * Subplot ROC curve
-    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 3)
+    plt.subplot(self._X_size_figure_subplot, self._Y_size_figure_subplot, 3)
     plt.plot([0, 1], [0, 1], 'k--')
-    plt.plot(self.FPRs[0], self.TPRs[0], label = 'Test' + '(area = {:.4f})'.format(Auc))
+    plt.plot(self._FPRs[0], self._TPRs[0], label = 'Test' + '(area = {:.4f})'.format(Auc))
     plt.xlabel('False positive rate')
     plt.ylabel('True positive rate')
     plt.title('ROC curve')
     plt.legend(loc = 'lower right')
     
-    self.save_figure(self.Save_figure, self.Title, Four_plot, self.Folder_path)
-    self.show_figure(self.Show_image)
+    self.save_figure(self._Save_figure, self._Title, Four_plot, self._Folder_path)
+    self.show_figure(self._Show_image)
 
-  @timer_func
+  @Utilities.timer_func
   def figure_plot_four_multiclass(self) -> None: 
     
     # * Colors for ROC curves
@@ -3181,32 +3137,32 @@ class FigurePlot(FigureAdjust):
 
 
     # * Figure's size
-    plt.figure(figsize = (self.X_figure_size, self.Y_figure_size))
-    plt.suptitle(self.Title, fontsize = self.Font_size_title)
-    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 4)
+    plt.figure(figsize = (self._X_figure_size, self._Y_figure_size))
+    plt.suptitle(self._Title, fontsize = self._Font_size_title)
+    plt.subplot(self._X_size_figure_subplot, self._Y_size_figure_subplot, 4)
 
     # * Confusion matrix heatmap
-    sns.set(font_scale = self.Font_size_general)
+    sns.set(font_scale = self._Font_size_general)
 
     # *
-    ax = sns.heatmap(self.Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Font_size_general})
+    ax = sns.heatmap(self._Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self._Font_size_general})
     #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values')
 
     # * Subplot training accuracy
-    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 1)
-    plt.plot(self.Accuracy, label = 'Training Accuracy')
-    plt.plot(self.Val_accuracy, label = 'Validation Accuracy')
+    plt.subplot(self._X_size_figure_subplot, self._Y_size_figure_subplot, 1)
+    plt.plot(self._Accuracy, label = 'Training Accuracy')
+    plt.plot(self._Val_accuracy, label = 'Validation Accuracy')
     plt.ylim([0, 1])
     plt.legend(loc = 'lower right')
     plt.title('Training and Validation Accuracy')
     plt.xlabel('Epoch')
 
     # * Subplot training loss
-    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 2)
-    plt.plot(self.Loss, label = 'Training Loss')
-    plt.plot(self.Val_loss, label = 'Validation Loss')
+    plt.subplot(self._X_size_figure_subplot, self._Y_size_figure_subplot, 2)
+    plt.plot(self._Loss, label = 'Training Loss')
+    plt.plot(self._Val_loss, label = 'Validation Loss')
     plt.ylim([0, 2.0])
     plt.legend(loc = 'upper right')
     plt.title('Training and Validation Loss')
@@ -3214,68 +3170,68 @@ class FigurePlot(FigureAdjust):
 
     # * FPR and TPR values for the ROC curve
     for i in range(len(self.Roc_curve_dataframes)):
-      Roc_auc[i] = auc(self.FPRs[i], self.TPRs[i])
+      Roc_auc[i] = auc(self._FPRs[i], self._TPRs[i])
 
     # * Plot ROC curve
-    plt.subplot(self.X_size_figure_subplot, self.Y_size_figure_subplot, 3)
+    plt.subplot(self._X_size_figure_subplot, self._Y_size_figure_subplot, 3)
     plt.plot([0, 1], [0, 1], 'k--')
 
     for i in range(len(self.Roc_curve_dataframes)):
-      plt.plot(self.FPRs[i], self.TPRs[i], color = Colors[i], label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(self.Labels[i], Roc_auc[i]))
+      plt.plot(self._FPRs[i], self._TPRs[i], color = Colors[i], label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(self._Labels[i], Roc_auc[i]))
     plt.xlabel('False positive rate')
     plt.ylabel('True positive rate')
     plt.title('ROC curve')
     plt.legend(loc = 'lower right')
     
-    self.save_figure(self.Save_figure, self.Title, Four_plot, self.Folder_path)
-    self.show_figure(self.Show_image)
+    self.save_figure(self._Save_figure, self._Title, Four_plot, self._Folder_path)
+    self.show_figure(self._Show_image)
 
-  @timer_func
+  @Utilities.timer_func
   def figure_plot_CM(self) -> None:
     
     # *
     CM_plot = 'CM_plot'
 
     # *
-    Confusion_matrix_dataframe = pd.read_csv(self.CM_dataframe)
+    Confusion_matrix_dataframe = pd.read_csv(self._CM_dataframe)
 
     # * Figure's size
-    plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
-    plt.title('Confusion Matrix with {}'.format(self.Title))
+    plt.figure(figsize = (self._X_figure_size / 2, self._Y_figure_size / 2))
+    plt.title('Confusion Matrix with {}'.format(self._Title))
 
     # * Confusion matrix heatmap
-    sns.set(font_scale = self.Font_size_general)
+    sns.set(font_scale = self._Font_size_general)
 
     # *
-    ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self.Font_size_general})
+    ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd', annot_kws = {"size": self._Font_size_general})
     #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
     ax.set_xlabel('\nPredicted Values')
     ax.set_ylabel('Actual Values')
 
-    self.save_figure(self.Save_figure, self.Title, CM_plot, self.Folder_path)
-    self.show_figure(self.Show_image)
+    self.save_figure(self._Save_figure, self._Title, CM_plot, self._Folder_path)
+    self.show_figure(self._Show_image)
 
-  @timer_func
+  @Utilities.timer_func
   def figure_plot_acc(self) -> None:
 
     # *
     ACC_plot = 'ACC_plot'
 
     # * Figure's size
-    plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
-    plt.title('Training and Validation Accuracy with {}'.format(self.Title))
+    plt.figure(figsize = (self._X_figure_size / 2, self._Y_figure_size / 2))
+    plt.title('Training and Validation Accuracy with {}'.format(self._Title))
 
     # * Plot training accuracy
-    plt.plot(self.Accuracy, label = 'Training Accuracy')
-    plt.plot(self.Val_accuracy, label = 'Validation Accuracy')
+    plt.plot(self._Accuracy, label = 'Training Accuracy')
+    plt.plot(self._Val_accuracy, label = 'Validation Accuracy')
     plt.ylim([0, 1])
     plt.legend(loc = 'lower right')
     plt.xlabel('Epoch')
 
-    self.save_figure(self.Save_figure, self.Title, ACC_plot, self.Folder_path)
-    self.show_figure(self.Show_image)
+    self.save_figure(self._Save_figure, self._Title, ACC_plot, self._Folder_path)
+    self.show_figure(self._Show_image)
 
-  @timer_func
+  @Utilities.timer_func
   def figure_plot_loss(self) -> None:
 
     # *
@@ -3283,41 +3239,41 @@ class FigurePlot(FigureAdjust):
 
     # * Figure's size
     
-    plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
-    plt.title('Training and Validation Loss with {}'.format(self.Title))
+    plt.figure(figsize = (self._X_figure_size / 2, self._Y_figure_size / 2))
+    plt.title('Training and Validation Loss with {}'.format(self._Title))
 
     # * Plot training loss
-    plt.plot(self.Loss, label = 'Training Loss')
-    plt.plot(self.Val_loss, label = 'Validation Loss')
+    plt.plot(self._Loss, label = 'Training Loss')
+    plt.plot(self._Val_loss, label = 'Validation Loss')
     plt.ylim([0, 2.0])
     plt.legend(loc = 'upper right')
     plt.xlabel('Epoch')
 
-    self.save_figure(self.Save_figure, self.Title, Loss_plot, self.Folder_path)
-    self.show_figure(self.Show_image)
+    self.save_figure(self._Save_figure, self._Title, Loss_plot, self._Folder_path)
+    self.show_figure(self._Show_image)
 
-  @timer_func
+  @Utilities.timer_func
   def figure_plot_ROC_curve(self) -> None:
     
     # *
     ROC_plot = 'ROC_plot'
 
     # * Figure's size
-    plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
+    plt.figure(figsize = (self._X_figure_size / 2, self._Y_figure_size / 2))
     plt.title('ROC curve Loss with {}'.format(self.Title))
 
     # * FPR and TPR values for the ROC curve
-    AUC = auc(self.FPRs[0], self.TPRs[0])
+    AUC = auc(self._FPRs[0], self._TPRs[0])
 
     # * Plot ROC curve
     plt.plot([0, 1], [0, 1], 'k--')
-    plt.plot(self.FPRs[0], self.TPRs[0], label = 'Test' + '(area = {:.4f})'.format(AUC))
+    plt.plot(self._FPRs[0], self._TPRs[0], label = 'Test' + '(area = {:.4f})'.format(AUC))
     plt.xlabel('False positive rate')
     plt.ylabel('True positive rate')
     plt.legend(loc = 'lower right')
 
-    self.save_figure(self.Save_figure, self.Title, ROC_plot, self.Folder_path)
-    self.show_figure(self.Show_image)
+    self.save_figure(self._Save_figure, self._Title, ROC_plot, self._Folder_path)
+    self.show_figure(self._Show_image)
 
   def figure_plot_ROC_curve_multiclass(self) -> None:
 
@@ -3329,23 +3285,23 @@ class FigurePlot(FigureAdjust):
     Roc_auc = dict()
 
     # * Figure's size
-    plt.figure(figsize = (self.X_figure_size / 2, self.Y_figure_size / 2))
-    plt.title(self.Title, fontsize = self.Font_size_title)
+    plt.figure(figsize = (self._X_figure_size / 2, self._Y_figure_size / 2))
+    plt.title(self._Title, fontsize = self._Font_size_title)
 
     # * FPR and TPR values for the ROC curve
     for i in range(len(self.Roc_curve_dataframes)):
-      Roc_auc[i] = auc(self.FPRs[i], self.TPRs[i])
+      Roc_auc[i] = auc(self._FPRs[i], self._TPRs[i])
 
     # * Plot ROC curve
     plt.plot([0, 1], [0, 1], 'k--')
 
     for i in range(len(self.Roc_curve_dataframes)):
-      plt.plot(self.FPRs[i], self.TPRs[i], color = Colors[i], label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(self.Labels[i], Roc_auc[i]))
+      plt.plot(self._FPRs[i], self._TPRs[i], color = Colors[i], label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(self._Labels[i], Roc_auc[i]))
 
     plt.xlabel('False positive rate')
     plt.ylabel('True positive rate')
     plt.title('ROC curve')
     plt.legend(loc = 'lower right')
 
-    self.save_figure(self.Save_figure, self.Title, ROC_plot, self.Folder_path)
-    self.show_figure(self.Show_image)
+    self.save_figure(self._Save_figure, self._Title, ROC_plot, self._Folder_path)
+    self.show_figure(self._Show_image)

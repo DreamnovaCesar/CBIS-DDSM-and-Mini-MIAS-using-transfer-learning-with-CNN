@@ -471,6 +471,9 @@ class ImageProcessing():
       # * Remove all the files in the new folder using this function
       remove_all_files(self.New_folder)
       
+      # * Using sort function
+      Sorted_files, Total_images = sort_images(self.Folder)
+
       # * Lists to save the values of the labels and the filename and later use them for a dataframe
       #Images = [] 
       Labels = []
@@ -485,11 +488,11 @@ class ImageProcessing():
       Nmi_ALL = [] # ? Normalized Mutual Information.
       R2s_ALL = [] # ? Coefficient of determination.
 
+      # *
       os.chdir(self.Folder)
 
-      # * Using sort function
-      Sorted_files, Total_images = sort_images(self.Folder)
-      Count:int = 1
+      # *
+      Count = 1
 
       # * Reading the files
       for File in Sorted_files:
