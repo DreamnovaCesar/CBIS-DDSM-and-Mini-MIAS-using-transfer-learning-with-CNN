@@ -280,7 +280,7 @@ def machine_learning_models(**kwargs):
     if len(Class_labels) == 2:
 
         # * Get the data from the model chosen
-        Y_pred, Total_time_training, Model_name = Model(X_train, y_train, X_test)
+        Y_pred, Model_name, Model_name_letters, Total_time_training = ML_model_pretrained(0, X_train, y_train, X_test)
 
         # * Confusion Matrix
         Confusion_matrix = confusion_matrix(y_test, Y_pred)
@@ -370,7 +370,7 @@ def machine_learning_models(**kwargs):
     elif len(Class_labels) >= 3:
 
         # * Get the data from the model chosen
-        Y_pred, Total_time_training, Model_name = Model(X_train, y_train, X_test)
+        Y_pred, Model_name, Model_name_letters, Total_time_training = ML_model_pretrained(0, X_train, y_train, X_test)
 
         # * Binarize labels to get multiples ROC curves
         for i in range(len(Class_labels)):
@@ -520,7 +520,7 @@ def overwrite_row_CSV(Folder_path, Dataframe, Info, Column_names, Row):
 
     return Dataframe
 
-def ML_model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretrained_value: int):
+def ML_model_pretrained(Model_pretrained_value: int, X_train, y_train, X_test):
     """
     Model configuration.
 
@@ -577,7 +577,7 @@ def ML_model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretra
 
             Model_name = 'Support Vector Machine'
             Model_name_letters = 'SVM'
-            Model_index_chosen = SVC()
+            Model_index_chosen = SVC(kernel = 'rbf', C = 1)
             
             return Model_name, Model_name_letters, Model_index_chosen
 
@@ -585,7 +585,7 @@ def ML_model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretra
 
             Model_name = 'Multi Support Vector Machine'
             Model_name_letters = 'MSVM'
-            Model_index_chosen = OneVsRestClassifier(SVC())
+            Model_index_chosen = OneVsRestClassifier(SVC(kernel = 'rbf', C = 1))
 
             return Model_name, Model_name_letters, Model_index_chosen
 
@@ -593,7 +593,7 @@ def ML_model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretra
 
             Model_name = 'Multi Layer Perceptron'
             Model_name_letters = 'MLP'
-            Model_index_chosen = MLPClassifier
+            Model_index_chosen = MLPClassifier(hidden_layer_sizes = [100] * 2, random_state = 1, max_iter = 2000)
         
             return Model_name, Model_name_letters, Model_index_chosen
 
@@ -601,7 +601,7 @@ def ML_model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretra
 
             Model_name = 'Decision Tree'
             Model_name_letters = 'DT'
-            Model_index_chosen = DecisionTreeClassifier
+            Model_index_chosen = DecisionTreeClassifier(max_depth = 50)
 
             return Model_name, Model_name_letters, Model_index_chosen
         
@@ -609,7 +609,7 @@ def ML_model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretra
 
             Model_name = 'K Neighbors'
             Model_name_letters = 'KNN'
-            Model_index_chosen = KNeighborsClassifier
+            Model_index_chosen = KNeighborsClassifier(n_neighbors = 7)
 
             return Model_name, Model_name_letters, Model_index_chosen
 
@@ -617,7 +617,7 @@ def ML_model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretra
 
             Model_name = 'Random Forest'
             Model_name_letters = 'RF'
-            Model_index_chosen = RandomForestClassifier
+            Model_index_chosen = RandomForestClassifier(n_estimators = 20, criterion = 'entropy', random_state = 0)
 
             return Model_name, Model_name_letters, Model_index_chosen
         
@@ -625,7 +625,7 @@ def ML_model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretra
 
             Model_name = 'Gradient Boostin Classifier'
             Model_name_letters = 'GBC'
-            Model_index_chosen = GradientBoostingClassifier
+            Model_index_chosen = GradientBoostingClassifier(n_estimators = 100, learning_rate = 1.0, max_depth = 2, random_state = 0)
 
             return Model_name, Model_name_letters, Model_index_chosen
 
@@ -649,259 +649,4 @@ def ML_model_pretrained(X_size: int, Y_size: int, Num_classes: int, Model_pretra
 
     Y_pred = classifier.predict(X_test)
 
-  return Model_name_letters, Model_name, Model_CNN
-
-
-# ?
-
-def SVM(X_train, y_train, X_test):
-
-    """
-	  SVM configuration.
-
-    Parameters:
-    argument1 (int): X train split data.
-    argument2 (int): y train split data.
-    argument3 (int): X test split data.
-
-    Returns:
-	    list:Model's prediction list
-        int:Training's time
-        int:Model's name
-        funcition:Classifier
-
-
-   	"""
-
-    Model_name = 'SVM'
-
-    Start_training_time = time.time()
-    
-    # Data Custom model
-    classifier = SVC(kernel = 'rbf', C = 1)
-    classifier.fit(X_train, y_train)
-
-    End_training_time = time.time()
-
-    Total_time_training = End_training_time - Start_training_time
-    
-    Y_pred = classifier.predict(X_test)
-
-    return Y_pred, Total_time_training, Model_name
-
-# ?
-
-def Multi_SVM(X_train, y_train, X_test):
-
-    """
-	  MultiSVM configuration.
-
-    Parameters:
-    argument1 (int): X train split data.
-    argument2 (int): y train split data.
-    argument3 (int): X test split data.
-
-    Returns:
-	    list:Model's prediction list
-        int:Training's time
-        int:Model's name
-        funcition:Classifier
-    
-   	"""
-
-    Model_name = 'Multi SVM'
-
-    Start_training_time = time.time()
-    
-    # Data Custom model
-    classifier = OneVsRestClassifier(SVC(kernel = 'rbf', C = 1))
-    classifier.fit(X_train, y_train)
-
-    End_training_time = time.time()
-
-    Total_time_training = End_training_time - Start_training_time
-    
-    Y_pred = classifier.predict(X_test)
-
-    return Y_pred, Total_time_training, Model_name
-
-# ?
-
-def MLP(X_train, y_train, X_test):
-
-    """
-	  MLP configuration.
-
-    Parameters:
-    argument1 (int): X train split data.
-    argument2 (int): y train split data.
-    argument3 (int): X test split data.
-
-    Returns:
-	    list:Model's prediction list
-        int:Training's time
-        int:Model's name
-        funcition:Classifier
-
-
-   	"""
-
-    Model_name = 'MLP'
-
-    Start_training_time = time.time()
-    
-    # Data Custom model
-    classifier = MLPClassifier(hidden_layer_sizes = [100] * 2, random_state = 1, max_iter = 2000)
-    classifier.fit(X_train, y_train)
-
-    End_training_time = time.time()
-
-    Total_time_training = End_training_time - Start_training_time
-    
-    Y_pred = classifier.predict(X_test)
-
-    return Y_pred, Total_time_training, Model_name
-
-# ?
-
-def DT(X_train, y_train, X_test):
-
-    """
-	  Decision Tree configuration.
-
-    Parameters:
-    argument1 (int): X train split data.
-    argument2 (int): y train split data.
-    argument3 (int): X test split data.
-
-    Returns:
-	    list:Model's prediction list
-        int:Training's time
-        int:Model's name
-        funcition:Classifier
-    
-   	"""
-
-    Model_name = 'DT'
-
-    Start_training_time = time.time()
-    
-    # Data Custom model
-    classifier = DecisionTreeClassifier(max_depth = 50)
-    classifier.fit(X_train, y_train)
-
-    End_training_time = time.time()
-
-    Total_time_training = End_training_time - Start_training_time
-    
-    Y_pred = classifier.predict(X_test)
-
-    return Y_pred, Total_time_training, Model_name
-
-# ?
-
-def KNN(X_train, y_train, X_test):
-
-    """
-	  KNeighbors configuration.
-
-    Parameters:
-    argument1 (int): X train split data.
-    argument2 (int): y train split data.
-    argument3 (int): X test split data.
-
-    Returns:
-	    list:Model's prediction list
-        int:Training's time
-        int:Model's name
-        funcition:Classifier
-    
-   	"""
-
-    Model_name = 'KNN'
-
-    Start_training_time = time.time()
-    
-    # Data Custom model
-    classifier = KNeighborsClassifier(n_neighbors = 7)
-    classifier.fit(X_train, y_train)
-
-    End_training_time = time.time()
-
-    Total_time_training = End_training_time - Start_training_time
-    
-    Y_pred = classifier.predict(X_test)
-
-    return Y_pred, Total_time_training, Model_name
-
-# ?
-
-def RF(X_train, y_train, X_test):
-
-    """
-	  Random forest configuration.
-
-    Parameters:
-    argument1 (int): X train split data.
-    argument2 (int): y train split data.
-    argument3 (int): X test split data.
-
-    Returns:
-	    list:Model's prediction list
-        int:Training's time
-        int:Model's name
-        funcition:Classifier
-
-   	"""
-
-    Model_name = 'RF'
-
-    Start_training_time = time.time()
-    
-    # Data Custom model
-    classifier = RandomForestClassifier(n_estimators = 20, criterion = 'entropy', random_state = 0)
-    classifier.fit(X_train, y_train)
-
-    End_training_time = time.time()
-
-    Total_time_training = End_training_time - Start_training_time
-    
-    Y_pred = classifier.predict(X_test)
-
-    return Y_pred, Total_time_training, Model_name
-
-# ?
-
-def GBC(X_train, y_train, X_test):
-
-    """
-	  Random forest configuration.
-
-    Parameters:
-    argument1 (int): X train split data.
-    argument2 (int): y train split data.
-    argument3 (int): X test split data.
-
-    Returns:
-	    list:Model's prediction list
-        int:Training's time
-        int:Model's name
-        funcition:Classifier
-
-   	"""
-       
-    Model_name = 'GBC'
-
-    Start_training_time = time.time()
-    
-    # Data Custom model
-    classifier = GradientBoostingClassifier(n_estimators = 100, learning_rate = 1.0, max_depth = 2, random_state = 0)
-    classifier.fit(X_train, y_train)
-
-    End_training_time = time.time()
-
-    Total_time_training = End_training_time - Start_training_time
-    
-    Y_pred = classifier.predict(X_test)
-
-    return Y_pred, Total_time_training, Model_name
+    return Y_pred, Model_name, Model_name_letters, Total_time_training

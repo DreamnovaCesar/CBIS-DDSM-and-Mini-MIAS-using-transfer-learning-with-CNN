@@ -1,62 +1,64 @@
 from Final_Code_0_Libraries import *
+from Final_Code_1_General_Functions_Classes import Utilities
 
 # Data Augmentation function
 
-class DataAugmentation:
+class DataAugmentation(Utilities):
   
+  @Utilities.timer_func
   def __init__(self, **kwargs) -> None:
     
     # * Instance attributes
-    self.Folder: str = kwargs.get('Folder', None)
-    self.Folder_dest: str = kwargs.get('NewFolder', None)
-    self.Severity: str = kwargs.get('Severity', None)
-    self.Sampling: int = kwargs.get('Sampling', 3)
-    self.Label: int = kwargs.get('Label', None)
-    self.Save_images: bool = kwargs.get('SI', False)
+    self.__Folder: str = kwargs.get('Folder', None)
+    self.__Folder_dest: str = kwargs.get('NewFolder', None)
+    self.__Severity: str = kwargs.get('Severity', None)
+    self.__Sampling: int = kwargs.get('Sampling', 3)
+    self.__Label: int = kwargs.get('Label', None)
+    self.__Save_images: bool = kwargs.get('SI', False)
 
     # * Folder attribute (ValueError, TypeError)
-    if (self.Folder == None):
+    if (self.__Folder == None):
       raise ValueError("Folder does not exist") #! Alert
-    if not isinstance(self.Folder, str):
+    if not isinstance(self.__Folder, str):
       raise TypeError("Folder must be a string") #! Alert
 
     # * Folder attribute (ValueError, TypeError)
-    if (self.Folder_dest != None and self.Save_images == True):
-      if not isinstance(self.Folder_dest, str):
+    if (self.__Folder_dest != None and self.__Save_images == True):
+      if not isinstance(self.__Folder_dest, str):
         raise TypeError("Folder destination must be a string") #! Alert
-    elif (self.Folder_dest == None and self.Save_images == True):
+    elif (self.__Folder_dest == None and self.__Save_images == True):
       warnings.warn('Saving the images is available but a folder destination was not found') #! Alert
       print("\n")
-    elif (self.Folder_dest != None and self.Save_images == False):
+    elif (self.__Folder_dest != None and self.__Save_images == False):
       warnings.warn('Saving the images is unavailable but a folder destination was found') #! Alert
       print("\n")
     else:
       pass
 
     # * Severity attribute (ValueError, TypeError)
-    if (self.Severity == None):
+    if (self.__Severity == None):
       raise ValueError("Add the severity label") #! Alert
-    if not isinstance(self.Severity, str):
+    if not isinstance(self.__Severity, str):
       raise TypeError("Severity label must be a string") #! Alert
 
     # * Sampling attribute (ValueError, TypeError)
-    if not isinstance(self.Sampling, int):
+    if not isinstance(self.__Sampling, int):
       raise TypeError("Sampling must be a integer") #! Alert
 
     # * Label attribute (ValueError, TypeError)
-    if (self.Label == None):
+    if (self.__Label == None):
       raise ValueError("Must add the label") #! Alert
-    if not isinstance(self.Label, int):
+    if not isinstance(self.__Label, int):
       raise TypeError("Label must be a integer") #! Alert
 
     # * Save images attribute (ValueError, TypeError)
-    if not isinstance(self.Save_images, bool):
+    if not isinstance(self.__Save_images, bool):
       raise TypeError("Save images attribute must be a bool value (True or False is required)") #! Alert
 
   def __repr__(self):
 
-        kwargs_info = "Folder: {} , Folder_dest: {}, Severity: {}, Sampling: {}, Label: {}, Save_images: {}".format( self.Folder, self.Folder_dest, self.Severity,
-                                                                                                                   self.Sampling, self.Label, self.Save_images)
+        kwargs_info = "Folder: {} , Folder_dest: {}, Severity: {}, Sampling: {}, Label: {}, Save_images: {}".format(  self.__Folder, self.__Folder_dest, self.__Severity,
+                                                                                                                      self.__Sampling, self.__Label, self.__Save_images)
         return kwargs_info
 
   def __str__(self):
@@ -64,75 +66,75 @@ class DataAugmentation:
         Descripcion_class = ''
         
         return Descripcion_class
-
+  
   # * Folder attribute
   @property
   def Folder_property(self):
-      return self.Folder
+      return self.__Folder
 
   @Folder_property.setter
   def Folder_property(self, New_value):
       if not isinstance(New_value, str):
         raise TypeError("Folder must be a string") #! Alert
-      self.Folder = New_value
+      self.__Folder = New_value
   
   @Folder_property.deleter
   def Folder_property(self):
       print("Deleting folder...")
-      del self.Folder
+      del self.__Folder
 
   # * Folder destination attribute
   @property
   def Folder_dest_property(self):
-      return self.Folder_dest
+      return self.__Folder_dest
 
   @Folder_dest_property.setter
   def Folder_dest_property(self, New_value):
       if not isinstance(New_value, str):
         raise TypeError("Folder dest must be a string") #! Alert
-      self.Folder_dest = New_value
+      self.__Folder_dest = New_value
   
   @Folder_dest_property.deleter
   def Folder_dest_property(self):
       print("Deleting destination folder...")
-      del self.Folder_dest
+      del self.__Folder_dest
 
   # * Severity attribute
   @property
   def Severity_property(self):
-      return self.Severity
+      return self.__Severity
 
   @Severity_property.setter
   def Severity_property(self, New_value):
       if not isinstance(New_value, str):
         raise TypeError("Severity must be a string") #! Alert
-      self.Severity = New_value
+      self.__Severity = New_value
   
   @Severity_property.deleter
   def Severity_property(self):
       print("Deleting severity...")
-      del self.Severity
+      del self.__Severity
 
   # * Sampling attribute
   @property
   def Sampling_property(self):
-      return self.Sampling
+      return self.__Sampling
 
   @Sampling_property.setter
   def Sampling_property(self, New_value):
     if not isinstance(New_value, int):
       raise TypeError("Must be a integer value ") #! Alert
-    self.Sampling = New_value
+    self.__Sampling = New_value
   
   @Sampling_property.deleter
   def Sampling_property(self):
       print("Deleting sampling...")
-      del self.Sampling
+      del self.__Sampling
 
   # * Label attribute
   @property
   def Label_property(self):
-      return self.Label
+      return self.__Label
 
   @Label_property.setter
   def Label_property(self, New_value):
@@ -140,23 +142,23 @@ class DataAugmentation:
       raise ValueError("Value is out of the range must be less than 10 and more than 0") #! Alert
     if not isinstance(New_value, int):
       raise TypeError("Must be a enteger value") #! Alert
-    self.Label = New_value
+    self.__Label = New_value
   
   @Label_property.deleter
   def Label_property(self):
       print("Deleting label...")
-      del self.Label
+      del self.__Label
 
   # * Save_images attribute
   @property
   def Save_images_property(self):
-      return self.Save_images
+      return self.__Save_images
 
   @Save_images_property.setter
   def Save_images_property(self, New_value):
     if not isinstance(New_value, bool):
       raise TypeError("Must be a bool value (True or False is required)") #! Alert
-    self.Save_images = New_value
+    self.__Save_images = New_value
   
   @staticmethod
   def safe_rotation(Image_cropped: np.ndarray) -> np.ndarray:
@@ -245,6 +247,7 @@ class DataAugmentation:
 
   # ? shift rotation using albumentation library
 
+  @Utilities.timer_func
   def data_augmentation(self) -> tuple[list[np.ndarray], list[np.ndarray]]:
     """
     Techniques used to increase the amount of data by adding slightly modified copies of already existing data 
@@ -260,20 +263,20 @@ class DataAugmentation:
     # * Create a folder with each image and its transformations.
 
     #Name_dir:str = os.path.dirname(self.Folder)
-    Name_base:str = os.path.basename(self.Folder)
+    Name_base:str = os.path.basename(self.__Folder)
 
     #Name_dir_dest:str = os.path.dirname(self.Folder_dest)
     #Name_base_dest:str = os.path.basename(self.Folder_dest)
     #print(self.Folder_dest + '/' + Name_base + '_DA')
 
-    Exist_dir:bool = os.path.isdir(self.Folder_dest + '/' + Name_base + '_DA') 
+    Exist_dir:bool = os.path.isdir(self.__Folder_dest + '/' + Name_base + '_DA') 
 
-    if self.Save_images == True:
+    if self.__Save_images == True:
       if Exist_dir == False:
-        New_folder_dest:str = self.Folder_dest + '/' + Name_base + '_DA'
+        New_folder_dest:str = self.__Folder_dest + '/' + Name_base + '_DA'
         os.mkdir(New_folder_dest)
       else:
-        New_folder_dest:str = self.Folder +  '/' + Name_base + '_DA'
+        New_folder_dest:str = self.__Folder +  '/' + Name_base + '_DA'
 
     # * Lists to save the images and their respective labels
     Images:list = [] 
@@ -283,11 +286,11 @@ class DataAugmentation:
     Rotation_initial_value:int = -120
 
     # * Reading the folder
-    os.chdir(self.Folder)
+    os.chdir(self.__Folder)
     Count:int = 1
 
     # * The number of images inside the folder
-    Total_images:int = len(os.listdir(self.Folder))
+    Total_images:int = len(os.listdir(self.__Folder))
 
     # * Iteration of each image in the folder.
     for File in os.listdir():
@@ -297,11 +300,11 @@ class DataAugmentation:
       # * Read extension files
       if File.endswith(Format):
 
-        print(f"Working with {Count} of {Total_images} images of {self.Severity}")
+        print(f"Working with {Count} of {Total_images} images of {self.__Severity}")
         Count += 1
 
         # * Resize with the given values
-        Path_file:str = os.path.join(self.Folder, File)
+        Path_file:str = os.path.join(self.__Folder, File)
         Image:ndarray = cv2.imread(Path_file)
 
         #Image = cv2.cvtColor(Image, cv2.COLOR_BGR2RGB)
@@ -310,10 +313,10 @@ class DataAugmentation:
         # ? 1) Standard image
 
         Images.append(Image)
-        Labels.append(self.Label)
+        Labels.append(self.__Label)
 
         # * if this parameter is true all images will be saved in a new folder
-        if self.Save_images == True:
+        if self.__Save_images == True:
           
           Filename_and_label = '{}_Normal ✅'.format(Filename)
           #Filename_and_label = Filename + '_Normal'
@@ -327,10 +330,10 @@ class DataAugmentation:
         Image_flip_horizontal = self.flip_horizontal(Image)
 
         Images.append(Image_flip_horizontal)
-        Labels.append(self.Label)
+        Labels.append(self.__Label)
 
         # * if this parameter is true all images will be saved in a new folder
-        if self.Save_images == True:
+        if self.__Save_images == True:
           
           Filename_and_label = '{}_FlipHorizontal_Augmentation ✅'.format(Filename)
           #Filename_and_label = Filename + '_FlipHorizontal' + '_Augmentation'
@@ -342,17 +345,17 @@ class DataAugmentation:
         # ? 1.B) Rotation
 
         # * this 'for' increments the rotation angles of each image
-        for i in range(self.Sampling):
+        for i in range(self.__Sampling):
 
           Image_rotation = self.rotation(Rotation_initial_value, Image)
 
           Rotation_initial_value += 10
 
           Images.append(Image_rotation)
-          Labels.append(self.Label)
+          Labels.append(self.__Label)
 
           # * if this parameter is true all images will be saved in a new folder
-          if self.Save_images == True:
+          if self.__Save_images == True:
             
             Filename_and_label = '{}_{}_Rotation_Augmentation ✅'.format(Filename, str(i))
             #Filename_and_label = Filename + '_' + str(i) + '_Rotation' + '_Augmentation'
@@ -366,10 +369,10 @@ class DataAugmentation:
         Image_flip_vertical = self.flip_vertical(Image)
 
         Images.append(Image_flip_vertical)
-        Labels.append(self.Label)
+        Labels.append(self.__Label)
 
         # * if this parameter is true all images will be saved in a new folder
-        if self.Save_images == True:
+        if self.__Save_images == True:
 
           Filename_and_label = '{}_FlipVertical_Augmentation ✅'.format(Filename)
           #Filename_and_label = Filename + '_FlipVertical' + '_Augmentation'
@@ -381,17 +384,17 @@ class DataAugmentation:
         # ? 2.B) Rotation
 
         # * this 'for' increments the rotation angles of each image
-        for i in range(self.Sampling):
+        for i in range(self.__Sampling):
 
           Image_flip_vertical_rotation = self.rotation(Rotation_initial_value, Image_flip_vertical)
 
           Rotation_initial_value += 10
 
           Images.append(Image_flip_vertical_rotation)
-          Labels.append(self.Label)
+          Labels.append(self.__Label)
 
           # * if this parameter is true all images will be saved in a new folder
-          if self.Save_images == True:
+          if self.__Save_images == True:
 
             Filename_and_label = '{}_{}_Rotation_FlipVertical_Augmentation ✅'.format(Filename, str(i))
             #Filename_and_label = Filename + '_' + str(i) + '_Rotation' + '_FlipVertical' + '_Augmentation'
@@ -404,6 +407,7 @@ class DataAugmentation:
     
     return Images, Labels
   
+  @Utilities.timer_func
   def data_augmentation_same_folder(self) -> tuple[list[np.ndarray], list[np.ndarray]]:
     """
     Techniques used to increase the amount of data by adding slightly modified copies of already existing data 
@@ -419,7 +423,7 @@ class DataAugmentation:
     # * Create a folder with each image and its transformations.
 
     #Name_dir:str = os.path.dirname(self.Folder)
-    Name_base:str = os.path.basename(self.Folder)
+    Name_base:str = os.path.basename(self.__Folder)
 
     #Name_dir_dest:str = os.path.dirname(self.Folder_dest)
     #Name_base_dest:str = os.path.basename(self.Folder_dest)
@@ -445,11 +449,11 @@ class DataAugmentation:
     Rotation_initial_value:int = -120
 
     # * Reading the folder
-    os.chdir(self.Folder)
+    os.chdir(self.__Folder)
     Count:int = 1
 
     # * The number of images inside the folder
-    Total_images:int = len(os.listdir(self.Folder))
+    Total_images:int = len(os.listdir(self.__Folder))
 
     # * Iteration of each image in the folder.
     for File in os.listdir():
@@ -459,11 +463,11 @@ class DataAugmentation:
       # * Read extension files
       if File.endswith(Format):
 
-        print(f"Working with {Count} of {Total_images} images of {self.Severity}")
+        print(f"Working with {Count} of {Total_images} images of {self.__Severity}")
         Count += 1
 
         # * Resize with the given values
-        Path_file:str = os.path.join(self.Folder, File)
+        Path_file:str = os.path.join(self.__Folder, File)
         Image:ndarray = cv2.imread(Path_file)
 
         #Image = cv2.cvtColor(Image, cv2.COLOR_BGR2RGB)
@@ -472,15 +476,15 @@ class DataAugmentation:
         # ? 1) Standard image
 
         Images.append(Image)
-        Labels.append(self.Label)
+        Labels.append(self.__Label)
 
         # * if this parameter is true all images will be saved in a new folder
-        if self.Save_images == True:
+        if self.__Save_images == True:
           
           Filename_and_label = '{}_Normal ✅'.format(Filename)
           #Filename_and_label = Filename + '_Normal'
           New_name_filename = Filename_and_label + Format
-          New_folder = os.path.join(self.Folder, New_name_filename)
+          New_folder = os.path.join(self.__Folder, New_name_filename)
 
           io.imsave(New_folder, Image)
           
@@ -489,37 +493,37 @@ class DataAugmentation:
         Image_flip_horizontal = self.flip_horizontal(Image)
 
         Images.append(Image_flip_horizontal)
-        Labels.append(self.Label)
+        Labels.append(self.__Label)
 
         # * if this parameter is true all images will be saved in a new folder
-        if self.Save_images == True:
+        if self.__Save_images == True:
           
           Filename_and_label = '{}_FlipHorizontal_Augmentation ✅'.format(Filename)
           #Filename_and_label = Filename + '_FlipHorizontal' + '_Augmentation'
           New_name_filename = Filename_and_label + Format
-          New_folder = os.path.join(self.Folder, New_name_filename)
+          New_folder = os.path.join(self.__Folder, New_name_filename)
 
           io.imsave(New_folder, Image_flip_horizontal)
 
         # ? 1.B) Rotation
 
         # * this 'for' increments the rotation angles of each image
-        for i in range(self.Sampling):
+        for i in range(self.__Sampling):
 
           Image_rotation = self.rotation(Rotation_initial_value, Image)
 
           Rotation_initial_value += 10
 
           Images.append(Image_rotation)
-          Labels.append(self.Label)
+          Labels.append(self.__Label)
 
           # * if this parameter is true all images will be saved in a new folder
-          if self.Save_images == True:
+          if self.__Save_images == True:
             
             Filename_and_label = '{}_{}_Rotation_Augmentation ✅'.format(Filename, str(i))
             #Filename_and_label = Filename + '_' + str(i) + '_Rotation' + '_Augmentation'
             New_name_filename = Filename_and_label + Format
-            New_folder = os.path.join(self.Folder, New_name_filename)
+            New_folder = os.path.join(self.__Folder, New_name_filename)
 
             io.imsave(New_folder, Image_rotation)
 
@@ -528,37 +532,37 @@ class DataAugmentation:
         Image_flip_vertical = self.flip_vertical(Image)
 
         Images.append(Image_flip_vertical)
-        Labels.append(self.Label)
+        Labels.append(self.__Label)
 
         # * if this parameter is true all images will be saved in a new folder
-        if self.Save_images == True:
+        if self.__Save_images == True:
 
           Filename_and_label = '{}_FlipVertical_Augmentation ✅'.format(Filename)
           #Filename_and_label = Filename + '_FlipVertical' + '_Augmentation'
           New_name_filename = Filename_and_label + Format
-          New_folder = os.path.join(self.Folder, New_name_filename)
+          New_folder = os.path.join(self.__Folder, New_name_filename)
 
           io.imsave(New_folder, Image_flip_vertical)
         
         # ? 2.B) Rotation
 
         # * this 'for' increments the rotation angles of each image
-        for i in range(self.Sampling):
+        for i in range(self.__Sampling):
 
           Image_flip_vertical_rotation = self.rotation(Rotation_initial_value, Image_flip_vertical)
 
           Rotation_initial_value += 10
 
           Images.append(Image_flip_vertical_rotation)
-          Labels.append(self.Label)
+          Labels.append(self.__Label)
 
           # * if this parameter is true all images will be saved in a new folder
-          if self.Save_images == True:
+          if self.__Save_images == True:
 
             Filename_and_label = '{}_{}_Rotation_FlipVertical_Augmentation ✅'.format(Filename, str(i))
             #Filename_and_label = Filename + '_' + str(i) + '_Rotation' + '_FlipVertical' + '_Augmentation'
             New_name_filename = Filename_and_label + Format
-            New_folder = os.path.join(self.Folder, New_name_filename)
+            New_folder = os.path.join(self.__Folder, New_name_filename)
 
             io.imsave(New_folder, Image_flip_vertical_rotation)
 
@@ -566,34 +570,39 @@ class DataAugmentation:
     
     return Images, Labels
 
-  def no_data_augmentation(self) -> tuple[list[np.ndarray], list[np.ndarray]]:
+  @Utilities.timer_func
+  def data_augmentation_test_images(self):
     """
     Techniques used to increase the amount of data by adding slightly modified copies of already existing data 
-    or newly created synthetic data from existing data
+    or newly created synthetic data from existing data. (Just the number of images).
 
     Args:
-        self (_type_): _description_
         ndarray (_type_): _description_
 
     Returns:
         _type_: _description_
+
+    Applying data augmentation different transformations.
+
+    Parameters:
+    argument1 (folder): Folder chosen.
+    argument2 (str): Severity of each image.
+    argument3 (int): Amount of transformation applied for each image, using only rotation.
+    argument4 (str): Label for each image.
+
+    Returns:
+    list:Returning images like 'X' value
+    list:Returning labels like 'Y' value
     """
-    # * Create a folder with each image and its transformations.
-
-    #Name_dir:str = os.path.dirname(self.Folder)
-    Name_base:str = os.path.basename(self.Folder)
-
-    # * Lists to save the images and their respective labels
-    Images:list = [] 
-    Labels:list = [] 
+    
+    Total_images_count = 0
   
-
     # * Reading the folder
-    os.chdir(self.Folder)
-    Count:int = 1
+    os.chdir(self.__Folder)
+    Count = 1
 
     # * The number of images inside the folder
-    Total_images:int = len(os.listdir(self.Folder))
+    Total_images = len(os.listdir(self.__Folder))
 
     # * Iteration of each image in the folder.
     for File in os.listdir():
@@ -603,18 +612,40 @@ class DataAugmentation:
       # * Read extension files
       if File.endswith(Format):
 
-        print(f"Working with {Count} of {Total_images} images of {self.Severity}")
+        print(f"Working with {Count} of {Total_images} images of {self.__Severity}")
         Count += 1
 
         # * Resize with the given values
-        Path_file:str = os.path.join(self.Folder, File)
-        Image:ndarray = cv2.imread(Path_file)
+        Path_file = os.path.join(self.__Folder, File)
+        Image = cv2.imread(Path_file)
+
+        #Image = cv2.cvtColor(Image, cv2.COLOR_BGR2RGB)
+        #Imagen = cv2.resize(Resize_Imagen, dim, interpolation = cv2.INTER_CUBIC)
 
         # ? 1) Standard image
 
-        Images.append(Image)
-        Labels.append(self.Label)
+        Total_images_count += 1
 
-    Labels = np.array(Labels)
-    
-    return Images, Labels
+        # ? 1.A) Flip horizontal 
+
+        Total_images_count += 1
+
+        # ? 1.B) Rotation
+
+        # * this 'for' increments the rotation angles of each image
+        for _ in range(self.__Sampling):
+
+          Total_images_count += 1
+
+        # ? 2.A) Flip vertical
+
+        Total_images_count += 1
+        
+        # ? 2.B) Rotation
+
+        # * this 'for' increments the rotation angles of each image
+        for _ in range(self.__Sampling):
+
+          Total_images_count += 1
+
+    return Total_images_count
