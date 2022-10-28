@@ -188,14 +188,13 @@ def machine_learning_models(**kwargs):
     elif Class_problem > 2:
         Class_problem_prefix = 'Multiclass'
 
-    Column_names = ["Model name", "Model", "Accuracy", "Precision", "Recall", "F1 Score", 
-                    "Precision Mass", "Recall Mass", "F1_Score Mass", "Images support Mass",
-                    "Precision Calcification", "Recall Calcification", "F1_Score Calcification", "Images support Calcification",
-                    "Precision macro avg", "Recall macro avg", "F1_Score macro avg", "Images support macro avg",
-                    "Precision weighted avg", "Recall weighted avg", "F1_Score weighted avg", "Images support weighted avg",
-                    "Training images", "Test images", "Time training", "Technique", "TN", "FP", "FN", "TP", "AUC"]
+    # * Lists
+    Column_names_ = [ 'name model', "model used", "accuracy training FE", "accuracy training LE", 
+                      "accuracy testing", "loss train", "loss test", "training images", "validation images", 
+                      "test images", "time training", "time testing", "technique used", "TN", "FP", "FN", "TP", "epochs", 
+                      "precision", "recall", "f1_Score"]
 
-    Dataframe_save = pd.DataFrame(columns = Column_names)
+    Dataframe_save = pd.DataFrame(columns = Column_names_)
 
     # * Save dataframe in the folder given
     #Dataframe_save_name = 'Biclass' + '_Dataframe_' + 'FOF_' + str(Enhancement_technique)  + '.csv'

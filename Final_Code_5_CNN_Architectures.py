@@ -787,8 +787,7 @@ def deep_learning_models_folder(**kwargs):
                       "accuracy testing", "loss train", "loss test", "training images", "validation images", 
                       "test images", "time training", "time testing", "technique used", "TN", "FP", "FN", "TP", "epochs", 
                       "precision", "recall", "f1_Score"]
-    
-    Dataframe_save = pd.DataFrame(columns = Column_names_)
+  
 
     # * 
     Dataframe_save.to_csv(Dataframe_save_folder)
@@ -820,15 +819,26 @@ def deep_learning_models_folder(**kwargs):
     print(classification_report(Test_data.classes, y_pred_class, target_names = Class_labels))
     
     Report = classification_report(Test_data.classes, y_pred_class, target_names = Class_labels)
-    Dict = classification_report(Test_data.classes, y_pred_class, target_names = Class_labels, output_dict = True)
-    
+    # *
+    #Report = classification_report(Test_data.classes, y_pred, target_names = Class_labels)
+    Dict = classification_report(Test_data.classes, y_pred, target_names = Class_labels, output_dict = True)
+
     for i, Report_labels in enumerate(Classification_report_labels):
       for i, Metric_labels in enumerate(Classification_report_metrics_labels):
-
-        #print(Dict[Report_labels][Metric_labels])
+        
+        # *
+        Classification_report_names.append('{} {}'.format(Metric_labels, Report_labels))
+        print(Classification_report_names)
+        print(Dict[Report_labels][Metric_labels])
         Classification_report_values.append(Dict[Report_labels][Metric_labels])
-        print("\n")
+    print("\n")
 
+    # *
+    Column_names_.extend(Class_labels)
+    Column_names_.extend(Classification_report_names)
+
+    Dataframe_save = pd.DataFrame(columns = Column_names_)
+    
     # * Precision
     Precision = precision_score(Test_data.classes, y_pred_class)
     print(f"Precision: {round(Precision, Digits)}")
