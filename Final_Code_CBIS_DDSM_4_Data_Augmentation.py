@@ -54,7 +54,21 @@ def Data_augmentation_stage(Folder_path: str, Labels: list[str], Numbers_iter: l
 
 
 def preprocessing_DataAugmentation_Folder(Folder_path: str, Labels: list[str], Numbers_iter: list[int], DA_T: bool = False, DA_V: bool = False) -> None:
+    """
+    _summary_
 
+    _extended_summary_
+
+    Args:
+        Folder_path (str): Path to save the new images
+        Labels (list[str]): Class labels
+        Numbers_iter (list[int]): Number of transformation per image
+        DA_T (bool, optional): Data augmentation for test set. Defaults to False.
+        DA_V (bool, optional): Data augmentation for validation set. Defaults to False.
+
+    Raises:
+        ValueError: _description_
+    """
     # *
     Folder_path_train ='{}/train/'.format(Folder_path)
     Folder_path_val ='{}/val/'.format(Folder_path)

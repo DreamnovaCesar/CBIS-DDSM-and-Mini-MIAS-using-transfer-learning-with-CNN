@@ -7,7 +7,7 @@ from Final_Code_1_General_Functions import FigurePlot
 
 ##################################################################################################################################################################
 
-class ConfigurationFolder(Utilities):
+class ConfigurationCNN(Utilities):
 
   def __init__(self, **kwargs) -> None:
 
@@ -620,9 +620,6 @@ class ConfigurationFolder(Utilities):
 
         if Class_problem == 2:
 
-          # * 
-          Dataframe_save.to_csv(Dataframe_save_folder)
-
           Labels_biclass_number = []
 
           for i in range(len(self.__Class_labels)):
@@ -643,9 +640,8 @@ class ConfigurationFolder(Utilities):
           print(Confusion_matrix)
           print(classification_report(Test_data.classes, y_pred_class, target_names = self.__Class_labels))
           
-          Report = classification_report(Test_data.classes, y_pred_class, target_names = self.__Class_labels)
           # *
-          #Report = classification_report(Test_data.classes, y_pred, target_names = Class_labels)
+          #Report = classification_report(Test_data.classes, y_pred, target_names = self.__Class_labels)
           Dict = classification_report(Test_data.classes, y_pred, target_names = self.__Class_labels, output_dict = True)
 
           for i, Report_labels in enumerate(Classification_report_labels):
@@ -653,8 +649,8 @@ class ConfigurationFolder(Utilities):
               
               # *
               Classification_report_names.append('{} {}'.format(Metric_labels, Report_labels))
-              print(Classification_report_names)
-              print(Dict[Report_labels][Metric_labels])
+              #print(Classification_report_names)
+              #print(Dict[Report_labels][Metric_labels])
               Classification_report_values.append(Dict[Report_labels][Metric_labels])
           print("\n")
 
@@ -664,6 +660,9 @@ class ConfigurationFolder(Utilities):
 
           Dataframe_save = pd.DataFrame(columns = Column_names_)
           
+          # * 
+          Dataframe_save.to_csv(Dataframe_save_folder)
+
           # * Precision
           Precision = precision_score(Test_data.classes, y_pred_class)
           print(f"Precision: {round(Precision, Digits)}")
@@ -724,12 +723,6 @@ class ConfigurationFolder(Utilities):
           TPR = dict()
           Roc_auc = dict()
 
-          # * Lists
-          Column_names_ = [ 'name model', "model used", "accuracy training FE", "accuracy training LE", 
-                            "accuracy testing", "loss train", "loss test", "training images", "validation images", 
-                            "test images", "time training", "time testing", "technique used", "TN", "FP", "FN", "TP", "epochs", 
-                            "precision", "recall", "f1_Score"]
-
           Labels_multiclass_number = []
 
           for i in range(len(self.__Class_labels)):
@@ -752,8 +745,8 @@ class ConfigurationFolder(Utilities):
               
               # *
               Classification_report_names.append('{} {}'.format(Metric_labels, Report_labels))
-              print(Classification_report_names)
-              print(Dict[Report_labels][Metric_labels])
+              #print(Classification_report_names)
+              #print(Dict[Report_labels][Metric_labels])
               Classification_report_values.append(Dict[Report_labels][Metric_labels])
           print("\n")
 
