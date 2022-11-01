@@ -1028,6 +1028,8 @@ class ImageProcessing(Utilities):
       Dataframe = pd.DataFrame({'REFNUMMF_ALL':All_filenames, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
 
       return Dataframe
+  
+  # ? gamma_correction_technique method
 
   @Utilities.timer_func
   def gamma_correction_technique(self) -> pd.DataFrame:
@@ -1110,7 +1112,7 @@ class ImageProcessing(Utilities):
             R2s_ALL.append(R2s)
 
             # * Name the new file
-            Filename_and_technique = '{}_CS'.format(str(Filename))
+            Filename_and_technique = '{}_GC'.format(str(Filename))
             #Filename_and_technique = Filename + '_CS'
             New_name_filename = Filename_and_technique + Format
             New_folder = os.path.join(self.New_folder, New_name_filename)

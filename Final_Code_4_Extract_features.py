@@ -77,9 +77,9 @@ class FeatureExtraction():
   def __init__(self, **kwargs) -> None:
     
     # * General parameters
-    self.Folder = kwargs.get('Folder', None)
-    self.Images = kwargs.get('Images', None)
-    self.Label = kwargs.get('Label', None)
+    self.__Folder = kwargs.get('Folder', None)
+    self.__Images = kwargs.get('Images', None)
+    self.__Label = kwargs.get('Label', None)
 
     #self.newfolder = kwargs.get('newfolder', None)
     #self.Format = kwargs.get('Format', None)
@@ -120,10 +120,10 @@ class FeatureExtraction():
     Energy = []
     Entropy = []
 
-    os.chdir(self.Folder)
+    os.chdir(self.__Folder)
 
     # * Using sort function
-    Sorted_files, Total_images = sort_images(self.Folder)
+    Sorted_files, Total_images = sort_images(self.__Folder)
     Count = 1
 
     # * Reading the files
@@ -138,7 +138,7 @@ class FeatureExtraction():
             Count += 1
 
             # * Reading the image
-            Path_File = os.path.join(self.Folder, File)
+            Path_File = os.path.join(self.__Folder, File)
             Image = cv2.imread(Path_File)
             
             # ? mean = np.mean(Imagen)
@@ -163,7 +163,7 @@ class FeatureExtraction():
             Energy.append(Features[6])
             Entropy.append(Features[7])
 
-            Labels.append(self.Label)
+            Labels.append(self.__Label)
             All_filename.append(Filename)
             #Extensions.append(extension)
 
@@ -212,10 +212,10 @@ class FeatureExtraction():
     RLU = []  # Run Length Uniformity
     RPC = []  # Run Percentage
 
-    os.chdir(self.Folder)
+    os.chdir(self.__Folder)
 
     # * Using sort function
-    Sorted_files, Total_images = sort_images(self.Folder)
+    Sorted_files, Total_images = sort_images(self.__Folder)
     Count = 1
 
     # * Reading the file
@@ -228,7 +228,7 @@ class FeatureExtraction():
             #print(f"Working with {Count} of {Total_images} {Format} images, {Filename} ------- {self.Format} ✅")
 
             # * Reading the image
-            Path_File = os.path.join(self.Folder, File)
+            Path_File = os.path.join(self.__Folder, File)
             Imagen = cv2.imread(Path_File)
             Imagen = cv2.cvtColor(Imagen, cv2.COLOR_BGR2GRAY)
 
@@ -243,7 +243,7 @@ class FeatureExtraction():
             RLU.append(glrlm.Features[3])
             RPC.append(glrlm.Features[4])
 
-            Labels.append(self.Label)
+            Labels.append(self.__Label)
             All_filename.append(Filename)
 
             Count += 1
@@ -283,10 +283,10 @@ class FeatureExtraction():
     Contrast = []
     ASM = []
 
-    os.chdir(self.Folder)
+    os.chdir(self.__Folder)
 
     # * Using sort function
-    sorted_files, Total_images = sort_images(self.Folder)
+    sorted_files, Total_images = sort_images(self.__Folder)
     Count = 1
 
     # * Reading the file
@@ -299,7 +299,7 @@ class FeatureExtraction():
             #print(f"Working with {Vount} of {images} {Format} images, {Filename} ------- {self.Format} ✅")
 
             # * Reading the image
-            Path_File = os.path.join(self.Folder, File)
+            Path_File = os.path.join(self.__Folder, File)
             Imagen = cv2.imread(Path_File)
             Imagen = cv2.cvtColor(Imagen, cv2.COLOR_BGR2GRAY)
 
@@ -312,7 +312,7 @@ class FeatureExtraction():
             Contrast.append(graycoprops(GLCM, 'contrast')[0, 0])
             ASM.append(graycoprops(GLCM, 'ASM')[0, 0])
 
-            Labels.append(self.Label)
+            Labels.append(self.__Label)
             All_filename.append(Filename)
             
             Count += 1
@@ -351,11 +351,11 @@ class FeatureExtraction():
     Entropy = []
 
     # * Enumerate the total of images
-    Total_images = len(self.Images)
+    Total_images = len(self.__Images)
     Count = 1
 
     # * Reading the file
-    for File in range(len(self.Images)):
+    for File in range(len(self.__Images)):
 
         try:
 
@@ -363,10 +363,10 @@ class FeatureExtraction():
             #print(f"Working with {Count} of {len(self.Images)} images ✅")
 
             # * Reading the image
-            self.Images[File] = cv2.cvtColor(self.Images[File], cv2.COLOR_BGR2GRAY)
+            self.__Images[File] = cv2.cvtColor(self.__Images[File], cv2.COLOR_BGR2GRAY)
 
             # * Extracting the first order features from the fos function
-            Features, Labels_ = fos(self.Images[File], None)
+            Features, Labels_ = fos(self.__Images[File], None)
 
             # * Add the value in the lists already created
             Mean.append(Features[0])
@@ -375,7 +375,7 @@ class FeatureExtraction():
             Kurtosis.append(Features[5])
             Energy.append(Features[6])
             Entropy.append(Features[7])
-            Labels.append(self.Label[0])
+            Labels.append(self.__Label[0])
 
             Count += 1
 
@@ -412,11 +412,11 @@ class FeatureExtraction():
     RPC = []  # Run Percentage
 
     # * Enumerate the total of images
-    Total_images = len(self.Images)
+    Total_images = len(self.__Images)
     Count = 1
 
     # * Reading the file
-    for File in range(len(self.Images)):
+    for File in range(len(self.__Images)):
 
         try:
 
@@ -425,7 +425,7 @@ class FeatureExtraction():
 
             # * Reading the image
             app = GLRLM()
-            glrlm = app.get_features(self.Images[File], 8)
+            glrlm = app.get_features(self.__Images[File], 8)
 
             # * Add the value in the lists already created
             SRE.append(glrlm.Features[0])
@@ -433,7 +433,7 @@ class FeatureExtraction():
             GLU.append(glrlm.Features[2])
             RLU.append(glrlm.Features[3])
             RPC.append(glrlm.Features[4])
-            Labels.append(self.Label[0])
+            Labels.append(self.__Label[0])
             
             Count += 1
 
@@ -491,11 +491,11 @@ class FeatureExtraction():
     Contrast_7_3_pi_4 = []
 
     # * Enumerate the total of images
-    Total_images = len(self.Images)
+    Total_images = len(self.__Images)
     Count = 1
 
     # * Reading the file
-    for File in range(len(self.Images)):
+    for File in range(len(self.__Images)):
 
         try:
 
@@ -506,35 +506,35 @@ class FeatureExtraction():
             #self.Images[File] = cv2.cvtColor(self.Images[File], cv2.COLOR_BGR2GRAY)
 
             # * Add the value in the lists already created
-            GLCM_1_0 = graycomatrix(self.Images[File], [1], [0])
+            GLCM_1_0 = graycomatrix(self.__Images[File], [1], [0])
             Energy_1_0.append(graycoprops(GLCM_1_0, 'energy')[0, 0])
             Correlation_1_0.append(graycoprops(GLCM_1_0, 'correlation')[0, 0])
             Homogeneity_1_0.append(graycoprops(GLCM_1_0, 'homogeneity')[0, 0])
             Dissimilarity_1_0.append(graycoprops(GLCM_1_0, 'dissimilarity')[0, 0])
             Contrast_1_0.append(graycoprops(GLCM_1_0, 'contrast')[0, 0])
           
-            GLCM_1_pi_4 = graycomatrix(self.Images[File], [1], [np.pi/4])
+            GLCM_1_pi_4 = graycomatrix(self.__Images[File], [1], [np.pi/4])
             Energy_1_pi_4.append(graycoprops(GLCM_1_pi_4, 'energy')[0, 0])
             Correlation_1_pi_4.append(graycoprops(GLCM_1_pi_4, 'correlation')[0, 0])
             Homogeneity_1_pi_4.append(graycoprops(GLCM_1_pi_4, 'homogeneity')[0, 0])
             Dissimilarity_1_pi_4.append(graycoprops(GLCM_1_pi_4, 'dissimilarity')[0, 0])
             Contrast_1_pi_4.append(graycoprops(GLCM_1_pi_4, 'contrast')[0, 0])
 
-            GLCM_7_pi_2 = graycomatrix(self.Images[File], [7], [np.pi/2])
+            GLCM_7_pi_2 = graycomatrix(self.__Images[File], [7], [np.pi/2])
             Energy_7_pi_2.append(graycoprops(GLCM_7_pi_2, 'energy')[0, 0])
             Correlation_7_pi_2.append(graycoprops(GLCM_7_pi_2, 'correlation')[0, 0])
             Homogeneity_7_pi_2.append(graycoprops(GLCM_7_pi_2, 'homogeneity')[0, 0])
             Dissimilarity_7_pi_2.append(graycoprops(GLCM_7_pi_2, 'dissimilarity')[0, 0])
             Contrast_7_pi_2.append(graycoprops(GLCM_7_pi_2, 'contrast')[0, 0])
 
-            GLCM_7_3_pi_4 = graycomatrix(self.Images[File], [7], [3 * np.pi/4])
+            GLCM_7_3_pi_4 = graycomatrix(self.__Images[File], [7], [3 * np.pi/4])
             Energy_7_3_pi_4.append(graycoprops(GLCM_7_3_pi_4, 'energy')[0, 0])
             Correlation_7_3_pi_4.append(graycoprops(GLCM_7_3_pi_4, 'correlation')[0, 0])
             Homogeneity_7_3_pi_4.append(graycoprops(GLCM_7_3_pi_4, 'homogeneity')[0, 0])
             Dissimilarity_7_3_pi_4.append(graycoprops(GLCM_7_3_pi_4, 'dissimilarity')[0, 0])
             Contrast_7_3_pi_4.append(graycoprops(GLCM_7_3_pi_4, 'contrast')[0, 0])
           
-            Labels.append(self.Label[0])
+            Labels.append(self.__Label[0])
             # np.pi/4
             # np.pi/2
             # 3*np.pi/4

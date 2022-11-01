@@ -583,6 +583,181 @@ def mini_mias_csv_clean(Dataframe:pd.DataFrame) -> pd.DataFrame:
 
   return Dataframe_Mini_MIAS
 
+# ? Kmeans algorithm
+@Utilities.timer_func
+def kmeans_function(Folder_CSV: str, Folder_graph: str, Technique_name: str, X_data, Clusters: int, Filename: str, Severity: str) -> pd.DataFrame:
+  """
+  _summary_
+
+  _extended_summary_
+
+  Args:
+      Folder_CSV (str): _description_
+      Folder_graph (str): _description_
+      Technique_name (str): _description_
+      X_data (_type_): _description_
+      Clusters (int): _description_
+      Filename (str): _description_
+      Severity (str): _description_
+
+  Returns:
+      pd.DataFrame: _description_
+  """
+
+  # * Tuple with different colors
+  List_wcss = []
+  Colors = ('red', 'blue', 'green', 'cyan', 'magenta', 'indigo', 'azure', 'tan', 'purple')
+
+  for i in range(1, 10):
+    kmeans = KMeans(n_clusters = i, init = 'k-means++', random_state = 42)
+    kmeans.fit(X_data)
+    List_wcss.append(kmeans.inertia_)
+
+  plt.plot(range(1, 10), List_wcss)
+  plt.title('The Elbow Method')
+  plt.xlabel('Number of clusters')
+  plt.ylabel('WCSS')
+  #plt.show()
+
+  kmeans = KMeans(n_clusters = Clusters, init = 'k-means++', random_state = 42)
+  y_kmeans = kmeans.fit_predict(X_data)
+
+  for i in range(Clusters):
+
+    if  Clusters <= 10:
+
+        plt.scatter(X_data[y_kmeans == i, 0], X_data[y_kmeans == i, 1], s = 100, c = Colors[i], label = 'Cluster ' + str(i))
+
+
+  plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s = 200, c = 'yellow', label = 'Centroids')
+
+  plt.title('Clusters')
+  plt.xlabel('')
+  plt.ylabel('')
+  plt.legend()
+
+  # * Tuple with different colors
+  Folder_graph_name = 'Kmeans_Graph_{}_{}.png'.format(Technique_name, Severity)
+  Folder_graph_folder = os.path.join(Folder_graph, Folder_graph_name)
+  plt.savefig(Folder_graph_folder)
+  #plt.show()
+
+  DataFrame = pd.DataFrame({'y_kmeans' : y_kmeans, 'REFNUM' : Filename})
+  #pd.set_option('display.max_rows', DataFrame.shape[0] + 1)
+  #print(DataFrame)
+
+  #pd.set_option('display.max_rows', DataFrame.shape[0] + 1)
+  Dataframe_name = '{}_Dataframe_{}'.format(Technique_name, Severity)
+  Dataframe_folder = os.path.join(Folder_CSV, Dataframe_name)
+
+  DataFrame.to_csv(Dataframe_folder)
+
+  #print(DataFrame['y_kmeans'].value_counts())
+
+  return DataFrame
+
+  # ? Remove Data from K-means function
+  
+@Utilities.timer_func
+def kmeans_remove_data(Folder_path: str, Folder_CSV: str, Technique_name: str, Dataframe: pd.DataFrame, Cluster_to_remove: int, Severity: str) -> pd.DataFrame:
+  """
+  _summary_
+
+  _extended_summary_
+
+  Args:
+      Folder_path (str): _description_
+      Folder_CSV (str): _description_
+      Technique_name (str): _description_
+      Dataframe (pd.DataFrame): _description_
+      Cluster_to_remove (int): _description_
+      Severity (str): _description_
+
+  Raises:
+      ValueError: _description_
+
+  Returns:
+      pd.DataFrame: _description_
+  """
+
+  # * General lists
+  #Images = [] # Png Images
+  All_filename = [] 
+
+  DataRemove = []
+  Data = 0
+
+  KmeansValue = 0
+  Refnum = 1
+  count = 1
+  Index = 1
+
+  os.chdir(Folder_path)
+
+  # * Using sort function
+  sorted_files, images = sort_images(Folder_path)
+
+  # * Reading the files
+  for File in sorted_files:
+
+    Filename, Format = os.path.splitext(File)
+
+    if Dataframe.iloc[Index - 1, Refnum] == Filename: # Read png files
+
+      print(Filename)
+      print(Dataframe.iloc[Index - 1, Refnum])
+
+      if Dataframe.iloc[Index - 1, KmeansValue] == Cluster_to_remove:
+
+        try:
+          print(f"Working with {count} of {images} {Format} images, {Filename} ------- {Format} ✅")
+          count += 1
+
+          Path_File = os.path.join(Folder_path, File)
+          os.remove(Path_File)
+          print(Dataframe.iloc[Index - 1, Refnum], ' removed ❌')
+          DataRemove.append(count)
+          Data += 0
+
+          #df = df.drop(df.index[count])
+
+        except OSError:
+          print('Cannot convert %s ❌' % File)
+
+      elif Dataframe.iloc[Index - 1, KmeansValue] != Cluster_to_remove:
+      
+        All_filename.append(Filename)
+
+      Index += 1
+
+    elif Dataframe.iloc[Index - 1, Refnum] != Filename:
+    
+      print(Dataframe.iloc[Index - 1, Refnum]  + '----' + Filename)
+      print(Dataframe.iloc[Index - 1, Refnum])
+      raise ValueError("Files are not the same") #! Alert
+
+    else:
+
+      Index += 1
+
+    for i in range(Data):
+
+      Dataframe = Dataframe.drop(Dataframe.index[DataRemove[i]])
+
+#Dataset = pd.DataFrame({'y_kmeans':df_u.iloc[Index - 1, REFNUM], 'REFNUM':df_u.iloc[Index - 1, KmeansValue]})
+#X = Dataset.iloc[:, [0, 1, 2, 3, 4]].values
+
+  #print(df)
+  #pd.set_option('display.max_rows', df.shape[0] + 1)
+
+  #Dataframe_name = str(Technique_name) + '_Data_Removed_' + str(Severity) + '.csv'
+  Dataframe_name = '{}_Data_Removed_{}.csv'.format(Technique_name, Severity)
+  Dataframe_folder = os.path.join(Folder_CSV, Dataframe_name)
+
+  Dataframe.to_csv(Dataframe_folder)
+
+  return Dataframe
+
 # ?
 
 class ChangeFormat(Utilities):
@@ -759,11 +934,11 @@ class ChangeFormat(Utilities):
 # ? Class for images cropping.
 
 class CropImages(Utilities):
-  """
-  _summary_
+    """
+    _summary_
 
-  _extended_summary_
-  """
+    _extended_summary_
+    """
     def __init__(self, **kwargs) -> None:
     
         """
@@ -829,10 +1004,10 @@ class CropImages(Utilities):
             raise ValueError("The shape is required") #! Alert
 
         elif self.__X_mean == None:
-            raise ValueError("Xmean is required") #! Alert
+            raise ValueError("X_mean is required") #! Alert
 
         elif self.__Y_mean == None:
-            raise ValueError("Ymean is required") #! Alert
+            raise ValueError("Y_mean is required") #! Alert
 
     @Utilities.timer_func
     def CropMIAS(self):
@@ -1040,180 +1215,6 @@ class CropImages(Utilities):
                         print('Cannot convert %s' % File)
 
             Index += 1   
-
-# ? Kmeans algorithm
-@Utilities.timer_func
-def kmeans_function(Folder_CSV: str, Folder_graph: str, Technique_name: str, X_data, Clusters: int, Filename: str, Severity: str) -> pd.DataFrame:
-  """
-  _summary_
-
-  _extended_summary_
-
-  Args:
-      Folder_CSV (str): _description_
-      Folder_graph (str): _description_
-      Technique_name (str): _description_
-      X_data (_type_): _description_
-      Clusters (int): _description_
-      Filename (str): _description_
-      Severity (str): _description_
-
-  Returns:
-      pd.DataFrame: _description_
-  """
-
-  # * Tuple with different colors
-  List_wcss = []
-  Colors = ('red', 'blue', 'green', 'cyan', 'magenta', 'indigo', 'azure', 'tan', 'purple')
-
-  for i in range(1, 10):
-    kmeans = KMeans(n_clusters = i, init = 'k-means++', random_state = 42)
-    kmeans.fit(X_data)
-    List_wcss.append(kmeans.inertia_)
-
-  plt.plot(range(1, 10), List_wcss)
-  plt.title('The Elbow Method')
-  plt.xlabel('Number of clusters')
-  plt.ylabel('WCSS')
-  #plt.show()
-
-  kmeans = KMeans(n_clusters = Clusters, init = 'k-means++', random_state = 42)
-  y_kmeans = kmeans.fit_predict(X_data)
-
-  for i in range(Clusters):
-
-    if  Clusters <= 10:
-
-        plt.scatter(X_data[y_kmeans == i, 0], X_data[y_kmeans == i, 1], s = 100, c = Colors[i], label = 'Cluster ' + str(i))
-
-
-  plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s = 200, c = 'yellow', label = 'Centroids')
-
-  plt.title('Clusters')
-  plt.xlabel('')
-  plt.ylabel('')
-  plt.legend()
-
-  # * Tuple with different colors
-  Folder_graph_name = 'Kmeans_Graph_{}_{}.png'.format(Technique_name, Severity)
-  Folder_graph_folder = os.path.join(Folder_graph, Folder_graph_name)
-  plt.savefig(Folder_graph_folder)
-  #plt.show()
-
-  DataFrame = pd.DataFrame({'y_kmeans' : y_kmeans, 'REFNUM' : Filename})
-  #pd.set_option('display.max_rows', DataFrame.shape[0] + 1)
-  #print(DataFrame)
-
-  #pd.set_option('display.max_rows', DataFrame.shape[0] + 1)
-  Dataframe_name = '{}_Dataframe_{}'.format(Technique_name, Severity)
-  Dataframe_folder = os.path.join(Folder_CSV, Dataframe_name)
-
-  DataFrame.to_csv(Dataframe_folder)
-
-  #print(DataFrame['y_kmeans'].value_counts())
-
-  return DataFrame
-
-  # ? Remove Data from K-means function
-  
-@Utilities.timer_func
-def kmeans_remove_data(Folder_path: str, Folder_CSV: str, Technique_name: str, Dataframe: pd.DataFrame, Cluster_to_remove: int, Severity: str) -> pd.DataFrame:
-  """
-  _summary_
-
-  _extended_summary_
-
-  Args:
-      Folder_path (str): _description_
-      Folder_CSV (str): _description_
-      Technique_name (str): _description_
-      Dataframe (pd.DataFrame): _description_
-      Cluster_to_remove (int): _description_
-      Severity (str): _description_
-
-  Raises:
-      ValueError: _description_
-
-  Returns:
-      pd.DataFrame: _description_
-  """
-
-  # * General lists
-  #Images = [] # Png Images
-  All_filename = [] 
-
-  DataRemove = []
-  Data = 0
-
-  KmeansValue = 0
-  Refnum = 1
-  count = 1
-  Index = 1
-
-  os.chdir(Folder_path)
-
-  # * Using sort function
-  sorted_files, images = sort_images(Folder_path)
-
-  # * Reading the files
-  for File in sorted_files:
-
-    Filename, Format = os.path.splitext(File)
-
-    if Dataframe.iloc[Index - 1, Refnum] == Filename: # Read png files
-
-      print(Filename)
-      print(Dataframe.iloc[Index - 1, Refnum])
-
-      if Dataframe.iloc[Index - 1, KmeansValue] == Cluster_to_remove:
-
-        try:
-          print(f"Working with {count} of {images} {Format} images, {Filename} ------- {Format} ✅")
-          count += 1
-
-          Path_File = os.path.join(Folder_path, File)
-          os.remove(Path_File)
-          print(Dataframe.iloc[Index - 1, Refnum], ' removed ❌')
-          DataRemove.append(count)
-          Data += 0
-
-          #df = df.drop(df.index[count])
-
-        except OSError:
-          print('Cannot convert %s ❌' % File)
-
-      elif Dataframe.iloc[Index - 1, KmeansValue] != Cluster_to_remove:
-      
-        All_filename.append(Filename)
-
-      Index += 1
-
-    elif Dataframe.iloc[Index - 1, Refnum] != Filename:
-    
-      print(Dataframe.iloc[Index - 1, Refnum]  + '----' + Filename)
-      print(Dataframe.iloc[Index - 1, Refnum])
-      raise ValueError("Files are not the same") #! Alert
-
-    else:
-
-      Index += 1
-
-    for i in range(Data):
-
-      Dataframe = Dataframe.drop(Dataframe.index[DataRemove[i]])
-
-#Dataset = pd.DataFrame({'y_kmeans':df_u.iloc[Index - 1, REFNUM], 'REFNUM':df_u.iloc[Index - 1, KmeansValue]})
-#X = Dataset.iloc[:, [0, 1, 2, 3, 4]].values
-
-  #print(df)
-  #pd.set_option('display.max_rows', df.shape[0] + 1)
-
-  Dataframe_name = str(Technique_name) + '_Data_Removed_' + str(Severity) + '.csv'
-  Dataframe_folder = os.path.join(Folder_CSV, Dataframe_name)
-
-  Dataframe.to_csv(Dataframe_folder)
-
-  return Dataframe
 
 # ? ####################################################### CBIS-DDSM #######################################################
 
@@ -2534,9 +2535,9 @@ class FigureAdjust(Utilities):
     self._Y_figure_size = 12
 
     # * General parameters
-    self._Font_size_title = self.X_figure_size * 1.2
-    self._Font_size_general = self.X_figure_size * 0.8
-    self._Font_size_ticks = (self.X_figure_size * self.Y_figure_size) * 0.05
+    self._Font_size_title = self._X_figure_size * 1.2
+    self._Font_size_general = self._X_figure_size * 0.8
+    self._Font_size_ticks = (self._X_figure_size * self._Y_figure_size) * 0.05
 
     # * 
     #self.Annot_kws = kwargs.get('annot_kws', None)
@@ -3020,18 +3021,18 @@ class FigurePlot(FigureAdjust):
     self._Y_size_figure_subplot = 2
 
     # *
-    self._Confusion_matrix_dataframe = pd.read_csv(self.CM_dataframe)
-    self._History_data_dataframe = pd.read_csv(self.History_dataframe)
+    self._Confusion_matrix_dataframe = pd.read_csv(self._CM_dataframe)
+    self._History_data_dataframe = pd.read_csv(self._History_dataframe)
     
-    self.Roc_curve_dataframes = []
-    for Dataframe in self.ROC_dataframe:
+    self._Roc_curve_dataframes = []
+    for Dataframe in self._ROC_dataframe:
       self.Roc_curve_dataframes.append(pd.read_csv(Dataframe))
 
     # *
-    self._Accuracy = self.History_data_dataframe.accuracy.to_list()
-    self._Loss = self.History_data_dataframe.loss.to_list()
-    self._Val_accuracy = self.History_data_dataframe.val_accuracy.to_list()
-    self._Val_loss = self.History_data_dataframe.val_loss.to_list()
+    self._Accuracy = self._History_data_dataframe.accuracy.to_list()
+    self._Loss = self._History_data_dataframe.loss.to_list()
+    self._Val_accuracy = self._History_data_dataframe.val_accuracy.to_list()
+    self._Val_loss = self._History_data_dataframe.val_loss.to_list()
 
     self._FPRs = []
     self._TPRs = []

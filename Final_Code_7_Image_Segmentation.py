@@ -3,36 +3,6 @@ from Final_Code_0_Libraries import *
 from Final_Code_1_General_Functions import sort_images
 from Final_Code_1_General_Functions import remove_all_files
 
-"""
-img = cv2.imread("D:\CBIS-DDSM\CBIS-DDSM Final\CBIS_DDSM_NO_Images_Biclass\Mass_NO_AbnormalImages_DA\Mass-Training_P_00018_RIGHT_MLO_1_Benign_0_Rotation_Augmentation.png")
-img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-plt.figure(figsize=(8,8))
-plt.imshow(img, cmap="gray")
-plt.axis('off')
-plt.title("Original Image")
-plt.show()
-
-ret, thresh = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-plt.figure(figsize=(8,8))
-plt.imshow(thresh, cmap="gray")
-plt.axis('off')
-plt.title("Threshold Image")
-plt.show()
-
-
-kernel = np.ones((3, 3), np.uint8)
-closing = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE,kernel, iterations = 15)
-bg = cv2.dilate(closing, kernel, iterations = 1)
-dist_transform = cv2.distanceTransform(closing, cv2.DIST_L2, 0)
-ret, fg = cv2.threshold(dist_transform, 0.02*dist_transform.max(), 255, 0)
-cv2.imshow('image', fg)
-plt.figure(figsize = (8,8))
-plt.imshow(fg,cmap = "gray")
-plt.axis('off')
-plt.title("Segmented Image")
-plt.show()
-"""
-
 def image_segmentation(Folder, NewFolder, Label):
     
     # * Remove all the files in the new folder using this function

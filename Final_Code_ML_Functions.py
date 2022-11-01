@@ -291,7 +291,7 @@ def machine_learning_models(**kwargs):
         Dict = classification_report(y_test, Y_pred, target_names = Class_labels, output_dict = True)
 
         for i, Report_labels in enumerate(Classification_report_labels):
-            for j, Metric_labels in enumerate(Classification_report_metrics_labels):
+            for _, Metric_labels in enumerate(Classification_report_metrics_labels):
                 print(Dict[Report_labels][Metric_labels])
                 Classification_report_values.append(Dict[Report_labels][Metric_labels])
                 print("\n")
@@ -526,28 +526,12 @@ def ML_model_pretrained(Model_pretrained_value: int, X_train, y_train, X_test):
     Model_pretrained_value is a import variable that chose the model required.
     The next index show every model this function has:
 
-    1:  EfficientNetB7_Model
-    2:  EfficientNetB6_Model
-    3:  EfficientNetB5_Model
-    4:  EfficientNetB4_Model
-    5:  EfficientNetB3_Model
-    6:  EfficientNetB2_Model
-    7:  EfficientNetB1_Model
-    8:  EfficientNetB0_Model
-    9:  ResNet50_Model
-    10: ResNet50V2_Model
-    11: ResNet152_Model
-    12: ResNet152V2_Model
-    13: MobileNet_Model
-    14: MobileNetV3Small_Model
-    15: MobileNetV3Large_Model\anytimeshield
-    16: Xception_Model
-    17: VGG16_Model
-    18: VGG19_Model
-    19: InceptionV3_Model
-    20: DenseNet121_Model
-    21: DenseNet201_Model
-    22: NASNetLarge_Model
+    1: Support Vector Machine
+    2: Multi Support Vector Machine
+    3: Decision Tree
+    4: K Neighbors
+    5: Random Forest
+    6: Gradient Boostin Classifier
 
     Args:
         X_size (int): X's size value.

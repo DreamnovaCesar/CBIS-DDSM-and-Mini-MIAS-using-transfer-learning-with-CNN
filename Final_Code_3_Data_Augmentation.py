@@ -571,7 +571,7 @@ class DataAugmentation(Utilities):
     return Images, Labels
 
   @Utilities.timer_func
-  def data_augmentation_test_images(self):
+  def data_augmentation_number_test_images(self) -> int:
     """
     Techniques used to increase the amount of data by adding slightly modified copies of already existing data 
     or newly created synthetic data from existing data. (Just the number of images).
