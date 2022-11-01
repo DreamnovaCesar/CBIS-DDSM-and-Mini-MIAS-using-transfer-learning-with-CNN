@@ -354,14 +354,14 @@ class SecurityFiles(Utilities):
         Keys = [];
         
         # * key generation
-        for i in range(Number_keys):
+        for i in range(self.__Number_keys):
 
             Key = Fernet.generate_key()
             
             print('Key created: {}'.format(Key))
 
             Key_name = 'filekey_{}'.format(i)
-            Key_path_name = '{}/filekey_{}.key'.format(Folder_path, i)
+            Key_path_name = '{}/filekey_{}.key'.format(self.__Folder_path, i)
 
             Keys.append(Key)
             Names.append(Key_name)
@@ -372,7 +372,7 @@ class SecurityFiles(Utilities):
             Dataframe_keys = pd.DataFrame({'Name':Names, 'Keys':Keys})
 
             Dataframe_Key_name = 'Dataframe_filekeys.csv'.format()
-            Dataframe_Key_folder = os.path.join(Folder_path, Dataframe_Key_name)
+            Dataframe_Key_folder = os.path.join(self.__Folder_path, Dataframe_Key_name)
 
             Dataframe_keys.to_csv(Dataframe_Key_folder)
 

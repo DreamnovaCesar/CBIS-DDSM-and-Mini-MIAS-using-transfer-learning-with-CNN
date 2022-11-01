@@ -7,7 +7,16 @@ from Final_Code_3_Data_Augmentation import DataAugmentation
 
 # *
 def Data_augmentation_stage(Folder_path: str, Labels: list[str], Numbers_iter: list[int]) -> None:
+    """
+    _summary_
 
+    _extended_summary_
+
+    Args:
+        Folder_path (str): _description_
+        Labels (list[str]): _description_
+        Numbers_iter (list[int]): _description_
+    """
     # *
     Total_files = 0
     Total_dir = 0
