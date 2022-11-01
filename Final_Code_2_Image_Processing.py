@@ -40,6 +40,9 @@ class ImageProcessing(Utilities):
     self.Radius = kwargs.get('radius', 1)
     self.Amount = kwargs.get('amount', 1)
 
+    # * Parameters for gamma correction
+    self.Gamma_correction = kwargs.get('GC', 1.0)
+
     # * Folder attribute (ValueError, TypeError)
     if self.Folder == None:
       raise ValueError("Folder does not exist") #! Alert
@@ -277,9 +280,25 @@ class ImageProcessing(Utilities):
       print("Deleting Amount...")
       del self.Amount
 
+  # * Gamma_correction attribute
+  @property
+  def Gamma_correction_property(self):
+      return self.Gamma_correction
+
+  @Gamma_correction_property.setter
+  def Gamma_correction_property(self, New_value):
+    if not isinstance(New_value, float):
+      raise TypeError("Gamma_correction must be a float value") #! Alert
+    self.Gamma_correction = New_value
+  
+  @Gamma_correction_property.deleter
+  def Gamma_correction_property(self):
+      print("Deleting Gamma_correction...")
+      del self.Gamma_correction
+
   # ? Gamma correction values
   @staticmethod
-  def gammaCorrection(Image, Gamma_value):
+  def gamma_correction(Image, Gamma_value):
     Gamma_inv = 1 / Gamma_value
 
     Table_gamma = [((i / 255) ** Gamma_inv) * 255 for i in range(256)]
@@ -1010,7 +1029,7 @@ class ImageProcessing(Utilities):
 
       return Dataframe
 
-    @Utilities.timer_func
+  @Utilities.timer_func
   def gamma_correction_technique(self) -> pd.DataFrame:
 
       """
@@ -1064,22 +1083,22 @@ class ImageProcessing(Utilities):
 
             # * Resize with the given values
             Path_file = os.path.join(self.Folder, File)
-            Image = io.imread(Path_file, as_gray = True)
+            Image = cv2.imread(Path_file, as_gray = True)
 
-            p2, p98 = np.percentile(Image, (2, 98))
-            CS_image = rescale_intensity(Image, in_range = (p2, p98))
+            # * Gamma correction 1.0 standard
+            Image_gamma = self.gamma_correction(Image, self.Gamma_correction)
 
             Image = img_as_ubyte(Image)
-            CS_image = img_as_ubyte(CS_image)
+            Image_gamma = img_as_ubyte(Image_gamma)
 
             # * Save each statistic in a variable
-            Mae = mae(Image, CS_image)
-            Mse = mse(Image, CS_image)
-            Ssim = ssim(Image, CS_image)
-            Psnr = psnr(Image, CS_image)
-            Nrmse = nrmse(Image, CS_image)
-            Nmi = nmi(Image, CS_image)
-            R2s = r2s(Image, CS_image)
+            Mae = mae(Image, Image_gamma)
+            Mse = mse(Image, Image_gamma)
+            Ssim = ssim(Image, Image_gamma)
+            Psnr = psnr(Image, Image_gamma)
+            Nrmse = nrmse(Image, Image_gamma)
+            Nmi = nmi(Image, Image_gamma)
+            R2s = r2s(Image, Image_gamma)
 
             # * Add the value in the lists already created
             Mae_ALL.append(Mae)
@@ -1097,7 +1116,7 @@ class ImageProcessing(Utilities):
             New_folder = os.path.join(self.New_folder, New_name_filename)
 
             # * Save the image in a new folder
-            io.imsave(New_folder, CS_image)
+            cv2.imwrite(New_folder, Image_gamma)
 
             # * Save the values of labels and each filenames
             #Images.append(Normalization_Imagen)

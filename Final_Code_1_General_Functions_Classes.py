@@ -334,17 +334,20 @@ class Generator(object):
 
 # ? Generate keys
 
-class SecurityFiles(object):
+class SecurityFiles(Utilities):
 
     def __init__(self, **kwargs) -> None:
         
         # * Instance attributes (Private)
         self.__Folder_path = kwargs.get('folder', None);
-        self.__Folders_name = kwargs.get('FN', None);
-        self.__Iteration = kwargs.get('iter', None);
-        self.__Save_dataframe = kwargs.get('SD', None);
+        self.__Number_keys = kwargs.get('NK', 2);
+        self.__Key_path = kwargs.get('KP', None);
+        self.__Keys_path = kwargs.get('KsP', None);
+        self.__Key_chosen = kwargs.get('KC', None);
+        self.__Key_random = kwargs.get('KR', None);
 
-    def generate_key(Folder_path: str, Number_keys: int = 2) -> None: 
+    @Utilities.timer_func
+    def generate_key(self) -> None: 
         
         # *
         Names = [];
@@ -375,117 +378,109 @@ class SecurityFiles(object):
 
     # ? Encrypt files
 
-    def encrypt_files(**kwargs) -> None:
-
-        # * General parameters
-        Folder_path = kwargs.get('folderpath', None)
-        Key_path = kwargs.get('keypath', None)
-        Keys_path = kwargs.get('keyspath', None)
-        Key_path_chosen = kwargs.get('newkeypath', None)
-        Random_key = kwargs.get('randomkey', False)
+    @Utilities.timer_func
+    def encrypt_files(self) -> None:
 
         # * Folder attribute (ValueError, TypeError)
-        if Folder_path == None:
+        if self.__Folder_path == None:
             raise ValueError("Folder does not exist") #! Alert
-        if not isinstance(Folder_path, str):
+        if not isinstance(self.__Folder_path, str):
             raise TypeError("Folder must be a string") #! Alert
 
         Filenames = []
 
-        if Random_key == True:
+        if self.__Key_random == True:
 
-            File = random.choice(os.listdir(Keys_path))
+            File = random.choice(os.listdir(self.__Keys_path))
             FilenameKey, Format = os.path.splitext(File)
 
             if File.endswith('.key'):
 
                 try:
-                    with open(Keys_path + '/' + File, 'rb') as filekey:
+                    with open(self.__Keys_path + '/' + File, 'rb') as filekey:
                         Key = filekey.read()
 
                     Fernet_ = Fernet(Key)
 
                     #Key_name = 'MainKey.key'.format()
-                    shutil.copy2(os.path.join(Keys_path, File), Key_path_chosen)
+                    shutil.copy2(os.path.join(self.__Keys_path, File), self.__Key_chosen)
 
                     # * This function sort the files and show them
 
-                    for Filename in os.listdir(Folder_path):
+                    for Filename in os.listdir(self.__Folder_path):
 
                         Filenames.append(Filename)
 
-                        with open(Folder_path + '/' + Filename, 'rb') as File_: # open in readonly mode
+                        with open(self.__Folder_path + '/' + Filename, 'rb') as File_: # open in readonly mode
                             Original_file = File_.read()
                         
                         Encrypted_File = Fernet_.encrypt(Original_file)
 
-                        with open(Folder_path + '/' + Filename, 'wb') as Encrypted_file:
+                        with open(self.__Folder_path + '/' + Filename, 'wb') as Encrypted_file:
                             Encrypted_file.write(Encrypted_File) 
 
-                    with open(Key_path_chosen + '/' + FilenameKey + '.txt', "w") as text_file:
+                    with open(self.__Key_path_chosen + '/' + FilenameKey + '.txt', "w") as text_file:
                         text_file.write('The key {} open the next documents {}'.format(FilenameKey, Filenames))   
 
                 except OSError:
                     print('Is not a key {} ❌'.format(str(File))) #! Alert
 
-        elif Random_key == False:
+        elif self.__Key_random == False:
 
-            Name_key = os.path.basename(Key_path)
-            Key_dir = os.path.dirname(Key_path)
+            Name_key = os.path.basename(self.__Key_path)
+            Key_dir = os.path.dirname(self.__Key_path)
 
-            if Key_path.endswith('.key'):
+            if self.__Key_path.endswith('.key'):
                 
                 try: 
-                    with open(Key_path, 'rb') as filekey:
+                    with open(self.__Key_path, 'rb') as filekey:
                         Key = filekey.read()
 
                     Fernet_ = Fernet(Key)
 
                     #Key_name = 'MainKey.key'.format()
-                    shutil.copy2(os.path.join(Key_dir, Name_key), Key_path_chosen)
+                    shutil.copy2(os.path.join(Key_dir, Name_key), self.__Key_chosen)
 
                     # * This function sort the files and show them
 
-                    for Filename in os.listdir(Folder_path):
+                    for Filename in os.listdir(self.__Folder_path):
 
                         Filenames.append(Filename)
 
-                        with open(Folder_path + '/' + Filename, 'rb') as File: # open in readonly mode
+                        with open(self.__Folder_path + '/' + Filename, 'rb') as File: # open in readonly mode
                             Original_file = File.read()
                         
                         Encrypted_File = Fernet_.encrypt(Original_file)
 
-                        with open(Folder_path + '/' + Filename, 'wb') as Encrypted_file:
+                        with open(self.__Folder_path + '/' + Filename, 'wb') as Encrypted_file:
                             Encrypted_file.write(Encrypted_File)
 
-                    with open(Key_path_chosen + '/' + Name_key + '.txt', "w") as text_file:
+                    with open(self.__Key_path_chosen + '/' + Name_key + '.txt', "w") as text_file:
                         text_file.write('The key {} open the next documents {}'.format(Name_key, Filenames))  
 
                 except OSError:
-                    print('Is not a key {} ❌'.format(str(Key_path))) #! Alert
+                    print('Is not a key {} ❌'.format(str(self.__Key_path))) #! Alert
 
     # ? Decrypt files
 
-    def decrypt_files(**kwargs) -> None: 
+    @Utilities.timer_func
+    def decrypt_files(self) -> None: 
 
-        # * General parameters
-        Folder_path = kwargs.get('folderpath', None)
-        Key_path = kwargs.get('keypath', None)
 
         # * Folder attribute (ValueError, TypeError)
-        if Folder_path == None:
+        if self.__Folder_path == None:
             raise ValueError("Folder does not exist") #! Alert
-        if not isinstance(Folder_path, str):
+        if not isinstance(self.__Folder_path, str):
             raise TypeError("Folder must be a string") #! Alert
 
-        Key_dir = os.path.dirname(Key_path)
-        Key_file = os.path.basename(Key_path)
+        Key_dir = os.path.dirname(self.__Key_path)
+        Key_file = os.path.basename(self.__Key_path)
 
         Filename_key, Format = os.path.splitext(Key_file)
 
         Datetime = datetime.datetime.now()
 
-        with open(Key_path, 'rb') as Filekey:
+        with open(self.__Key_path, 'rb') as Filekey:
             Key = Filekey.read()
 
         Fernet_ = Fernet(Key)
@@ -495,23 +490,23 @@ class SecurityFiles(object):
         if Filename_key.endswith('.key'):
 
             try:
-                for Filename in os.listdir(Folder_path):
+                for Filename in os.listdir(self.__Folder_path):
 
                     print(Filename)
 
-                    with open(Folder_path + '/' + Filename, 'rb') as Encrypted_file: # open in readonly mode
+                    with open(self.__Folder_path + '/' + Filename, 'rb') as Encrypted_file: # open in readonly mode
                         Encrypted = Encrypted_file.read()
                     
                     Decrypted = Fernet_.decrypt(Encrypted)
 
-                    with open(Folder_path + '/' + Filename, 'wb') as Decrypted_file:
+                    with open(self.__Folder_path + '/' + Filename, 'wb') as Decrypted_file:
                         Decrypted_file.write(Decrypted)
 
                 with open(Key_dir + '/' + Key_file + '.txt', "w") as text_file:
                         text_file.write('Key used. Datetime: {} '.format(Datetime))  
 
             except OSError:
-                    print('Is not a key {} ❌'.format(str(Key_path))) #! Alert
+                    print('Is not a key {} ❌'.format(str(self.__Key_path))) #! Alert
 
 
 # ? ####################################################### Mini-MIAS #######################################################
