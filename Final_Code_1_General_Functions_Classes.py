@@ -2157,6 +2157,20 @@ class SplitDataFolder(Utilities):
 
         # * General parameters
         self.__Folder = kwargs.get('Folder', None)
+    
+    # * Folder attribute
+    @property
+    def __Folder_property(self):
+        return self.__Folder
+
+    @__Folder_property.setter
+    def __Folder_property(self, New_value):
+        self.__Folder = New_value
+    
+    @__Folder_property.deleter
+    def __Folder_property(self):
+        print("Deleting folder...")
+        del self.__Folder
 
     @Utilities.timer_func
     def split_folders_train_test_val(self) -> str:
