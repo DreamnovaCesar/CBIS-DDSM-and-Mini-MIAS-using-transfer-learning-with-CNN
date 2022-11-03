@@ -2149,53 +2149,84 @@ def concat_dataframe(*dfs: pd.DataFrame, **kwargs: str) -> pd.DataFrame:
 
 # ? Split folders into train/test/validation
 
-@Utilities.timer_func
-def split_folders_train_test_val(Folder_path:str, Only_train_test: bool) -> str:
-  """
-  Create a new folder with the folders of the class problem and its distribution of training, test and validation.
-  The split is 80 and 20. If there is a validation set, it'll be 80, 10, and 10.
+class SplitDataFolder(Utilities):
 
-  Args:
-      Folder_path (str): Folder's dataset for distribution
+    # * Change the format of one image to another 
 
-  Returns:
-      None
-  """
-  # * General parameters
+    def __init__(self, **kwargs):
 
-  Asterisks: int = 50
-  Train_split: float = 0.8
-  Test_split: float = 0.1
-  Validation_split: float = 0.1
+        # * General parameters
+        self.__Folder = kwargs.get('Folder', None)
 
-  #Name_dir = os.path.dirname(Folder)
-  #Name_base = os.path.basename(Folder)
-  #New_Folder_name = Folder_path + '_Split'
+    @Utilities.timer_func
+    def split_folders_train_test_val(self) -> str:
+        """
+        Create a new folder with the folders of the class problem and its distribution of training, test and validation.
+        If there is a validation set, it'll be 80, 10, and 10.
 
-  New_Folder_name = '{}_Split'.format(Folder_path)
+        Args:
+            Folder_path (str): Folder's dataset for distribution
 
-  print("*" * Asterisks)
-  print('New folder name: {}'.format(New_Folder_name))
-  print("*" * Asterisks)
+        Returns:
+            None
+        """
+        # * General parameters
 
-  #1337
-  
-  try:
+        Asterisks: int = 50
+        Train_split: float = 0.8
+        Test_split: float = 0.1
+        Validation_split: float = 0.1
 
-    if(Only_train_test == False):
+        #Name_dir = os.path.dirname(Folder)
+        #Name_base = os.path.basename(Folder)
+        #New_Folder_name = Folder_path + '_Split'
 
-      splitfolders.ratio(Folder_path, output = New_Folder_name, seed = 22, ratio = (Train_split, Test_split, Validation_split)) 
+        # *
+        New_Folder_name = '{}_Split'.format(self.__Folder)
+
+        # *
+        print("*" * Asterisks)
+        print('New folder name: {}'.format(New_Folder_name))
+        print("*" * Asterisks)
     
-    else:
+        splitfolders.ratio(self.__Folder, output = New_Folder_name, seed = 22, ratio = (Train_split, Test_split, Validation_split)) 
 
-      Test_split: float = 0.2
-      splitfolders.ratio(Folder_path, output = New_Folder_name, seed = 22, ratio = (Train_split, Test_split)) 
+        return New_Folder_name
 
-  except OSError as e:
-    print('Cannot split the following folder {}, Type error: {} ❌'.format(str(Folder_path), str(type(e)))) #! Alert
+    def split_folders_train_test(self) -> str:
 
-  return New_Folder_name
+        """
+        Create a new folder with the folders of the class problem and its distribution of training and test.
+        The split is 80 and 20.
 
+        Args:
+            Folder_path (str): Folder's dataset for distribution
+
+        Returns:
+            None
+        """
+        # * General parameters
+
+        Asterisks: int = 50
+        Train_split: float = 0.8
+        Test_split: float = 0.2
+
+        #Name_dir = os.path.dirname(Folder)
+        #Name_base = os.path.basename(Folder)
+        #New_Folder_name = Folder_path + '_Split'
+
+        # *
+        New_Folder_name = '{}_Split'.format(self.__Folder)
+
+        # *
+        print("*" * Asterisks)
+        print('New folder name: {}'.format(New_Folder_name))
+        print("*" * Asterisks)
+    
+        splitfolders.ratio(self.__Folder, output = New_Folder_name, seed = 22, ratio = (Train_split, Test_split)) 
+
+        return New_Folder_name
+        
 # ? .
 class DCM_format(Utilities):
 
