@@ -1,0 +1,2 @@
+install media feature pack
+pip install -r requirements.txt

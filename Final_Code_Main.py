@@ -103,14 +103,14 @@ def main():
 
     Model_CNN = (13, 14)
 
-    Bic = 'D:\Mini-MIAS\Mini_MIAS_NO_Cropped_Images_Biclass'
-    Multic = "D:\Mini-MIAS\CBIS_DDSM_NO_Images_Multiclass"
+    #Bic = 'D:\Mini-MIAS\Mini_MIAS_NO_Cropped_Images_Biclass'
+    #Multic = "D:\Mini-MIAS\CBIS_DDSM_NO_Images_Multiclass"
     
-    MulticSplit = split_folders_train_test_val(Multic, False)
+    #MulticSplit = split_folders_train_test_val(Multic, False)
 
-    preprocessing_DataAugmentation_Folder(MulticSplit, ['A', 'B', 'C'], [1, 1, 22])
+    #preprocessing_DataAugmentation_Folder(MulticSplit, ['A', 'B', 'C'], [1, 1, 22])
 
-    configuration_models_folder(folder = MulticSplit, foldermodels = 'D:\Test',
+    configuration_models_folder(folder = "D:\Mini-MIAS\CBIS_DDSM_NO_Images_Multiclass" + '_Split', foldermodels = 'D:\Test',
                                     foldermodelesp = 'D:\Test', foldercsv = 'D:\Test', 
                                         models = Model_CNN, technique = 'TEST', 
                                             labels = ['A', 'B', 'C'], X = 224, Y = 224, epochs = 2)

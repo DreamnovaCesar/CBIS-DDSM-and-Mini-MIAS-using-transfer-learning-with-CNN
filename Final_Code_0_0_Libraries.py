@@ -14,6 +14,7 @@ import seaborn as sns
 
 # *
 import tensorflow as tf
+import tensorflow as keras
 import matplotlib.pyplot as plt
 
 # *
@@ -36,8 +37,6 @@ import warnings
 
 # *
 import splitfolders
-import tensorflow as tf
-import matplotlib.pyplot as plt
 
 # *
 from sklearn.cluster import KMeans
@@ -82,78 +81,78 @@ from sklearn.preprocessing import label_binarize
 from sklearn.preprocessing import OneHotEncoder
 
 # *
-from tensorflow.keras import Input
-from tensorflow.keras import datasets
-from tensorflow.keras import layers
-from tensorflow.keras import models
+from keras import Input
+from keras import datasets
+from keras import layers
+from keras import models
 
 # *
-from tensorflow.keras.optimizers import Adam
+from keras.optimizers import Adam
 
 # *
-from tensorflow.keras.applications import ResNet50
-from tensorflow.keras.applications import ResNet50V2
-from tensorflow.keras.applications import ResNet152
-from tensorflow.keras.applications import ResNet152V2
+from keras.applications import ResNet50
+from keras.applications import ResNet50V2
+from keras.applications import ResNet152
+from keras.applications import ResNet152V2
 
 # *
-from tensorflow.keras.applications import MobileNet
+from keras.applications import MobileNet
 
 # *
-from tensorflow.keras.applications import MobileNetV3Small
-from tensorflow.keras.applications import MobileNetV3Large
+from keras.applications import MobileNetV3Small
+from keras.applications import MobileNetV3Large
 
 # *
-from tensorflow.keras.applications import Xception
+from keras.applications import Xception
 
 # *
-from tensorflow.keras.applications import VGG16
-from tensorflow.keras.applications import VGG19
+from keras.applications import VGG16
+from keras.applications import VGG19
 
 # *
-from tensorflow.keras.applications import InceptionV3
-from tensorflow.keras.applications import DenseNet121
-from tensorflow.keras.applications import DenseNet201
+from keras.applications import InceptionV3
+from keras.applications import DenseNet121
+from keras.applications import DenseNet201
 
 # *
-from tensorflow.keras.applications import Xception
-from tensorflow.keras.applications import NASNetLarge
+from keras.applications import Xception
+from keras.applications import NASNetLarge
 
 # *
-from tensorflow.keras.applications import EfficientNetB0
-from tensorflow.keras.applications import EfficientNetB1
-from tensorflow.keras.applications import EfficientNetB2
-from tensorflow.keras.applications import EfficientNetB3
-from tensorflow.keras.applications import EfficientNetB4
-from tensorflow.keras.applications import EfficientNetB5
-from tensorflow.keras.applications import EfficientNetB6
-from tensorflow.keras.applications import EfficientNetB7
+from keras.applications import EfficientNetB0
+from keras.applications import EfficientNetB1
+from keras.applications import EfficientNetB2
+from keras.applications import EfficientNetB3
+from keras.applications import EfficientNetB4
+from keras.applications import EfficientNetB5
+from keras.applications import EfficientNetB6
+from keras.applications import EfficientNetB7
 
 # *
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.models import Model
+from keras.models import Sequential
+from keras.models import Model
 
 # *
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers import Dropout
-from tensorflow.keras.layers import Conv2D
-from tensorflow.keras.layers import MaxPooling2D
-from tensorflow.keras.layers import AveragePooling2D
-from tensorflow.keras.layers import BatchNormalization
-from tensorflow.keras.layers import LeakyReLU
+from keras.layers import Dense
+from keras.layers import Flatten
+from keras.layers import Dropout
+from keras.layers import Conv2D
+from keras.layers import MaxPooling2D
+from keras.layers import AveragePooling2D
+from keras.layers import BatchNormalization
+from keras.layers import LeakyReLU
 
 # *
-from tensorflow.keras import regularizers
+from keras import regularizers
 
 # *
 from sklearn.model_selection import train_test_split
 
 # *
-from tensorflow.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.callbacks import CSVLogger
-from tensorflow.keras.callbacks import ReduceLROnPlateau
+from keras.callbacks import ModelCheckpoint
+from keras.callbacks import EarlyStopping
+from keras.callbacks import CSVLogger
+from keras.callbacks import ReduceLROnPlateau
 
 # *
 from keras.preprocessing.image import ImageDataGenerator
@@ -202,3 +201,14 @@ from sklearn.multiclass import OneVsRestClassifier
 #from sklearn.naive_bayes import GaussianNB
 
 from imblearn.over_sampling import SMOTE
+
+from tensorflow.python.client import device_lib
+
+print(f"Tensor Flow Version: {tf.__version__}")
+print(f"Keras Version: {keras.__version__}")
+print()
+print(f"Python {sys.version}")
+print(f"Pandas {pd.__version__}")
+gpu = len(tf.config.list_physical_devices('GPU'))>0
+print("GPU is", "available" if gpu else "NOT AVAILABLE")
+print(device_lib.list_local_devices())
